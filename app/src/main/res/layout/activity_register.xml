@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activity.RegisterActivity">
+
+    <data>
+        <variable
+            name="registerParam"
+            type="com.example.bright_storage.model.view.RegisterParam" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="30dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="填写密码完成注册">
+
+        </TextView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/input_phone"
+                style="@style/BaseInput"
+                android:hint="密码"
+                android:inputType="textPassword"
+                android:layout_width="match_parent"
+                app:met_clearButton="true"
+                app:met_floatingLabel="normal"
+                android:text="@={registerParam.password}">
+
+            </com.rengwuxian.materialedittext.MaterialEditText>
+
+
+        </RelativeLayout>
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/input_code"
+            style="@style/BaseInput"
+            android:hint="重复密码"
+            android:inputType="textPassword"
+            app:met_clearButton="true"
+            app:met_floatingLabel="normal"
+            android:text="@={registerParam.repeatPassword}">
+
+        </com.rengwuxian.materialedittext.MaterialEditText>
+
+        <Button
+            android:id="@+id/btn_register"
+            style="@style/ButtonPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_margin="2dp"
+            android:text="完成注册" />
+
+    </LinearLayout>
+</layout>

@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Bright-Storage</string>
+    <string name="title_home">物品</string>
+    <string name="title_personal_info">我</string>
+    <string name="title_BSPro">购买智存Pro</string>
+    <string name="title_Relation">我的关系</string>
+    <string name="title_Settings">设置</string>
+    <string name="title_RecycleBin">回收站</string>
+    <string name="title_activity_test">TestActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+</resources>

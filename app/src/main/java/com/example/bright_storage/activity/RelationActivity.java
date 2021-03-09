@@ -1,4 +1,4 @@
-package com.example.bright_storage;
+package com.example.bright_storage.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.bright_storage.R;
 
 import static android.view.View.INVISIBLE;
 

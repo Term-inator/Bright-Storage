@@ -14,7 +14,7 @@
             android:name=".activity.LoginActivity"
             android:label="LoginActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.BrightStorage">
             <intent-filter>
@@ -24,19 +24,49 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BSProActivity"
+            android:name=".activity.BSProActivity"
             android:label="@string/title_BSPro" />
         <activity
-            android:name=".RelationActivity"
+            android:name=".activity.RelationActivity"
             android:label="@string/title_Relation" />
         <activity
-            android:name=".SettingActivity"
+            android:name=".activity.SettingActivity"
             android:label="@string/title_Settings" />
         <activity
-            android:name=".RecycleBinActivity"
+            android:name=".activity.RecycleBinActivity"
             android:label="@string/title_RecycleBin" />
+        <activity
+            android:name=".activity.ZxingActivity" />
         <activity android:name=".search.SearchActivity" />
         <activity android:name=".search.TestActivity"></activity>
+        <activity
+            android:name=".activity.AddActivity"
+            android:label="@string/title_select_path">
+        </activity>
+        <activity
+            android:name=".activity.PathSelectActivity"
+            android:label="@string/title_add">
+        </activity>
+        <activity
+            android:name=".activity.TypeActivity"
+            android:label="@string/title_type">
+        </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.bright_storage.camera.file_provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
-
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

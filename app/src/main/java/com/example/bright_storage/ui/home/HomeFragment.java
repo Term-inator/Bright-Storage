@@ -9,13 +9,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.bright_storage.R;
-import com.example.bright_storage.SettingActivity;
 import com.example.bright_storage.search.SearchActivity;
 
 public class HomeFragment extends Fragment {

@@ -8,11 +8,12 @@ android {
 
     defaultConfig {
         applicationId "com.example.bright_storage"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        renderscriptTargetApi 17
+        renderscriptSupportModeEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -26,16 +27,19 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    dataBinding {
-        enabled = true
-    }
-    viewBinding {
-        enabled = true
+    buildFeatures{
+        dataBinding = true
+        // for view binding :
+        viewBinding = true
     }
 }
 
 dependencies {
-
+    implementation 'com.kongzue.dialog_v3x:dialog:3.2.4'
+    implementation 'cn.yipianfengye.android:zxing-library:2.2'
+    implementation 'me.texy.treeview:treeview_lib:1.0.6'
+    implementation 'com.contrarywind:wheelview:4.1.0'
+    implementation 'com.contrarywind:Android-PickerView:4.1.9'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

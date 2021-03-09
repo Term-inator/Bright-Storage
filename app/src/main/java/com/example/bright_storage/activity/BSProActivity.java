@@ -1,4 +1,4 @@
-package com.example.bright_storage;
+package com.example.bright_storage.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bright_storage.R;
 import com.example.bright_storage.search.SearchActivity;
 
 import static android.view.View.INVISIBLE;
@@ -20,8 +21,8 @@ public class BSProActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_bspro);
-        TextView thetitle = findViewById(R.id.title_text);
-        thetitle.setText(R.string.title_BSPro);
+        TextView theTitle = findViewById(R.id.title_text);
+        theTitle.setText(R.string.title_BSPro);
         Button title_back = (Button) findViewById(R.id.title_back);
         Button title_search = (Button) findViewById(R.id.title_search);
         title_search.setVisibility(INVISIBLE);

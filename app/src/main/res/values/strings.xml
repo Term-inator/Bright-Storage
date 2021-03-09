@@ -6,6 +6,9 @@
     <string name="title_Relation">我的关系</string>
     <string name="title_Settings">设置</string>
     <string name="title_RecycleBin">回收站</string>
+    <string name="title_add">添加物品</string>
+    <string name="title_select_path">请选择路径</string>
+    <string name="title_type">管理分类</string>
     <string name="title_activity_test">TestActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

@@ -54,6 +54,10 @@ dependencies {
 
     implementation 'com.rengwuxian.materialedittext:library:2.1.4'
 
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
 
     compileOnly 'org.projectlombok:lombok:1.18.4'
     annotationProcessor 'org.projectlombok:lombok:1.18.4'

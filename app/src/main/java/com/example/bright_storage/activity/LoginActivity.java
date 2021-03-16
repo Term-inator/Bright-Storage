@@ -11,7 +11,7 @@ import com.example.bright_storage.R;
 import com.example.bright_storage.databinding.ActivityLoginBinding;
 import com.example.bright_storage.fragment.LoginPasswordFragment;
 import com.example.bright_storage.fragment.LoginPhoneFragment;
-import com.example.bright_storage.model.view.LoginParam;
+import com.example.bright_storage.model.param.LoginParam;
 
 
 public class LoginActivity extends AppCompatActivity {

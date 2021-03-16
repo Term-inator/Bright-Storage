@@ -1,8 +1,7 @@
-package com.example.bright_storage.model.view;
+package com.example.bright_storage.model.param;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
-
 
 import com.example.bright_storage.BR;
 
@@ -10,6 +9,10 @@ import lombok.ToString;
 
 @ToString
 public class RegisterParam extends BaseObservable {
+
+    private String phone;
+
+    private String code;
 
     private String password;
 
@@ -33,5 +36,25 @@ public class RegisterParam extends BaseObservable {
     public void setRepeatPassword(String repeatPassword) {
         this.repeatPassword = repeatPassword;
         notifyPropertyChanged(BR.repeatPassword);
+    }
+
+    @Bindable
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+        notifyPropertyChanged(BR.code);
+    }
+
+    @Bindable
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+        notifyPropertyChanged(BR.code);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.bright_storage.model.view;
+package com.example.bright_storage.model.param;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;

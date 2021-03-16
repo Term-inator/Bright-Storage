@@ -5,8 +5,13 @@ import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.inject.Inject;
 
 import static org.junit.Assert.*;
 
@@ -17,10 +22,13 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+    @Inject
+    StorageUnitService storageUnitService;
+
     @Test
     public void useAppContext() {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.example.bright_storage", appContext.getPackageName());
+        storageUnitService = new StorageUnitServiceImpl();
+        System.out.println(storageUnitService.save());
+        System.out.println(storageUnitService.findAll());
     }
 }

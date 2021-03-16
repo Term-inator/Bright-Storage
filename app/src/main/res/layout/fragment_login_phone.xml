@@ -7,7 +7,7 @@
     <data>
         <variable
             name="loginParam"
-            type="com.example.bright_storage.model.view.LoginParam" />
+            type="com.example.bright_storage.model.param.LoginParam" />
     </data>
 
     <LinearLayout

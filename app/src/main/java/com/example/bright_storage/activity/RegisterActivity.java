@@ -6,7 +6,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.bright_storage.databinding.ActivityRegisterBinding;
-import com.example.bright_storage.model.view.RegisterParam;
+import com.example.bright_storage.model.param.RegisterParam;
 
 public class RegisterActivity extends AppCompatActivity {
 

@@ -14,7 +14,7 @@ import com.example.bright_storage.R;
 import com.example.bright_storage.activity.LoginActivity;
 import com.example.bright_storage.activity.RegisterActivity;
 import com.example.bright_storage.databinding.FragmentLoginPasswordBinding;
-import com.example.bright_storage.model.view.LoginParam;
+import com.example.bright_storage.model.param.LoginParam;
 
 import lombok.RequiredArgsConstructor;
 

@@ -7,7 +7,7 @@
     <data>
         <variable
             name="registerParam"
-            type="com.example.bright_storage.model.view.RegisterParam" />
+            type="com.example.bright_storage.model.param.RegisterParam" />
     </data>
 
     <LinearLayout

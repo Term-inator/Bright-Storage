@@ -5,47 +5,32 @@ import com.example.bright_storage.component.RepositoryModule;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.service.StorageUnitService;
-
-import org.xutils.ex.DbException;
-
-import java.util.List;
+import com.example.bright_storage.service.base.AbstractCrudService;
 
 import javax.inject.Inject;
 
-import dagger.internal.DaggerCollections;
-
-public class StorageUnitServiceImpl implements StorageUnitService {
+public class StorageUnitServiceImpl extends AbstractCrudService<StorageUnit, Long> implements StorageUnitService {
 
     @Inject
     StorageUnitRepository storageUnitRepository;
 
     public StorageUnitServiceImpl() {
+        super();
         DaggerServiceComponent.builder()
                 .repositoryModule(new RepositoryModule())
                 .build()
                 .inject(this);
+        super.repository = storageUnitRepository;
     }
 
     @Override
-    public List<StorageUnit> findAll() {
-        try {
-            return storageUnitRepository.findAll();
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public StorageUnit create(StorageUnit storageUnit) {
+        return super.create(storageUnit);
     }
 
     @Override
-    public StorageUnit save() {
-        StorageUnit storageUnit = new StorageUnit();
-        storageUnit.setRemoteId(33L);
-        storageUnit.setName("testN");
-        try {
-            return storageUnitRepository.save(storageUnit);
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
-        return storageUnit;
+    public void update(StorageUnit storageUnit) {
+        super.update(storageUnit);
     }
+
 }

@@ -12,15 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id", callSuper = false)
-@Table(name = "category")
-public class Category extends OwnershipEntity {
+public class StorageUnitCategory extends BaseEntity{
 
-    @Column(name = "category_id", isId = true, autoGen = true)
-    private Long localId;
-
-    @Column(name = "remote_id")
+    @Column(name = "storage_unit_category_id", isId = true, autoGen = true)
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "storage_unit_id")
+    private Long storageUnitId;
+
+    @Column(name = "category_id")
+    private Long categoryId;
 }

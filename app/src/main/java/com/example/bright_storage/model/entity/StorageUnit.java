@@ -3,24 +3,96 @@ package com.example.bright_storage.model.entity;
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
+import java.util.Date;
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id", callSuper = false)
+@EqualsAndHashCode(of = "localId", callSuper = false)
 @Table(name = "storage_unit")
-public class StorageUnit extends BaseEntity {
+public class StorageUnit extends OwnershipEntity {
 
     @Column(name = "storage_unit_id", isId = true, autoGen = true)
-    private Long id;
+    private Long localId;
 
     @Column(name = "remote_id")
-    private Long remoteId;
+    private Long id;
+
+    /**
+     * 0: 物品
+     * 1: 容器
+     */
+    @Column(name = "type")
+    private Integer type;
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "amount")
+    private Integer amount;
+
+    @Column(name = "parent_id")
+    private Long parentId;
+
+    /**
+     * true: 向关系成员公开
+     * false: 私有
+     */
+    @Column(name = "access")
+    private Boolean access;
+
+    @Column(name = "image")
+    private String image;
+
+    @Column(name = "is_deleted")
+    private Boolean deleted;
+
+    @Column(name = "expire_time")
+    private Date expireTime;
+
+    @Column(name = "note")
+    private String note;
+
+    private Set<Category> categories;
+
+    @Override
+    public void prePersist() {
+        super.prePersist();
+        if(type == null){
+            type = 0;
+        }
+        if(name == null){
+            name = "";
+        }
+        if(amount == null){
+            amount = 1;
+        }
+        if(parentId == null){
+            parentId = 0L;
+        }
+        if(access == null){
+            access = false;
+        }
+        if(image == null){
+            image = "";
+        }
+        if(deleted == null){
+            deleted = false;
+        }
+        if(note == null){
+            note = "";
+        }
+    }
+
+    @Override
+    public void preUpdate() {
+        super.preUpdate();
+    }
 }

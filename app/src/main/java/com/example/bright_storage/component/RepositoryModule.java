@@ -2,6 +2,10 @@ package com.example.bright_storage.component;
 
 import android.util.Log;
 
+import com.example.bright_storage.model.entity.Category;
+import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.repository.CategoryRepository;
+import com.example.bright_storage.repository.StorageUnitCategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
 
 import org.xutils.DbManager;
@@ -26,13 +30,14 @@ public class RepositoryModule {
     public RepositoryModule(){
         DbManager.DaoConfig daoConfig = new DbManager.DaoConfig()
                 .setDbName("brightstorage.db")
-                .setDbVersion(2)
+                .setDbVersion(3)
                 .setAllowTransaction(true)
                 .setDbOpenListener(db -> {
                     db.getDatabase().enableWriteAheadLogging();
                 })
                 .setDbUpgradeListener((db, oldVersion, newVersion) -> {
-
+                    db.dropTable(Category.class);
+                    db.dropTable(StorageUnit.class);
                 })
                 .setTableCreateListener((db, table) -> {
                     Log.i(TAG, "onCreate: " + table.getName());
@@ -51,5 +56,17 @@ public class RepositoryModule {
     @Provides
     public StorageUnitRepository providerStorageUnitRepository(){
         return new StorageUnitRepository();
+    }
+
+    @Singleton
+    @Provides
+    public CategoryRepository providerCategoryRepository(){
+        return new CategoryRepository();
+    }
+
+    @Singleton
+    @Provides
+    public StorageUnitCategoryRepository providerStorageUnitCategoryRepository(){
+        return new StorageUnitCategoryRepository();
     }
 }

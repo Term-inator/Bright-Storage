@@ -1,12 +1,11 @@
 package com.example.bright_storage.service;
 
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.service.base.AbstractCrudService;
+import com.example.bright_storage.service.base.CrudService;
 
 import java.util.List;
 
-public interface StorageUnitService {
+public interface StorageUnitService extends CrudService<StorageUnit, Long> {
 
-    StorageUnit save();
-
-    List<StorageUnit> findAll();
 }

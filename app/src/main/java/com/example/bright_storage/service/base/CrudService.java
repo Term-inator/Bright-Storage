@@ -1,5 +1,8 @@
 package com.example.bright_storage.service.base;
 
+import com.example.bright_storage.model.query.BaseQuery;
+import com.example.bright_storage.model.support.Pageable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -12,17 +15,21 @@ public interface CrudService<ENTITY, ID> {
 
     List<ENTITY> listByIdsIn(Collection<ID> ids);
 
-    Optional<ENTITY> getById(ID id);
+    ENTITY getById(ID id);
 
     ENTITY getNotNullById(ID id);
 
-    ENTITY update(ENTITY entity);
+    List<ENTITY> query(BaseQuery<ENTITY> query);
+
+    List<ENTITY> query(BaseQuery<ENTITY> query, Pageable pageable);
+
+    void update(ENTITY entity);
 
     void delete(ENTITY entity);
 
     ENTITY deleteById(ID id);
 
-    long deleteByIdIn(Collection<ID> ids);
+    void deleteByIdIn(Collection<ID> ids);
 
     long count();
 }

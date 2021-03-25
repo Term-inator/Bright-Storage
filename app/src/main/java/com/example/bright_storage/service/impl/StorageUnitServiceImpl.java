@@ -2,10 +2,18 @@ package com.example.bright_storage.service.impl;
 
 import com.example.bright_storage.component.DaggerServiceComponent;
 import com.example.bright_storage.component.RepositoryModule;
+import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.model.entity.StorageUnitCategory;
+import com.example.bright_storage.repository.StorageUnitCategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
+import com.example.bright_storage.service.CategoryService;
 import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.base.AbstractCrudService;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -24,13 +32,9 @@ public class StorageUnitServiceImpl extends AbstractCrudService<StorageUnit, Lon
     }
 
     @Override
-    public StorageUnit create(StorageUnit storageUnit) {
-        return super.create(storageUnit);
+    public List<StorageUnit> listByCategoriesIn(Collection<Category> categories) {
+        return storageUnitRepository.listByCategoriesIn(categories);
     }
 
-    @Override
-    public void update(StorageUnit storageUnit) {
-        super.update(storageUnit);
-    }
 
 }

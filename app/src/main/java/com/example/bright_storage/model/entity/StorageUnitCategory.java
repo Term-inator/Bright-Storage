@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id", callSuper = false)
+@Table(name = "storage_unit_category")
 public class StorageUnitCategory extends BaseEntity{
 
     @Column(name = "storage_unit_category_id", isId = true, autoGen = true)

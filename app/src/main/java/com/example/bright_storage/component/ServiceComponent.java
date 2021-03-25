@@ -9,7 +9,11 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {RepositoryModule.class, RequestModule.class, CommonModule.class})
+@Component(modules = {
+        RepositoryModule.class,
+        RequestModule.class,
+        CommonModule.class,
+        ServiceModule.class})
 public interface ServiceComponent {
 
     void inject(UserServiceImpl userService);

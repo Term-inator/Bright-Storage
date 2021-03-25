@@ -11,6 +11,8 @@ public interface CrudService<ENTITY, ID> {
 
     ENTITY create(ENTITY entity);
 
+    List<ENTITY> create(Collection<ENTITY> entities);
+
     List<ENTITY> listAll();
 
     List<ENTITY> listByIdsIn(Collection<ID> ids);
@@ -24,6 +26,8 @@ public interface CrudService<ENTITY, ID> {
     List<ENTITY> query(BaseQuery<ENTITY> query, Pageable pageable);
 
     void update(ENTITY entity);
+
+    void update(Collection<ENTITY> entities);
 
     void delete(ENTITY entity);
 

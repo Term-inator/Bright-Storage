@@ -1,7 +1,9 @@
 package com.example.bright_storage.component;
 
+import com.example.bright_storage.service.CategoryService;
 import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.UserService;
+import com.example.bright_storage.service.impl.CategoryServiceImpl;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
 
@@ -21,7 +23,13 @@ public class ServiceModule {
 
     @Singleton
     @Provides
-    public StorageUnitService storageUnitService(){
+    public StorageUnitService providerStorageUnitService(){
         return new StorageUnitServiceImpl();
+    }
+
+    @Singleton
+    @Provides
+    public CategoryService providerCateogryService(){
+        return new CategoryServiceImpl();
     }
 }

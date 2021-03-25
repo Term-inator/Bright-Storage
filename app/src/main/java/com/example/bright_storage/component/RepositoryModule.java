@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.model.entity.StorageUnitCategory;
 import com.example.bright_storage.repository.CategoryRepository;
 import com.example.bright_storage.repository.StorageUnitCategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
@@ -30,14 +31,16 @@ public class RepositoryModule {
     public RepositoryModule(){
         DbManager.DaoConfig daoConfig = new DbManager.DaoConfig()
                 .setDbName("brightstorage.db")
-                .setDbVersion(3)
-                .setAllowTransaction(true)
+                .setDbVersion(4)
+                .setAllowTransaction(false)
                 .setDbOpenListener(db -> {
                     db.getDatabase().enableWriteAheadLogging();
                 })
                 .setDbUpgradeListener((db, oldVersion, newVersion) -> {
                     db.dropTable(Category.class);
                     db.dropTable(StorageUnit.class);
+                    db.dropTable(StorageUnitCategory.class);
+                    // 不设置监听器自动drop所有table
                 })
                 .setTableCreateListener((db, table) -> {
                     Log.i(TAG, "onCreate: " + table.getName());

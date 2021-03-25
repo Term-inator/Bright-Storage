@@ -12,7 +12,11 @@ public interface BaseRepository<ENTITY, ID> {
 
     ENTITY save(ENTITY entity);
 
+    List<ENTITY> save(Collection<ENTITY> entities);
+
     void update(ENTITY entity);
+
+    void update(Collection<ENTITY> entities);
 
     List<ENTITY> findAll();
 
@@ -21,6 +25,8 @@ public interface BaseRepository<ENTITY, ID> {
     List<ENTITY> findByIds(Collection<ID> ids);
 
     void delete(ENTITY entity);
+
+    void delete(Collection<ENTITY> entities);
 
     ENTITY deleteById(ID id);
 

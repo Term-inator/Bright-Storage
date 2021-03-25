@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id", callSuper = false)
+@EqualsAndHashCode(of = "localId", callSuper = false)
 @Table(name = "category")
 public class Category extends OwnershipEntity {
 

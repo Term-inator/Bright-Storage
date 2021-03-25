@@ -27,6 +27,11 @@ public abstract class AbstractCrudService<ENTITY, ID> implements CrudService<ENT
     }
 
     @Override
+    public List<ENTITY> create(Collection<ENTITY> entities) {
+        return repository.save(entities);
+    }
+
+    @Override
     public List<ENTITY> listByIdsIn(Collection<ID> ids) {
         return repository.findByIds(ids);
     }
@@ -61,6 +66,11 @@ public abstract class AbstractCrudService<ENTITY, ID> implements CrudService<ENT
     @Override
     public void update(ENTITY entity) {
         repository.update(entity);
+    }
+
+    @Override
+    public void update(Collection<ENTITY> entities) {
+        repository.update(entities);
     }
 
     @Override

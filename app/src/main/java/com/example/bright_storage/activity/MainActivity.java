@@ -8,6 +8,7 @@ import android.widget.Button;
 
 import com.example.bright_storage.R;
 import com.example.bright_storage.search.SearchActivity;
+import com.example.bright_storage.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 //finish();
 //                Intent intent = new Intent(BSProActivity.this, MainActivity.class);
 //                startActivity(intent);
+                HomeFragment.back();
             }
         });
         title_search.setOnClickListener(new View.OnClickListener() {

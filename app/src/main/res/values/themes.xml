@@ -23,4 +23,9 @@
     <style name="Theme.BrightStorage.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.BrightStorage.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="updateButton" parent="Theme.AppCompat">
+        <item name="colorControlHighlight">@color/theme_color</item>
+        <item name="colorButtonNormal">@color/theme_color</item>
+    </style>
+
 </resources>

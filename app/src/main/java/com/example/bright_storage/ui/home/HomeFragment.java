@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.bright_storage.activity.ShowActivity;
 import com.example.bright_storage.repository.AbstractRepository;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.query.StorageUnitQuery;
@@ -37,8 +38,11 @@ public class HomeFragment extends Fragment {
     private static RecyclerView mRecyclerView;
     private static StorageUnitQuery select = new StorageUnitQuery();
     private static Stack<Long> p_id = new Stack<>();
+    private static Stack<String> title_name = new Stack<>();
     private static List<StorageUnit> datas;
     private static HomeAdapter honmeAdapter;
+    private Button title_back, title_search;
+    private TextView title_text;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +55,43 @@ public class HomeFragment extends Fragment {
         //        RelativeLayout layout = new RelativeLayout(this);
 //        初始化RecyclerView
         mRecyclerView = (RecyclerView) root.findViewById(R.id.id_recyclerview);
+        title_back = (Button) root.findViewById(R.id.title_back);
+        title_search = (Button) root.findViewById(R.id.title_search);
+        title_text = (TextView) root.findViewById(R.id.title_text);
+        title_text.setText("智存");
+        title_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //finish();
+//                Intent intent = new Intent(BSProActivity.this, MainActivity.class);
+//                startActivity(intent);
+                if (!p_id.empty()) {
+                    p_id.pop();
+                    if (p_id.empty())
+                        initData(0l);
+                    else
+                        initData(p_id.peek());
+                }
+                if (!title_name.empty()){
+                    title_name.pop();
+                    if (title_name.empty())
+                        title_text.setText("智存");
+                    else
+                        title_text.setText(title_name.peek());
+                }else
+                    title_text.setText("智存");
+                honmeAdapter = new HomeAdapter(root.getContext(), datas);
+                mRecyclerView.setAdapter(honmeAdapter); //can change like this  重新加载list中的数据到页面上
+                SetOnClick();
+            }
+        });
+        title_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(root.getContext(), SearchActivity.class);
+                startActivity(intent);
+            }
+        });
 //      RecyclerView设置展示的的样式（listView样子，gridView样子，瀑布流样子）
 //        listView纵向滑动样子
         //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -137,41 +178,34 @@ SetOnClick();
         return root;
 
     }
-    protected static void initData() {
+    protected void initData() {
         select.setParentId(0l);
         StorageUnitRepository StorageUnitRepo = new StorageUnitRepository();
         datas = StorageUnitRepo.query(select);
     }
-    protected static void initData(Long p_id) {
+    protected void initData(Long p_id) {
         select.setParentId(p_id);
         StorageUnitRepository StorageUnitRepo = new StorageUnitRepository();
         datas = StorageUnitRepo.query(select);
     }
-    protected static void updataData(Long p_id){
+    protected void updataData(Long p_id){
         initData(p_id);
     }
-    public static void back(){
-        if (!p_id.empty()) {
-            p_id.pop();
-            if (p_id.empty())
-                initData(0l);
-            else
-                initData(p_id.peek());
-        }
-        honmeAdapter = new HomeAdapter(root.getContext(), datas);
-        mRecyclerView.setAdapter(honmeAdapter); //can change like this  重新加载list中的数据到页面上
-        SetOnClick();
-    }
-    protected static void SetOnClick(){
+    protected void SetOnClick(){
         //      调用按钮返回事件回调的方法
         honmeAdapter.layoutSetOnclick(new HomeAdapter.layoutInterface() {
 
             @Override
             public void onclick(View view, StorageUnit TstorageUnit) {
 //                Toast.makeText(root.getContext(), "点击条目上的按钮" + position, Toast.LENGTH_SHORT).show();
+                if(TstorageUnit.getType()==1)
+                {
+                    p_id.push(TstorageUnit.getLocalId());  //将pid设置为点击的storageunit的id
+                    title_name.push(TstorageUnit.getName()); //将titlename设置成点击的路径；
+                    title_text.setText(title_name.peek());
+                }
                 if(TstorageUnit.getType()== 1) {
 //                    System.out.println(TstorageUnit);
-                    p_id.push(TstorageUnit.getLocalId());  //将pid设置为点击的storageunit的id
 //                    swipeRefreshLayout.setRefreshing(true); //显示刷新图标
                     updataData(p_id.peek());   //根据pid初始化list
                     honmeAdapter = new HomeAdapter(root.getContext(), datas);
@@ -179,9 +213,15 @@ SetOnClick();
 //                    swipeRefreshLayout.setRefreshing(false);    //隐藏刷新图标
                     SetOnClick();
                 }else{
-                    Intent intent = new Intent(root.getContext(),);
+                    Intent intent = new Intent();
+                    intent.putExtra("Id",TstorageUnit.getLocalId());
+                    intent.setClass(root.getContext(),ShowActivity.class);
+                    startActivity(intent);
                 }
             }
         });
+    }
+    public static Long getPid(){
+        return p_id.peek();
     }
 }

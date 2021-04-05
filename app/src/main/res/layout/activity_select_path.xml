@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    android:orientation="vertical"
+    tools:context=".ui.home.HomeFragment">
     <include
-        android:id="@+id/include2"
+        android:id="@+id/include"
         layout="@layout/title_bar" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/id_pull_flush"
         android:layout_width="match_parent"
-        android:layout_height="680dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include2">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
+        android:layout_height="match_parent"
+        android:layout_marginTop="56.6dp"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/id_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="0dp"
+            />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <include
+        layout="@layout/app_bar_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

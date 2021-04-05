@@ -62,6 +62,7 @@ import com.example.bright_storage.R;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.repository.CategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
+import com.example.bright_storage.ui.home.HomeFragment;
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
 import com.uuzuche.lib_zxing.activity.CaptureFragment;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
@@ -114,6 +115,7 @@ public class ShowActivity extends AppCompatActivity
         setContentView(R.layout.activity_show);
         Intent intent =getIntent();
         Long Id = intent.getLongExtra("Id", 0);
+        storageUnitRepository = new StorageUnitRepository();
         storageUnit = storageUnitRepository.findById(Id);
         //TODO 接受Id
         isPrivate = (Switch)findViewById(R.id.isPrivate);
@@ -139,12 +141,12 @@ public class ShowActivity extends AppCompatActivity
         objectRemarks.setText(storageUnit.getNote());
         objectOverdue = (Button) findViewById(R.id.object_overdue);
         objectOverdue.setEnabled(false);
-        objectOverdue.setText(storageUnit.getExpireTime().toString());
+        //objectOverdue.setText(storageUnit.getExpireTime().toString());
         objectType = (Button) findViewById(R.id.object_type);
         objectType.setEnabled(false);
-        Long x = new Long(storageUnit.getType().intValue());
-        CategoryRepository categoryRepository = new CategoryRepository();
-        objectType.setText(categoryRepository.findById(x).getName() + "");
+        //Long x = new Long(storageUnit.getType().intValue());
+        //CategoryRepository categoryRepository = new CategoryRepository();
+        //objectType.setText(categoryRepository.findById(x).getName() + "");
         objectDate = (Button) findViewById(R.id.object_date);
         objectDate.setEnabled(false);
         objectShelfLife = (Button) findViewById(R.id.object_shelflife);
@@ -196,9 +198,7 @@ public class ShowActivity extends AppCompatActivity
         });
         title_back.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                finish();
-            }
+            public void onClick(View v) { finish(); }
         });
         objectOverdue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -283,12 +283,23 @@ public class ShowActivity extends AppCompatActivity
                     storageUnit.setParentId(path);
                     storageUnit.setAmount(count);
                     if(imageUri != null)
-                        storageUnit.setImage(imageUri.getPath());
+                        storageUnit.setImage(imageUri.toString());
                     storageUnit.setExpireTime(expireTime);
                     storageUnit.setNote(remarks);
                     storageUnit.setDeleted(false);
                     storageUnitRepository = new StorageUnitRepository();
                     storageUnitRepository.update(storageUnit);
+                    photoButton.setEnabled(false);
+                    objectName.setEnabled(false);
+                    objectCount.setEnabled(false);
+                    objectRemarks.setEnabled(false);
+                    objectOverdue.setEnabled(false);
+                    objectType.setEnabled(false);
+                    objectDate.setEnabled(false);
+                    objectShelfLife.setEnabled(false);
+                    objectSubmit.setVisibility(View.INVISIBLE);
+                    objectNewPath.setVisibility(View.INVISIBLE);
+                    isPrivate.setVisibility(View.INVISIBLE);
                 }
             }
         });

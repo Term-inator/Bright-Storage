@@ -194,7 +194,9 @@ public class AddActivity extends AppCompatActivity
                 int count = 0;
                 String remarks = objectRemarks.getText().toString();
                 // TODO 获取path
+                Intent intent = getIntent();
                 long path = 0;
+                path = intent.getLongExtra("pid", 0);
                 String overdue = objectOverdue.getText().toString();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Date expireTime = null;
@@ -250,10 +252,9 @@ public class AddActivity extends AppCompatActivity
                     storageUnit.setType(theBox);
                     storageUnitRepository = new StorageUnitRepository();
                     storageUnitRepository.save(storageUnit);
-                    Intent intent = new Intent();
-                    intent.putExtra("Id",storageUnit.getId());
-                    intent.setClass(AddActivity.this, ShowActivity.class);
-                    startActivity(intent);
+                    Intent intent1 = new Intent();
+                    intent1.putExtra("Id",storageUnit.getId());
+                    finish();
                 }
             }
         });

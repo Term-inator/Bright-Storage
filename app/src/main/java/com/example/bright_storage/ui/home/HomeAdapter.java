@@ -55,17 +55,19 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.tv.setText(list.get(position).getName());
-//        holder.th.setImageResource();
-//        holder.th.setImageBitmap();
-//        holder.id_clicklayout.setText(list.get(position));
-//
         ViewGroup.LayoutParams lp;
         lp= holder.id_clicklayout.getLayoutParams();
         lp.height= MainActivity.width/2;
         holder.id_clicklayout.setLayoutParams(lp);
-//        holder.id_clicklayout(com.example.roomtest3.MainActivity.width/2);
-//        holder.id_clicklayout.setWidth(com.example.roomtest3.MainActivity.width/3);
-        if (list.get(position).getImage()!=null) {
+        if (list.get(position).getImage().length() == 0)
+        {
+            Picasso.get()
+                    .load(R.mipmap.ic_launcher)
+                    .centerCrop()
+                    .fit()
+                    .into(holder.th);
+        }
+        else {
             Picasso.get()
                     .load(list.get(position).getImage())//"https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3155097781,4164517483&fm=26&gp=0.jpg"
                     .centerCrop()
@@ -75,14 +77,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
                     .networkPolicy(NetworkPolicy.NO_CACHE, NetworkPolicy.NO_STORE)
                     .into(holder.th);
         }
-//        x.image().bind(holder.th,"https://c-ssl.duitang.com/uploads/item/202002/24/20200224003004_movto.thumb.1000_0.jpg");
-
-//        try {
-//            URL url = new URL("https://c-ssl.duitang.com/uploads/item/202002/24/20200224003004_movto.thumb.1000_0.jpg");
-//            holder.th.setImageBitmap(BitmapFactory.decodeStream(url.openStream()));
-//        } catch (Exception e) {
-//
-//        }
 
         holder.id_clicklayout.setOnClickListener(new View.OnClickListener() {
             @Override

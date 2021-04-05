@@ -60,6 +60,7 @@ import com.contrarywind.view.WheelView;
 import com.example.bright_storage.R;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.repository.StorageUnitRepository;
+import com.example.bright_storage.ui.home.HomeFragment;
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
 import com.uuzuche.lib_zxing.activity.CaptureFragment;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
@@ -254,6 +255,7 @@ public class AddActivity extends AppCompatActivity
                     storageUnitRepository.save(storageUnit);
                     Intent intent1 = new Intent();
                     intent1.putExtra("Id",storageUnit.getId());
+                    HomeFragment.refresh();
                     finish();
                 }
             }

@@ -49,7 +49,7 @@ public abstract class AbstractRepository<ENTITY extends BaseEntity, ID> implemen
             database.beginTransaction();
 
             manager.saveBindingId(entity);
-            postPersist(entity);
+            //postPersist(entity);
 
             database.setTransactionSuccessful();
 

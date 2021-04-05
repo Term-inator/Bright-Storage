@@ -57,6 +57,10 @@
             android:label="@string/title_add">
         </activity>
         <activity
+            android:name=".activity.ShowActivity"
+            android:label="@string/title_show">
+        </activity>
+        <activity
             android:name=".activity.TypeActivity"
             android:label="@string/title_type">
         </activity>

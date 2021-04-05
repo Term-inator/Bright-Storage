@@ -44,4 +44,12 @@
         <item name="colorControlNormal">@color/auxiliary_color</item>
         <item name="colorControlActivated">@color/theme_color</item>
     </style>
+    <style name="mySwitch" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/theme_color</item>
+        <!--  switch关闭时的按钮的颜色 -->
+        <item name="colorSwitchThumbNormal">@color/theme_color</item>
+        <!-- switch关闭时的轨迹的颜色 30%这个颜色 -->
+        <item name="android:colorForeground">@color/theme_color</item>
+
+    </style>
 </resources>

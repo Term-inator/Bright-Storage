@@ -8,6 +8,7 @@ import android.widget.Button;
 
 import com.example.bright_storage.R;
 import com.example.bright_storage.search.SearchActivity;
+import com.example.bright_storage.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -33,27 +34,30 @@ public class MainActivity extends AppCompatActivity {
         View titleView = this.findViewById(R.id.title_bar);
         Button title_search = (Button) titleView.findViewById(R.id.title_search);
         Button title_back = (Button) titleView.findViewById(R.id.title_back);
-        title_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //finish();
-//                Intent intent = new Intent(BSProActivity.this, MainActivity.class);
+//        title_back.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //finish();
+////                Intent intent = new Intent(BSProActivity.this, MainActivity.class);
+////                startActivity(intent);
+//                HomeFragment.back();
+//            }
+//        });
+//        title_search.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(titleView.getContext(), SearchActivity.class);
 //                startActivity(intent);
-            }
-        });
-        title_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(titleView.getContext(), SearchActivity.class);
-                startActivity(intent);
-            }
-        });
+//            }
+//        });
         FloatingActionButton fab = findViewById(R.id.fab);
         System.out.println(fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddActivity.class);
+                Intent intent = new Intent();
+                intent.putExtra("pid",HomeFragment.getPid());
+                intent.setClass(MainActivity.this, AddActivity.class);
                 startActivity(intent);
             }
         });

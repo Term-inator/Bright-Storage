@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.home.HomeFragment">
-
+    <include
+        android:id="@+id/include"
+        layout="@layout/title_bar" />
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/id_pull_flush"
         android:layout_width="match_parent"

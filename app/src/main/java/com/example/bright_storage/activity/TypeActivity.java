@@ -21,7 +21,7 @@ import static android.view.View.INVISIBLE;
 public class TypeActivity extends AppCompatActivity
 {
     private ArrayList<String> types;
-    String[] countryArray = {"China", "India", "Pakistan", "USA", "UK"};//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/android/android_list_view.html
+    String[] countryArray = {"China", "India", "Pakistan", "USA", "UK"};
 
 
     @Override

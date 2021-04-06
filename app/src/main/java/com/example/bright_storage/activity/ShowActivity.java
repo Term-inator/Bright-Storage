@@ -1,21 +1,27 @@
 package com.example.bright_storage.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -54,6 +60,7 @@ import com.contrarywind.listener.OnItemSelectedListener;
 import com.contrarywind.view.WheelView;
 import com.example.bright_storage.R;
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.repository.CategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.ui.home.HomeFragment;
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
@@ -66,6 +73,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,62 +81,129 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import lombok.SneakyThrows;
+
 import static android.view.View.INVISIBLE;
 
-public class AddActivity extends AppCompatActivity
+public class ShowActivity extends AppCompatActivity
 {
     private Date overdueDate, productionDate;
     private int shelfLifeCount = 0;
     private String shelfLifeType = "";
     private StorageUnitRepository storageUnitRepository;
     private StorageUnit storageUnit;
+    private Switch isPrivate;
     private Uri imageUri;
     public static final int SELECT_PATH = 1, TAKE_PHOTO = 2, CHOOSE_PHOTO = 3, REQUEST_CODE = 5;
     private Button title_back, title_search;
     private Button choosePhoto, takePhoto, takeCode, cancel;
-    private Switch isBox, isPrivate;
     private EditText objectName, objectCount, objectRemarks;
-    private Button objectOverdue, objectType, objectDate, objectShelfLife, objectSubmit;
+    private boolean open = true;
+    private Button objectNewPath, objectOverdue,objectType, objectDate, objectShelfLife, objectSubmit;
     private ImageButton photoButton;
     private TextView thetitle;
     private OptionsPickerView shelfLifeOptions, typeOptions;
-    private TimePickerView dateOptions1, dateOptions2;
+    private TimePickerView dateOptions;
     private ArrayList<String> options1Items = new ArrayList<>();
     private ArrayList<ArrayList<String>> options2Items = new ArrayList<>();
     private ArrayList<String> optionsForType = new ArrayList<>();//类型列表
-    boolean box = false, open = true;
 
+    @SneakyThrows
+    @SuppressLint("ResourceAsColor")
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ZXingLibrary.initDisplayOpinion(this);
         getSupportActionBar().hide();
-        setContentView(R.layout.activity_add);
-        //overdue = (TextView) findViewById(R.id.overdue);
-        //shelfLife = (TextView) findViewById(R.id.shelfLife);
-        isBox = (Switch) findViewById(R.id.isBox);
-        isPrivate = (Switch) findViewById(R.id.isPrivate);
+        setContentView(R.layout.activity_show);
+        Intent intent =getIntent();
+        Long Id = intent.getLongExtra("Id", 0);
+        storageUnitRepository = new StorageUnitRepository();
+        storageUnit = storageUnitRepository.findById(Id);
+        //TODO 接受Id
+        isPrivate = (Switch)findViewById(R.id.isPrivate);
+        isPrivate.setChecked(storageUnit.getAccess());
         thetitle = (TextView) findViewById(R.id.title_text);
         title_back = (Button) findViewById(R.id.title_back);
         title_search = (Button) findViewById(R.id.title_search);
         photoButton = (ImageButton) findViewById(R.id.photoButton);
-        objectName = (EditText) findViewById(R.id.object_name);
-        objectCount = (EditText) findViewById(R.id.object_count);
-        objectRemarks = (EditText) findViewById(R.id.object_remarks);
-        objectOverdue = (Button) findViewById(R.id.object_overdue);
-        objectType = (Button) findViewById(R.id.object_type);
-        objectDate = (Button) findViewById(R.id.object_date);
-        objectShelfLife = (Button) findViewById(R.id.object_shelflife);
-        objectSubmit = (Button) findViewById(R.id.object_submit);
+        photoButton.setEnabled(false);
+        //TODO 根据地址设置图片
+        imageUri = Uri.parse(storageUnit.getImage());
+        //if(!imageUri.equals(""))
+        try {
+            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+            photoButton.setImageBitmap(bitmap);
+        }catch (FileNotFoundException e)
+        {
 
-        thetitle.setText(R.string.title_add);
-        title_search.setVisibility(INVISIBLE);
+        }
+        // 将图片显示出来
+        objectName = (EditText) findViewById(R.id.object_name);
+        objectName.setEnabled(false);
+        objectName.setText(storageUnit.getName());
+
+        objectCount = (EditText) findViewById(R.id.object_count);
+        objectCount.setEnabled(false);
+        objectCount.setText("" + storageUnit.getAmount());
+        objectRemarks = (EditText) findViewById(R.id.object_remarks);
+        objectRemarks.setEnabled(false);
+        objectRemarks.setText(storageUnit.getNote());
+        objectOverdue = (Button) findViewById(R.id.object_overdue);
+        objectOverdue.setEnabled(false);
+        overdueDate = storageUnit.getExpireTime();
+        if(overdueDate != null)
+        {
+            objectOverdue.setText(storageUnit.getExpireTime().toString());
+        }
+        objectType = (Button) findViewById(R.id.object_type);
+        objectType.setEnabled(false);
+        //Long x = new Long(storageUnit.getType().intValue());
+        //CategoryRepository categoryRepository = new CategoryRepository();
+        //objectType.setText(categoryRepository.findById(x).getName() + "");
+        objectDate = (Button) findViewById(R.id.object_date);
+        objectDate.setEnabled(false);
+        objectShelfLife = (Button) findViewById(R.id.object_shelflife);
+        objectShelfLife.setEnabled(false);
+        objectSubmit = (Button) findViewById(R.id.object_submit);
+        objectSubmit.setVisibility(INVISIBLE);
+        objectNewPath = (Button) findViewById(R.id.object_newPath);
+
+        thetitle.setText(R.string.title_show);
+        title_search.setBackgroundResource(R.mipmap.update);
         objectCount.setInputType( InputType.TYPE_CLASS_NUMBER);
-        initTypeData();//把类型数据导入
+        initTypeData();//TODO 把类型数据导入
         initDateData();
         initOptionPicker();
         initTimePicker();
 
+        isPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked == true)
+                    open = false;
+                else
+                    open = true;
+            }
+        });
+
+        title_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                photoButton.setEnabled(true);
+                objectName.setEnabled(true);
+                objectCount.setEnabled(true);
+                objectRemarks.setEnabled(true);
+                objectOverdue.setEnabled(true);
+                objectType.setEnabled(true);
+                objectDate.setEnabled(true);
+                objectShelfLife.setEnabled(true);
+                objectSubmit.setVisibility(View.VISIBLE);
+                objectNewPath.setVisibility(View.VISIBLE);
+                isPrivate.setVisibility(View.VISIBLE);
+            }
+        });
 
         photoButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -139,21 +214,26 @@ public class AddActivity extends AppCompatActivity
         title_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
-            }
+                //HomeFragment.refresh();
+                finish(); }
         });
         objectOverdue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent(AddActivity.this, PathSelectActivity.class);
-                startActivityForResult(intent, SELECT_PATH);*/
-                dateOptions2.show(v);
+                dateOptions.show(v);
+            }
+        });
+        objectNewPath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ShowActivity.this, PathSelectActivity.class);
+                startActivityForResult(intent, SELECT_PATH);
             }
         });
         objectDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dateOptions1.show(v);
+                dateOptions.show(v);
             }
         });
         objectShelfLife.setOnClickListener(new View.OnClickListener() {
@@ -168,37 +248,6 @@ public class AddActivity extends AppCompatActivity
                 typeOptions.show();
             }
         });
-        isBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked == false) {
-                    box = false;
-                    objectCount.setText("");
-                    objectCount.setVisibility(View.VISIBLE);
-                    objectDate.setVisibility(View.VISIBLE);
-                    objectShelfLife.setVisibility(View.VISIBLE);
-                    objectOverdue.setVisibility(View.VISIBLE);
-                }
-                else{
-                    box = true;
-                    objectCount.setText("1");
-                    objectCount.setVisibility(View.GONE);
-                    objectDate.setVisibility(View.GONE);
-                    objectShelfLife.setVisibility(View.GONE);
-                    objectOverdue.setVisibility(View.GONE);
-                }
-            }
-        });
-        isPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked == false)
-                    open = true;
-                else
-                    open = false;
-
-            }
-        });
         objectSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -206,11 +255,8 @@ public class AddActivity extends AppCompatActivity
                 boolean legal = true;
                 String name = objectName.getText().toString();
                 int count = 0;
+                long path = (long)0;
                 String remarks = objectRemarks.getText().toString();
-                // TODO 获取path
-                Intent intent = getIntent();
-                long path = 0;
-                path = intent.getLongExtra("pid", 0);
                 String overdue = objectOverdue.getText().toString();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Date expireTime = null;
@@ -234,11 +280,8 @@ public class AddActivity extends AppCompatActivity
                 }
                 else
                 {
-                    if(box == false)
-                    {
-                        legal = false;
-                        hint += "数量 ";
-                    }
+                    legal = false;
+                    hint += "数量 ";
                 }
                 if(type.length() == 0)
                 {
@@ -247,15 +290,11 @@ public class AddActivity extends AppCompatActivity
                 }
                 if(!legal)
                 {
-                    Toast.makeText(AddActivity.this, hint, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShowActivity.this, hint, Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
-                    //TODO 提交数据
-                    //暂时用来测试打开另一个页面
-                    /*Intent intent = new Intent(AddActivity.this, ShowActivity.class);
-                    startActivity(intent);*/
-                    storageUnit = new StorageUnit();
+                    //storageUnit = new StorageUnit();//TODO 后续传入数据之后删了它
                     storageUnit.setName(name);
                     storageUnit.setAccess(open);
                     storageUnit.setParentId(path);
@@ -265,14 +304,19 @@ public class AddActivity extends AppCompatActivity
                     storageUnit.setExpireTime(expireTime);
                     storageUnit.setNote(remarks);
                     storageUnit.setDeleted(false);
-                    int theBox = box ? 1 : 0;
-                    storageUnit.setType(theBox);
                     storageUnitRepository = new StorageUnitRepository();
-                    storageUnitRepository.save(storageUnit);
-                    Intent intent1 = new Intent();
-                    intent1.putExtra("Id",storageUnit.getId());
-                    //HomeFragment.refresh();
-                    finish();
+                    storageUnitRepository.update(storageUnit);
+                    photoButton.setEnabled(false);
+                    objectName.setEnabled(false);
+                    objectCount.setEnabled(false);
+                    objectRemarks.setEnabled(false);
+                    objectOverdue.setEnabled(false);
+                    objectType.setEnabled(false);
+                    objectDate.setEnabled(false);
+                    objectShelfLife.setEnabled(false);
+                    objectSubmit.setVisibility(View.INVISIBLE);
+                    objectNewPath.setVisibility(View.INVISIBLE);
+                    isPrivate.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -284,20 +328,20 @@ public class AddActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode)
         {
-            /*case SELECT_PATH:
+            case SELECT_PATH://TODO 这里需要改为打开夏老板的页面并选择一个路径。
                 if(data != null)
                 {
                     ArrayList<String> result = data.getExtras().getStringArrayList("pathName");//得到新Activity 关闭后返回的数据
-                    objectPath.setText(result.get(0));
+                    objectNewPath.setText(result.get(0));
                 }
-                break;*/
+                break;
             case TAKE_PHOTO:
                 try {
-                        // 将图片解析成Bitmap对象
+                    // 将图片解析成Bitmap对象
                     Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        // 将图片显示出来
+                    // 将图片显示出来
                     photoButton.setImageBitmap(bitmap);
-                        //picture.setImageBitmap(bitmap);
+                    //picture.setImageBitmap(bitmap);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -320,7 +364,7 @@ public class AddActivity extends AppCompatActivity
                         String result = bundle.getString(CodeUtils.RESULT_STRING);
                         Toast.makeText(this, "解析结果:" + result, Toast.LENGTH_LONG).show();
                     } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
-                        Toast.makeText(AddActivity.this, "解析二维码失败", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ShowActivity.this, "解析二维码失败", Toast.LENGTH_LONG).show();
                     }
                 }
         }
@@ -554,15 +598,15 @@ public class AddActivity extends AppCompatActivity
                 // 如果Android版本大于等于7.0
                 if (Build.VERSION.SDK_INT >= 24) {
                     // 将File对象转换成一个封装过的Uri对象
-                    imageUri = FileProvider.getUriForFile(AddActivity.this, "com.example.bright_storage.camera.file_provider", outputImage);
+                    imageUri = FileProvider.getUriForFile(ShowActivity.this, "com.example.bright_storage.camera.file_provider", outputImage);
                 } else {
                     // 将File对象转换为Uri对象，这个Uri标识着output_image.jpg这张图片的本地真实路径
                     imageUri = Uri.fromFile(outputImage);
                 }
 
                 // 动态申请权限
-                if (ContextCompat.checkSelfPermission(AddActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions((Activity) AddActivity.this, new String[]{Manifest.permission.CAMERA}, 100);
+                if (ContextCompat.checkSelfPermission(ShowActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions((Activity) ShowActivity.this, new String[]{Manifest.permission.CAMERA}, 100);
                 } else {
                     // 启动相机程序
                     startCamera();
@@ -574,9 +618,9 @@ public class AddActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 mCameraDialog.dismiss();
-                if (ContextCompat.checkSelfPermission(AddActivity.this,
+                if (ContextCompat.checkSelfPermission(ShowActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(AddActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    ActivityCompat.requestPermissions(ShowActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 } else {
                     openAlbum();
                 }
@@ -588,7 +632,7 @@ public class AddActivity extends AppCompatActivity
             public void onClick(View v) {
                 //TODO 扫码
                 mCameraDialog.dismiss();
-                Intent intent = new Intent(AddActivity.this, ZxingActivity.class);
+                Intent intent = new Intent(ShowActivity.this, ZxingActivity.class);
                 startActivityForResult(intent, REQUEST_CODE);
             }
         });
@@ -610,46 +654,16 @@ public class AddActivity extends AppCompatActivity
     }
 
     private void initTimePicker() {
-        dateOptions1 = new TimePickerBuilder(this, new OnTimeSelectListener() {
+        dateOptions = new TimePickerBuilder(this, new OnTimeSelectListener() {
             @Override
             public void onTimeSelect(Date date, View v) {
-                productionDate = date;
-                objectDate.setText(getTime(productionDate));
-                if(!shelfLifeType.equals(""))
-                {
-                    Calendar temp = Calendar.getInstance();
-                    temp.setTime(productionDate);
-                    if(shelfLifeType.equals("年"))
-                        temp.add(Calendar.YEAR, shelfLifeCount);
-                    else if(shelfLifeType.equals("月"))
-                        temp.add(Calendar.MONTH, shelfLifeCount);
-                    else
-                        temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
-                    overdueDate = temp.getTime();
-                    objectOverdue.setText(getTime(overdueDate));
-                }
-                //objectOverdue.setText(getTime(date));
+                objectDate.setText(getTime(date));
             }
         })
                 .setTimeSelectChangeListener(new OnTimeSelectChangeListener() {
                     @Override
                     public void onTimeSelectChanged(Date date) {
-                        productionDate = date;
-                        objectDate.setText(getTime(productionDate));
-                        if(!shelfLifeType.equals(""))
-                        {
-                            Calendar temp = Calendar.getInstance();
-                            temp.setTime(productionDate);
-                            if(shelfLifeType.equals("年"))
-                                temp.add(Calendar.YEAR, shelfLifeCount);
-                            else if(shelfLifeType.equals("月"))
-                                temp.add(Calendar.MONTH, shelfLifeCount);
-                            else
-                                temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
-                            overdueDate = temp.getTime();
-                            objectOverdue.setText(getTime(overdueDate));
-                        }
-                        //objectOverdue.setText(getTime(date));
+                        objectDate.setText(getTime(date));
                     }
                 })
                 .setType(new boolean[]{true, true, true, false, false, false})
@@ -662,7 +676,7 @@ public class AddActivity extends AppCompatActivity
                 .setSubmitText("确定")
                 .build();
 
-        Dialog mDialog = dateOptions1.getDialog();
+        Dialog mDialog = dateOptions.getDialog();
         if (mDialog != null) {
 
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
@@ -672,80 +686,9 @@ public class AddActivity extends AppCompatActivity
 
             params.leftMargin = 0;
             params.rightMargin = 0;
-            dateOptions1.getDialogContainerLayout().setLayoutParams(params);
+            dateOptions.getDialogContainerLayout().setLayoutParams(params);
 
             Window dialogWindow = mDialog.getWindow();
-            if (dialogWindow != null) {
-                //dialogWindow.setWindowAnimations(com.bigkoo.pickerview.R.style.picker_view_slide_anim);//修改动画样式
-                dialogWindow.setGravity(Gravity.BOTTOM);
-                dialogWindow.setDimAmount(0.3f);
-            }
-        }
-        dateOptions2 = new TimePickerBuilder(this, new OnTimeSelectListener() {
-            @Override
-            public void onTimeSelect(Date date, View v) {
-                //objectDate.setText(getTime(date));
-                overdueDate = date;
-                objectOverdue.setText(getTime(overdueDate));
-                if(!shelfLifeType.equals(""))
-                {
-                    Calendar temp = Calendar.getInstance();
-                    temp.setTime(overdueDate);
-                    if(shelfLifeType.equals("年"))
-                        temp.add(Calendar.YEAR, -1*shelfLifeCount);
-                    else if(shelfLifeType.equals("月"))
-                        temp.add(Calendar.MONTH, -1*shelfLifeCount);
-                    else
-                        temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
-                    productionDate = temp.getTime();
-                    objectDate.setText(getTime(productionDate));
-                }
-            }
-        })
-                .setTimeSelectChangeListener(new OnTimeSelectChangeListener() {
-                    @Override
-                    public void onTimeSelectChanged(Date date) {
-                        //objectDate.setText(getTime(date));
-                        overdueDate = date;
-                        objectOverdue.setText(getTime(overdueDate));
-                        if(!shelfLifeType.equals(""))
-                        {
-                            Calendar temp = Calendar.getInstance();
-                            temp.setTime(overdueDate);
-                            if(shelfLifeType.equals("年"))
-                                temp.add(Calendar.YEAR, -1*shelfLifeCount);
-                            else if(shelfLifeType.equals("月"))
-                                temp.add(Calendar.MONTH, -1*shelfLifeCount);
-                            else
-                                temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
-                            productionDate = temp.getTime();
-                            objectDate.setText(getTime(productionDate));
-                        }
-                    }
-                })
-                .setType(new boolean[]{true, true, true, false, false, false})
-                .isDialog(true)
-                .setItemVisibleCount(5)
-                .setLineSpacingMultiplier(2.0f)
-                .isAlphaGradient(true)
-                .setCancelText("取消")
-                .setTitleText("过期日期")
-                .setSubmitText("确定")
-                .build();
-
-        Dialog mDialog2 = dateOptions2.getDialog();
-        if (mDialog2 != null) {
-
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    Gravity.BOTTOM);
-
-            params.leftMargin = 0;
-            params.rightMargin = 0;
-            dateOptions1.getDialogContainerLayout().setLayoutParams(params);
-
-            Window dialogWindow = mDialog2.getWindow();
             if (dialogWindow != null) {
                 //dialogWindow.setWindowAnimations(com.bigkoo.pickerview.R.style.picker_view_slide_anim);//修改动画样式
                 dialogWindow.setGravity(Gravity.BOTTOM);

@@ -11,19 +11,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bright_storage.activity.MainActivity;
 import com.example.bright_storage.R;
+import com.example.bright_storage.model.entity.StorageUnit;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> {
     private Context context;
-    private ArrayList<String> list;
+    private List<StorageUnit> list;
     private layoutInterface layoutInterface;
 
 
-    public HomeAdapter(Context context, ArrayList<String> list) {
+    public HomeAdapter(Context context, List<StorageUnit> list) {
         this.context = context;
         this.list = list;
     }
@@ -39,7 +41,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
      * 按钮点击事件对应的接口
      */
     public interface layoutInterface {
-        public void onclick(View view, int position);
+        public void onclick(View view, StorageUnit TstorageUnit);
     }
 
     @Override
@@ -52,40 +54,36 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        holder.tv.setText(list.get(position));
-//        holder.th.setImageResource();
-//        holder.th.setImageBitmap();
-//        holder.id_clicklayout.setText(list.get(position));
-//
+        holder.tv.setText(list.get(position).getName());
         ViewGroup.LayoutParams lp;
         lp= holder.id_clicklayout.getLayoutParams();
         lp.height= MainActivity.width/2;
         holder.id_clicklayout.setLayoutParams(lp);
-//        holder.id_clicklayout(com.example.roomtest3.MainActivity.width/2);
-//        holder.id_clicklayout.setWidth(com.example.roomtest3.MainActivity.width/3);
-        Picasso.get()
-                .load("https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3155097781,4164517483&fm=26&gp=0.jpg")
-                .centerCrop()
-                .error(R.mipmap.ic_launcher)
-                .fit()
-                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-                .networkPolicy(NetworkPolicy.NO_CACHE,NetworkPolicy.NO_STORE)
-                .into(holder.th);
-//        x.image().bind(holder.th,"https://c-ssl.duitang.com/uploads/item/202002/24/20200224003004_movto.thumb.1000_0.jpg");
-
-//        try {
-//            URL url = new URL("https://c-ssl.duitang.com/uploads/item/202002/24/20200224003004_movto.thumb.1000_0.jpg");
-//            holder.th.setImageBitmap(BitmapFactory.decodeStream(url.openStream()));
-//        } catch (Exception e) {
-//
-//        }
+        if (list.get(position).getImage().length() == 0)
+        {
+            Picasso.get()
+                    .load(R.mipmap.ic_launcher)
+                    .centerCrop()
+                    .fit()
+                    .into(holder.th);
+        }
+        else {
+            Picasso.get()
+                    .load(list.get(position).getImage())//"https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3155097781,4164517483&fm=26&gp=0.jpg"
+                    .centerCrop()
+                    .error(R.mipmap.ic_launcher)
+                    .fit()
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE, NetworkPolicy.NO_STORE)
+                    .into(holder.th);
+        }
 
         holder.id_clicklayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (layoutInterface != null) {
 //                  接口实例化后的而对象，调用重写后的方法
-                    layoutInterface.onclick(v, position);
+                    layoutInterface.onclick(v, list.get(position));
                 }
 
             }

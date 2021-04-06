@@ -59,6 +59,7 @@ import com.bigkoo.pickerview.view.TimePickerView;
 import com.contrarywind.listener.OnItemSelectedListener;
 import com.contrarywind.view.WheelView;
 import com.example.bright_storage.R;
+import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.repository.CategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
@@ -79,7 +80,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import lombok.SneakyThrows;
 
@@ -87,7 +90,9 @@ import static android.view.View.INVISIBLE;
 
 public class ShowActivity extends AppCompatActivity
 {
-    private Date overdueDate, productionDate;
+    private Set<Category> categories;
+    private Long newPath;
+    private Date overdueDate, productionDate, createTime, updateTime;
     private int shelfLifeCount = 0;
     private String shelfLifeType = "";
     private StorageUnitRepository storageUnitRepository;
@@ -103,7 +108,7 @@ public class ShowActivity extends AppCompatActivity
     private ImageButton photoButton;
     private TextView thetitle;
     private OptionsPickerView shelfLifeOptions, typeOptions;
-    private TimePickerView dateOptions;
+    private TimePickerView dateOptions1, dateOptions2;
     private ArrayList<String> options1Items = new ArrayList<>();
     private ArrayList<ArrayList<String>> options2Items = new ArrayList<>();
     private ArrayList<String> optionsForType = new ArrayList<>();//类型列表
@@ -119,6 +124,7 @@ public class ShowActivity extends AppCompatActivity
         setContentView(R.layout.activity_show);
         Intent intent =getIntent();
         Long Id = intent.getLongExtra("Id", 0);
+        categories = new HashSet<>();
         storageUnitRepository = new StorageUnitRepository();
         storageUnit = storageUnitRepository.findById(Id);
         //TODO 接受Id
@@ -153,9 +159,19 @@ public class ShowActivity extends AppCompatActivity
         objectOverdue = (Button) findViewById(R.id.object_overdue);
         objectOverdue.setEnabled(false);
         overdueDate = storageUnit.getExpireTime();
+        categories = storageUnit.getCategories();
+        System.out.println(categories.size());
+        for(Category it : categories)
+        {
+            System.out.println(it.getName());
+            objectType.setText(it.getName());
+        }
         if(overdueDate != null)
         {
-            objectOverdue.setText(storageUnit.getExpireTime().toString());
+            String pattern="yyyy-MM-dd";
+            SimpleDateFormat sdf= new SimpleDateFormat(pattern);
+            String dateString=sdf.format(overdueDate);// format  为格式化方法
+            objectOverdue.setText(dateString);
         }
         objectType = (Button) findViewById(R.id.object_type);
         objectType.setEnabled(false);
@@ -166,10 +182,10 @@ public class ShowActivity extends AppCompatActivity
         objectDate.setEnabled(false);
         objectShelfLife = (Button) findViewById(R.id.object_shelflife);
         objectShelfLife.setEnabled(false);
+        switchButton1();
         objectSubmit = (Button) findViewById(R.id.object_submit);
         objectSubmit.setVisibility(INVISIBLE);
         objectNewPath = (Button) findViewById(R.id.object_newPath);
-
         thetitle.setText(R.string.title_show);
         title_search.setBackgroundResource(R.mipmap.update);
         objectCount.setInputType( InputType.TYPE_CLASS_NUMBER);
@@ -198,10 +214,13 @@ public class ShowActivity extends AppCompatActivity
                 objectOverdue.setEnabled(true);
                 objectType.setEnabled(true);
                 objectDate.setEnabled(true);
+                objectDate.setVisibility(View.VISIBLE);
+                objectShelfLife.setVisibility(View.VISIBLE);
                 objectShelfLife.setEnabled(true);
                 objectSubmit.setVisibility(View.VISIBLE);
                 objectNewPath.setVisibility(View.VISIBLE);
                 isPrivate.setVisibility(View.VISIBLE);
+                switchButton2();
             }
         });
 
@@ -220,7 +239,7 @@ public class ShowActivity extends AppCompatActivity
         objectOverdue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dateOptions.show(v);
+                dateOptions2.show(v);
             }
         });
         objectNewPath.setOnClickListener(new View.OnClickListener() {
@@ -233,7 +252,7 @@ public class ShowActivity extends AppCompatActivity
         objectDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dateOptions.show(v);
+                dateOptions1.show(v);
             }
         });
         objectShelfLife.setOnClickListener(new View.OnClickListener() {
@@ -280,6 +299,7 @@ public class ShowActivity extends AppCompatActivity
                 }
                 else
                 {
+
                     legal = false;
                     hint += "数量 ";
                 }
@@ -297,8 +317,10 @@ public class ShowActivity extends AppCompatActivity
                     //storageUnit = new StorageUnit();//TODO 后续传入数据之后删了它
                     storageUnit.setName(name);
                     storageUnit.setAccess(open);
-                    storageUnit.setParentId(path);
+                    //storageUnit.setParentId(path);
                     storageUnit.setAmount(count);
+                    if(newPath != null)
+                        storageUnit.setParentId(newPath);
                     if(imageUri != null)
                         storageUnit.setImage(imageUri.toString());
                     storageUnit.setExpireTime(expireTime);
@@ -314,9 +336,10 @@ public class ShowActivity extends AppCompatActivity
                     objectType.setEnabled(false);
                     objectDate.setEnabled(false);
                     objectShelfLife.setEnabled(false);
-                    objectSubmit.setVisibility(View.INVISIBLE);
-                    objectNewPath.setVisibility(View.INVISIBLE);
-                    isPrivate.setVisibility(View.INVISIBLE);
+                    objectSubmit.setVisibility(View.GONE);
+                    objectNewPath.setVisibility(View.GONE);
+                    isPrivate.setVisibility(View.GONE);
+                    switchButton1();
                 }
             }
         });
@@ -331,8 +354,9 @@ public class ShowActivity extends AppCompatActivity
             case SELECT_PATH://TODO 这里需要改为打开夏老板的页面并选择一个路径。
                 if(data != null)
                 {
-                    ArrayList<String> result = data.getExtras().getStringArrayList("pathName");//得到新Activity 关闭后返回的数据
-                    objectNewPath.setText(result.get(0));
+                    newPath = data.getExtras().getLong("pathName");
+                    StorageUnit father = storageUnitRepository.findById(newPath);
+                    objectNewPath.setText(father.getName());
                 }
                 break;
             case TAKE_PHOTO:
@@ -654,16 +678,46 @@ public class ShowActivity extends AppCompatActivity
     }
 
     private void initTimePicker() {
-        dateOptions = new TimePickerBuilder(this, new OnTimeSelectListener() {
+        dateOptions1 = new TimePickerBuilder(this, new OnTimeSelectListener() {
             @Override
             public void onTimeSelect(Date date, View v) {
-                objectDate.setText(getTime(date));
+                productionDate = date;
+                objectDate.setText(getTime(productionDate));
+                if(!shelfLifeType.equals(""))
+                {
+                    Calendar temp = Calendar.getInstance();
+                    temp.setTime(productionDate);
+                    if(shelfLifeType.equals("年"))
+                        temp.add(Calendar.YEAR, shelfLifeCount);
+                    else if(shelfLifeType.equals("月"))
+                        temp.add(Calendar.MONTH, shelfLifeCount);
+                    else
+                        temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
+                    overdueDate = temp.getTime();
+                    objectOverdue.setText(getTime(overdueDate));
+                }
+                //objectOverdue.setText(getTime(date));
             }
         })
                 .setTimeSelectChangeListener(new OnTimeSelectChangeListener() {
                     @Override
                     public void onTimeSelectChanged(Date date) {
-                        objectDate.setText(getTime(date));
+                        productionDate = date;
+                        objectDate.setText(getTime(productionDate));
+                        if(!shelfLifeType.equals(""))
+                        {
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(productionDate);
+                            if(shelfLifeType.equals("年"))
+                                temp.add(Calendar.YEAR, shelfLifeCount);
+                            else if(shelfLifeType.equals("月"))
+                                temp.add(Calendar.MONTH, shelfLifeCount);
+                            else
+                                temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
+                            overdueDate = temp.getTime();
+                            objectOverdue.setText(getTime(overdueDate));
+                        }
+                        //objectOverdue.setText(getTime(date));
                     }
                 })
                 .setType(new boolean[]{true, true, true, false, false, false})
@@ -676,7 +730,7 @@ public class ShowActivity extends AppCompatActivity
                 .setSubmitText("确定")
                 .build();
 
-        Dialog mDialog = dateOptions.getDialog();
+        Dialog mDialog = dateOptions1.getDialog();
         if (mDialog != null) {
 
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
@@ -686,9 +740,80 @@ public class ShowActivity extends AppCompatActivity
 
             params.leftMargin = 0;
             params.rightMargin = 0;
-            dateOptions.getDialogContainerLayout().setLayoutParams(params);
+            dateOptions1.getDialogContainerLayout().setLayoutParams(params);
 
             Window dialogWindow = mDialog.getWindow();
+            if (dialogWindow != null) {
+                //dialogWindow.setWindowAnimations(com.bigkoo.pickerview.R.style.picker_view_slide_anim);//修改动画样式
+                dialogWindow.setGravity(Gravity.BOTTOM);
+                dialogWindow.setDimAmount(0.3f);
+            }
+        }
+        dateOptions2 = new TimePickerBuilder(this, new OnTimeSelectListener() {
+            @Override
+            public void onTimeSelect(Date date, View v) {
+                //objectDate.setText(getTime(date));
+                overdueDate = date;
+                objectOverdue.setText(getTime(overdueDate));
+                if(!shelfLifeType.equals(""))
+                {
+                    Calendar temp = Calendar.getInstance();
+                    temp.setTime(overdueDate);
+                    if(shelfLifeType.equals("年"))
+                        temp.add(Calendar.YEAR, -1*shelfLifeCount);
+                    else if(shelfLifeType.equals("月"))
+                        temp.add(Calendar.MONTH, -1*shelfLifeCount);
+                    else
+                        temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
+                    productionDate = temp.getTime();
+                    objectDate.setText(getTime(productionDate));
+                }
+            }
+        })
+                .setTimeSelectChangeListener(new OnTimeSelectChangeListener() {
+                    @Override
+                    public void onTimeSelectChanged(Date date) {
+                        //objectDate.setText(getTime(date));
+                        overdueDate = date;
+                        objectOverdue.setText(getTime(overdueDate));
+                        if(!shelfLifeType.equals(""))
+                        {
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(overdueDate);
+                            if(shelfLifeType.equals("年"))
+                                temp.add(Calendar.YEAR, -1*shelfLifeCount);
+                            else if(shelfLifeType.equals("月"))
+                                temp.add(Calendar.MONTH, -1*shelfLifeCount);
+                            else
+                                temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
+                            productionDate = temp.getTime();
+                            objectDate.setText(getTime(productionDate));
+                        }
+                    }
+                })
+                .setType(new boolean[]{true, true, true, false, false, false})
+                .isDialog(true)
+                .setItemVisibleCount(5)
+                .setLineSpacingMultiplier(2.0f)
+                .isAlphaGradient(true)
+                .setCancelText("取消")
+                .setTitleText("过期日期")
+                .setSubmitText("确定")
+                .build();
+
+        Dialog mDialog2 = dateOptions2.getDialog();
+        if (mDialog2 != null) {
+
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Gravity.BOTTOM);
+
+            params.leftMargin = 0;
+            params.rightMargin = 0;
+            dateOptions1.getDialogContainerLayout().setLayoutParams(params);
+
+            Window dialogWindow = mDialog2.getWindow();
             if (dialogWindow != null) {
                 //dialogWindow.setWindowAnimations(com.bigkoo.pickerview.R.style.picker_view_slide_anim);//修改动画样式
                 dialogWindow.setGravity(Gravity.BOTTOM);
@@ -742,5 +867,23 @@ public class ShowActivity extends AppCompatActivity
         // 指定图片的输出地址为imageUri
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, TAKE_PHOTO);
+    }
+
+    private void switchButton1()
+    {
+        createTime = storageUnit.getCreateTime();
+        updateTime = storageUnit.getUpdateTime();
+        String pattern="yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat sdf= new SimpleDateFormat(pattern);
+        String createTimeString=sdf.format(createTime);
+        String updateTimeString=sdf.format(updateTime);
+        objectShelfLife.setText("创建于" + createTimeString);
+        objectDate.setText("修改于" + updateTimeString);
+    }
+
+    private void switchButton2()
+    {
+        objectDate.setText("生产日期");
+        objectShelfLife.setText("保质期");
     }
 }

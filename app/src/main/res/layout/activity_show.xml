@@ -78,7 +78,7 @@
             android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/object_shelflife" />
+            app:layout_constraintTop_toBottomOf="@+id/object_type" />
 
         <Button
             android:id="@+id/object_type"
@@ -114,7 +114,7 @@
             android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/object_type" />
+            app:layout_constraintTop_toBottomOf="@+id/object_shelflife" />
 
         <Button
             android:id="@+id/object_shelflife"
@@ -132,7 +132,7 @@
             android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/object_date" />
+            app:layout_constraintTop_toBottomOf="@+id/object_overdue" />
 
         <Button
             android:id="@+id/object_newPath"
@@ -186,31 +186,6 @@
             app:layout_constraintStart_toEndOf="@+id/photoButton"
             app:layout_constraintTop_toBottomOf="@+id/include" />
 
-        <TextView
-            android:id="@+id/overdue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/include"
-            app:layout_constraintTop_toTopOf="@+id/include"
-            tools:layout_editor_absoluteX="0dp"
-            android:visibility="gone"/>
-        <TextView
-            android:id="@+id/shelfLife"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/include"
-            app:layout_constraintTop_toTopOf="@+id/include"
-            tools:layout_editor_absoluteX="0dp"
-            android:visibility="gone"/>
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/include"
-            app:layout_constraintTop_toTopOf="@+id/include"
-            tools:layout_editor_absoluteX="0dp"
-            android:visibility="gone"/>
-
         <EditText
             android:gravity ="top"
             android:id="@+id/object_remarks"
@@ -226,6 +201,6 @@
             android:theme="@style/MyEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/object_overdue" />
+            app:layout_constraintTop_toBottomOf="@+id/object_date" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

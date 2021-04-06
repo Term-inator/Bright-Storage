@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -53,7 +54,9 @@ import com.bigkoo.pickerview.view.TimePickerView;
 import com.contrarywind.listener.OnItemSelectedListener;
 import com.contrarywind.view.WheelView;
 import com.example.bright_storage.R;
+import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.repository.CategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.ui.home.HomeFragment;
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
@@ -70,13 +73,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static android.view.View.INVISIBLE;
 
 public class AddActivity extends AppCompatActivity
 {
+    private Set<Category> categories;
     private Date overdueDate, productionDate;
     private int shelfLifeCount = 0;
     private String shelfLifeType = "";
@@ -221,8 +229,12 @@ public class AddActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 String type = objectType.getText().toString();
-                String date = objectDate.getText().toString();
-                String shelfLife = objectShelfLife.getText().toString();
+                categories = new HashSet<Category>();
+                Category temp = new Category();
+                temp.setName(type);
+                categories.add(temp);
+                //String date = objectDate.getText().toString();
+                //String shelfLife = objectShelfLife.getText().toString();
                 if(name.length() == 0)
                 {
                     legal = false;
@@ -259,6 +271,10 @@ public class AddActivity extends AppCompatActivity
                     storageUnit.setName(name);
                     storageUnit.setAccess(open);
                     storageUnit.setParentId(path);
+                    //System.out.println(categories.size());
+                    storageUnit.setCategories(categories);
+
+                    //System.out.println(storageUnit.getCategories().size());
                     storageUnit.setAmount(count);
                     if(imageUri != null)
                         storageUnit.setImage(imageUri.toString());
@@ -420,36 +436,8 @@ public class AddActivity extends AppCompatActivity
                 .setOptionsSelectChangeListener(new OnOptionsSelectChangeListener() {
                     @Override
                     public void onOptionsSelectChanged(int options1, int options2, int options3) {
-                        shelfLifeCount = Integer.parseInt(options2Items.get(options1).get(options2));
-                        shelfLifeType = options1Items.get(options1);
-                        String tx = shelfLifeCount + shelfLifeType;
-                        objectShelfLife.setText(tx);
-                        if(productionDate != null)
-                        {
-                            Calendar temp = Calendar.getInstance();
-                            temp.setTime(productionDate);
-                            if(shelfLifeType.equals("年"))
-                                temp.add(Calendar.YEAR, shelfLifeCount);
-                            else if(shelfLifeType.equals("月"))
-                                temp.add(Calendar.MONTH, shelfLifeCount);
-                            else
-                                temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
-                            overdueDate = temp.getTime();
-                            objectOverdue.setText(getTime(overdueDate));
-                        }
-                        else if(overdueDate != null)
-                        {
-                            Calendar temp = Calendar.getInstance();
-                            temp.setTime(overdueDate);
-                            if(shelfLifeType.equals("年"))
-                                temp.add(Calendar.YEAR, -1*shelfLifeCount);
-                            else if(shelfLifeType.equals("月"))
-                                temp.add(Calendar.MONTH, -1*shelfLifeCount);
-                            else
-                                temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
-                            productionDate = temp.getTime();
-                            objectDate.setText(getTime(productionDate));
-                        }
+                        String tx = optionsForType.get(options1);
+                        objectType.setText(tx);
                     }
                 })
                 .build();
@@ -500,8 +488,36 @@ public class AddActivity extends AppCompatActivity
                 .setOptionsSelectChangeListener(new OnOptionsSelectChangeListener() {
                     @Override
                     public void onOptionsSelectChanged(int options1, int options2, int options3) {
-                        String tx = options2Items.get(options1).get(options2) + options1Items.get(options1);
+                        shelfLifeCount = Integer.parseInt(options2Items.get(options1).get(options2));
+                        shelfLifeType = options1Items.get(options1);
+                        String tx = shelfLifeCount + shelfLifeType;
                         objectShelfLife.setText(tx);
+                        if(productionDate != null)
+                        {
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(productionDate);
+                            if(shelfLifeType.equals("年"))
+                                temp.add(Calendar.YEAR, shelfLifeCount);
+                            else if(shelfLifeType.equals("月"))
+                                temp.add(Calendar.MONTH, shelfLifeCount);
+                            else
+                                temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
+                            overdueDate = temp.getTime();
+                            objectOverdue.setText(getTime(overdueDate));
+                        }
+                        else if(overdueDate != null)
+                        {
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(overdueDate);
+                            if(shelfLifeType.equals("年"))
+                                temp.add(Calendar.YEAR, -1*shelfLifeCount);
+                            else if(shelfLifeType.equals("月"))
+                                temp.add(Calendar.MONTH, -1*shelfLifeCount);
+                            else
+                                temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
+                            productionDate = temp.getTime();
+                            objectDate.setText(getTime(productionDate));
+                        }
                     }
                 })
                 .build();
@@ -787,10 +803,12 @@ public class AddActivity extends AppCompatActivity
 
     private void initTypeData()
     {
-        optionsForType.add("食物");
-        optionsForType.add("服装");
-        optionsForType.add("书籍");
-        optionsForType.add("文件");
+        CategoryRepository categoryRepository = new CategoryRepository();
+        List<Category> temp = categoryRepository.findAll();
+        for(Category it : temp)
+        {
+            optionsForType.add(it.getName());
+        }
         //TODO 传入分类数据
     }
 

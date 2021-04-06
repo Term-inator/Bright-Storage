@@ -86,8 +86,9 @@ public class PathSelectActivity extends AppCompatActivity
             @Override
             public void onClick(View view){
                 Intent intent = new Intent();
-                intent.putExtra("respond",getPid());
+                intent.putExtra("pathName",getPid());
                 setResult(Activity.RESULT_OK,intent);
+                finish();
             }
         });
 //      RecyclerView设置展示的的样式（listView样子，gridView样子，瀑布流样子）
@@ -137,11 +138,6 @@ public class PathSelectActivity extends AppCompatActivity
                     mRecyclerView.setAdapter(honmeAdapter);     //can change like this
 //                    swipeRefreshLayout.setRefreshing(false);    //隐藏刷新图标
                     SetOnClick();
-                }else{
-                    Intent intent = new Intent();
-                    intent.putExtra("Id",p_id.peek());
-                    intent.setClass(PathSelectActivity.this,ShowActivity.class);
-                    startActivity(intent);
                 }
             }
         });

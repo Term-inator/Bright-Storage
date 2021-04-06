@@ -58,8 +58,8 @@ public class ExampleInstrumentedTest {
 
     @Test
     public void insertCategory(){
-        Category c1 = new Category(null, null, "nihaoC");
-        Category c2 = new Category(null, null, "cate2");
+        Category c1 = new Category(null, null, "食品");
+        Category c2 = new Category(null, null, "书籍");
         categoryService.create(c1);
         categoryService.create(c2);
     }

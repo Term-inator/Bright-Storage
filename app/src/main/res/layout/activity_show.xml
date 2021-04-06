@@ -186,6 +186,31 @@
             app:layout_constraintStart_toEndOf="@+id/photoButton"
             app:layout_constraintTop_toBottomOf="@+id/include" />
 
+        <TextView
+            android:id="@+id/overdue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/include"
+            app:layout_constraintTop_toTopOf="@+id/include"
+            tools:layout_editor_absoluteX="0dp"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/shelfLife"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/include"
+            app:layout_constraintTop_toTopOf="@+id/include"
+            tools:layout_editor_absoluteX="0dp"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/include"
+            app:layout_constraintTop_toTopOf="@+id/include"
+            tools:layout_editor_absoluteX="0dp"
+            android:visibility="gone"/>
+
         <EditText
             android:gravity ="top"
             android:id="@+id/object_remarks"

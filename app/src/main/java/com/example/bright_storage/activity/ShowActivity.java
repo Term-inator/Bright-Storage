@@ -77,6 +77,7 @@ import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -86,6 +87,9 @@ import static android.view.View.INVISIBLE;
 
 public class ShowActivity extends AppCompatActivity
 {
+    private Date overdueDate, productionDate;
+    private int shelfLifeCount = 0;
+    private String shelfLifeType = "";
     private StorageUnitRepository storageUnitRepository;
     private StorageUnit storageUnit;
     private Switch isPrivate;
@@ -127,12 +131,19 @@ public class ShowActivity extends AppCompatActivity
         photoButton.setEnabled(false);
         //TODO 根据地址设置图片
         imageUri = Uri.parse(storageUnit.getImage());
-        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+        //if(!imageUri.equals(""))
+        try {
+            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+            photoButton.setImageBitmap(bitmap);
+        }catch (FileNotFoundException e)
+        {
+
+        }
         // 将图片显示出来
-        photoButton.setImageBitmap(bitmap);
         objectName = (EditText) findViewById(R.id.object_name);
         objectName.setEnabled(false);
         objectName.setText(storageUnit.getName());
+
         objectCount = (EditText) findViewById(R.id.object_count);
         objectCount.setEnabled(false);
         objectCount.setText("" + storageUnit.getAmount());
@@ -141,7 +152,11 @@ public class ShowActivity extends AppCompatActivity
         objectRemarks.setText(storageUnit.getNote());
         objectOverdue = (Button) findViewById(R.id.object_overdue);
         objectOverdue.setEnabled(false);
-        //objectOverdue.setText(storageUnit.getExpireTime().toString());
+        overdueDate = storageUnit.getExpireTime();
+        if(overdueDate != null)
+        {
+            objectOverdue.setText(storageUnit.getExpireTime().toString());
+        }
         objectType = (Button) findViewById(R.id.object_type);
         objectType.setEnabled(false);
         //Long x = new Long(storageUnit.getType().intValue());
@@ -198,7 +213,9 @@ public class ShowActivity extends AppCompatActivity
         });
         title_back.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { finish(); }
+            public void onClick(View v) {
+                //HomeFragment.refresh();
+                finish(); }
         });
         objectOverdue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -447,8 +464,36 @@ public class ShowActivity extends AppCompatActivity
                 .setOptionsSelectChangeListener(new OnOptionsSelectChangeListener() {
                     @Override
                     public void onOptionsSelectChanged(int options1, int options2, int options3) {
-                        String tx = optionsForType.get(options1);
-                        objectType.setText(tx);
+                        shelfLifeCount = Integer.parseInt(options2Items.get(options1).get(options2));
+                        shelfLifeType = options1Items.get(options1);
+                        String tx = shelfLifeCount + shelfLifeType;
+                        objectShelfLife.setText(tx);
+                        if(productionDate != null)
+                        {
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(productionDate);
+                            if(shelfLifeType.equals("年"))
+                                temp.add(Calendar.YEAR, shelfLifeCount);
+                            else if(shelfLifeType.equals("月"))
+                                temp.add(Calendar.MONTH, shelfLifeCount);
+                            else
+                                temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
+                            overdueDate = temp.getTime();
+                            objectOverdue.setText(getTime(overdueDate));
+                        }
+                        else if(overdueDate != null)
+                        {
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(overdueDate);
+                            if(shelfLifeType.equals("年"))
+                                temp.add(Calendar.YEAR, -1*shelfLifeCount);
+                            else if(shelfLifeType.equals("月"))
+                                temp.add(Calendar.MONTH, -1*shelfLifeCount);
+                            else
+                                temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
+                            productionDate = temp.getTime();
+                            objectDate.setText(getTime(productionDate));
+                        }
                     }
                 })
                 .build();
@@ -457,8 +502,36 @@ public class ShowActivity extends AppCompatActivity
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
                 //返回的分别是三个级别的选中位置
-                String tx = options2Items.get(options1).get(options2) + options1Items.get(options1);
+                shelfLifeCount = Integer.parseInt(options2Items.get(options1).get(options2));
+                shelfLifeType = options1Items.get(options1);
+                String tx = shelfLifeCount + shelfLifeType;
                 objectShelfLife.setText(tx);
+                if(productionDate != null)
+                {
+                    Calendar temp = Calendar.getInstance();
+                    temp.setTime(productionDate);
+                    if(shelfLifeType.equals("年"))
+                        temp.add(Calendar.YEAR, shelfLifeCount);
+                    else if(shelfLifeType.equals("月"))
+                        temp.add(Calendar.MONTH, shelfLifeCount);
+                    else
+                        temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
+                    overdueDate = temp.getTime();
+                    objectOverdue.setText(getTime(overdueDate));
+                }
+                else if(overdueDate != null)
+                {
+                    Calendar temp = Calendar.getInstance();
+                    temp.setTime(overdueDate);
+                    if(shelfLifeType.equals("年"))
+                        temp.add(Calendar.YEAR, -1*shelfLifeCount);
+                    else if(shelfLifeType.equals("月"))
+                        temp.add(Calendar.MONTH, -1*shelfLifeCount);
+                    else
+                        temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
+                    productionDate = temp.getTime();
+                    objectDate.setText(getTime(productionDate));
+                }
             }
         })
                 .setCancelText("取消")

@@ -79,8 +79,7 @@ public class HomeFragment extends Fragment {
                         title_text.setText(title_name.peek());
                 }else
                     title_text.setText("智存");
-                honmeAdapter = new HomeAdapter(root.getContext(), datas);
-                mRecyclerView.setAdapter(honmeAdapter); //can change like this  重新加载list中的数据到页面上
+                refresh();
                 SetOnClick();
             }
         });
@@ -164,12 +163,19 @@ public class HomeFragment extends Fragment {
             return p_id.peek();
         return 0l;
     }
-    public static void refresh(){
+    protected static void refresh(){
         if (!p_id.empty())
             initData(p_id.peek());
         else
             initData();
         honmeAdapter = new HomeAdapter(root.getContext(), datas);
         mRecyclerView.setAdapter(honmeAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh();
+        SetOnClick();
     }
 }

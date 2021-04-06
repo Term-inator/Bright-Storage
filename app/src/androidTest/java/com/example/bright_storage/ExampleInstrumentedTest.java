@@ -10,6 +10,7 @@ import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.entity.StorageUnitCategory;
 import com.example.bright_storage.model.query.StorageUnitQuery;
+import com.example.bright_storage.model.support.Pageable;
 import com.example.bright_storage.repository.StorageUnitCategoryRepository;
 import com.example.bright_storage.service.CategoryService;
 import com.example.bright_storage.service.StorageUnitService;
@@ -19,6 +20,7 @@ import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.xutils.db.Selector;
 
 import java.util.HashSet;
 import java.util.List;
@@ -73,9 +75,9 @@ public class ExampleInstrumentedTest {
     @Test
     public void insertStorageUnit(){
         StorageUnit storageUnit = new StorageUnit();
-        storageUnit.setName("su with categories");
-        storageUnit.setAmount(4);
-        storageUnit.setNote("u with categories");
+        storageUnit.setName("777");
+        storageUnit.setAmount(7);
+        storageUnit.setNote("777");
         storageUnit.setCategories(new HashSet<>(categoryService.listAll()));
 
         storageUnitService.create(storageUnit);
@@ -85,9 +87,12 @@ public class ExampleInstrumentedTest {
     @Test
     public void queryStorageUnit(){
         StorageUnitQuery query = new StorageUnitQuery();
-        query.setName("cate");
-        List<StorageUnit> res = storageUnitService.query(query);
-//        List<StorageUnit> res = storageUnitService.listAll();
+//        query.setName("cate");
+//        query.setAmount(3);
+        Pageable pageable = new Pageable();
+        pageable.getOrderByList().clear();
+        pageable.getOrderByList().add(new Selector.OrderBy("amount", true));
+        List<StorageUnit> res = storageUnitService.query(query, pageable);
         for(StorageUnit storageUnit: res){
             Log.i(TAG, "query storage unit: " + storageUnit);
         }

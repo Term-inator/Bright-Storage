@@ -44,27 +44,6 @@ public class StorageUnitRepository extends AbstractRepository<StorageUnit, Long>
         return findByIds(ids);
     }
 
-//    @Override
-//    public StorageUnit save(StorageUnit entity) {
-//        SQLiteDatabase database = manager.getDatabase();
-//        try {
-////            database.beginTransactionNonExclusive();
-//
-//            entity.prePersist();
-//            manager.saveBindingId(entity);
-//            postPersist(entity);
-//
-////            database.setTransactionSuccessful();
-//
-//            return entity;
-//        } catch (DbException e) {
-//            e.printStackTrace();
-//        } finally {
-////            database.endTransaction();
-//        }
-//        return null;
-//    }
-
     @Override
     protected StorageUnit postQuery(StorageUnit entity) {
         List<StorageUnitCategory> suc =
@@ -81,8 +60,7 @@ public class StorageUnitRepository extends AbstractRepository<StorageUnit, Long>
 
     @Override
     protected StorageUnit postPersist(StorageUnit entity) {
-        throw new DBException("");
-//        return postUpdate(entity);
+        return postUpdate(entity);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class ServiceModule {
 
     @Singleton
     @Provides
-    public CategoryService providerCateogryService(){
+    public CategoryService providerCategoryService(){
         return new CategoryServiceImpl();
     }
 }

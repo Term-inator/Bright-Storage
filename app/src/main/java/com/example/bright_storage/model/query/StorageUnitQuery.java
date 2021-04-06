@@ -55,6 +55,9 @@ public class StorageUnitQuery extends BaseQuery<StorageUnit>{
         if(parentId != null){
             selector.and("parent_id", "=", parentId);
         }
+        if(amount != null){
+            selector.and("amount", "=", amount);
+        }
         if(StringUtil.hasText(name)){
             selector.and("name", "like", "%"+name+"%");
         }

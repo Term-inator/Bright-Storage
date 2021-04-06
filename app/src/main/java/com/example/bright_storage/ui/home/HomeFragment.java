@@ -61,24 +61,11 @@ public class HomeFragment extends Fragment {
         title_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //finish();
-//                Intent intent = new Intent(BSProActivity.this, MainActivity.class);
-//                startActivity(intent);
-                if (!p_id.empty()) {
+                if (!p_id.empty())
                     p_id.pop();
-                    if (p_id.empty())
-                        initData(0l);
-                    else
-                        initData(p_id.peek());
-                }
-                if (!title_name.empty()){
+                if (!title_name.empty())
                     title_name.pop();
-                    if (title_name.empty())
-                        title_text.setText("智存");
-                    else
-                        title_text.setText(title_name.peek());
-                }else
-                    title_text.setText("智存");
+                setTitle();
                 refresh();
                 SetOnClick();
             }
@@ -97,9 +84,6 @@ public class HomeFragment extends Fragment {
 
 
 //      获取数据，向适配器传数据，绑定适配器
-//        initData();
-//            honmeAdapter = new HomeAdapter(root.getContext(), datas);
-//            mRecyclerView.setAdapter(honmeAdapter);
         //      初始化SwipeRefreshLayout
         swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.id_pull_flush);
         swipeRefreshLayout.setColorSchemeResources(R.color.auxiliary_color);
@@ -115,61 +99,55 @@ public class HomeFragment extends Fragment {
         return root;
 
     }
+
     protected static void initData() {
-        select.setParentId(0l);
+        select.setParentId(getPid());
         StorageUnitRepository StorageUnitRepo = new StorageUnitRepository();
         datas = StorageUnitRepo.query(select);
     }
-    protected static void initData(Long p_id) {
-        select.setParentId(p_id);
-        StorageUnitRepository StorageUnitRepo = new StorageUnitRepository();
-        datas = StorageUnitRepo.query(select);
-    }
-    protected void updataData(Long p_id){
-        initData(p_id);
-    }
-    protected void SetOnClick(){
+
+    protected void SetOnClick() {
         //      调用按钮返回事件回调的方法
         honmeAdapter.layoutSetOnclick(new HomeAdapter.layoutInterface() {
 
             @Override
             public void onclick(View view, StorageUnit TstorageUnit) {
 //                Toast.makeText(root.getContext(), "点击条目上的按钮" + position, Toast.LENGTH_SHORT).show();
-                if(TstorageUnit.getType()==1)
-                {
+                if (TstorageUnit.getType() == 1) {
                     p_id.push(TstorageUnit.getLocalId());  //将pid设置为点击的storageunit的id
                     title_name.push(TstorageUnit.getName()); //将titlename设置成点击的路径；
-                    title_text.setText(title_name.peek());
+                    setTitle();
                 }
-                if(TstorageUnit.getType()== 1) {
-//                    System.out.println(TstorageUnit);
-//                    swipeRefreshLayout.setRefreshing(true); //显示刷新图标
-                    updataData(p_id.peek());   //根据pid初始化list
-                    honmeAdapter = new HomeAdapter(root.getContext(), datas);
-                    mRecyclerView.setAdapter(honmeAdapter);     //can change like this
-//                    swipeRefreshLayout.setRefreshing(false);    //隐藏刷新图标
+                if (TstorageUnit.getType() == 1) {
+                    refresh();
                     SetOnClick();
-                }else{
+                } else {
                     Intent intent = new Intent();
-                    intent.putExtra("Id",TstorageUnit.getLocalId());
-                    intent.setClass(root.getContext(),ShowActivity.class);
+                    intent.putExtra("Id", TstorageUnit.getLocalId());
+                    intent.setClass(root.getContext(), ShowActivity.class);
                     startActivity(intent);
                 }
             }
         });
     }
-    public static Long getPid(){
+
+    public static Long getPid() {
         if (!p_id.empty())
             return p_id.peek();
         return 0l;
     }
-    protected static void refresh(){
-        if (!p_id.empty())
-            initData(p_id.peek());
-        else
-            initData();
+
+    protected static void refresh() {
+        initData();
         honmeAdapter = new HomeAdapter(root.getContext(), datas);
         mRecyclerView.setAdapter(honmeAdapter);
+    }
+
+    protected void setTitle() {
+        if (title_name.empty())
+            title_text.setText("智存");
+        else
+            title_text.setText(title_name.peek());
     }
 
     @Override

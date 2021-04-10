@@ -122,228 +122,13 @@ public class ShowActivity extends AppCompatActivity
         ZXingLibrary.initDisplayOpinion(this);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_show);
-        Intent intent =getIntent();
-        Long Id = intent.getLongExtra("Id", 0);
-        categories = new HashSet<>();
-        storageUnitRepository = new StorageUnitRepository();
-        storageUnit = storageUnitRepository.findById(Id);
-        //TODO 接受Id
-        isPrivate = (Switch)findViewById(R.id.isPrivate);
-        isPrivate.setChecked(storageUnit.getAccess());
-        thetitle = (TextView) findViewById(R.id.title_text);
-        title_back = (Button) findViewById(R.id.title_back);
-        title_search = (Button) findViewById(R.id.title_search);
-        photoButton = (ImageButton) findViewById(R.id.photoButton);
-        photoButton.setEnabled(false);
-        //TODO 根据地址设置图片
-        imageUri = Uri.parse(storageUnit.getImage());
-        //if(!imageUri.equals(""))
-        try {
-            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-            photoButton.setImageBitmap(bitmap);
-        }catch (FileNotFoundException e)
-        {
-
-        }
-        // 将图片显示出来
-        objectName = (EditText) findViewById(R.id.object_name);
-        objectName.setEnabled(false);
-        objectName.setText(storageUnit.getName());
-
-        objectCount = (EditText) findViewById(R.id.object_count);
-        objectCount.setEnabled(false);
-        objectCount.setText("" + storageUnit.getAmount());
-        objectRemarks = (EditText) findViewById(R.id.object_remarks);
-        objectRemarks.setEnabled(false);
-        objectRemarks.setText(storageUnit.getNote());
-        objectOverdue = (Button) findViewById(R.id.object_overdue);
-        objectOverdue.setEnabled(false);
-        overdueDate = storageUnit.getExpireTime();
-        categories = storageUnit.getCategories();
-        System.out.println(categories.size());
-        for(Category it : categories)
-        {
-            System.out.println(it.getName());
-            objectType.setText(it.getName());
-        }
-        if(overdueDate != null)
-        {
-            String pattern="yyyy-MM-dd";
-            SimpleDateFormat sdf= new SimpleDateFormat(pattern);
-            String dateString=sdf.format(overdueDate);// format  为格式化方法
-            objectOverdue.setText(dateString);
-        }
-        objectType = (Button) findViewById(R.id.object_type);
-        objectType.setEnabled(false);
-        //Long x = new Long(storageUnit.getType().intValue());
-        //CategoryRepository categoryRepository = new CategoryRepository();
-        //objectType.setText(categoryRepository.findById(x).getName() + "");
-        objectDate = (Button) findViewById(R.id.object_date);
-        objectDate.setEnabled(false);
-        objectShelfLife = (Button) findViewById(R.id.object_shelflife);
-        objectShelfLife.setEnabled(false);
-        switchButton1();
-        objectSubmit = (Button) findViewById(R.id.object_submit);
-        objectSubmit.setVisibility(INVISIBLE);
-        objectNewPath = (Button) findViewById(R.id.object_newPath);
-        thetitle.setText(R.string.title_show);
-        title_search.setBackgroundResource(R.mipmap.update);
-        objectCount.setInputType( InputType.TYPE_CLASS_NUMBER);
+        initModule();
         initTypeData();//TODO 把类型数据导入
         initDateData();
         initOptionPicker();
         initTimePicker();
-
-        isPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked == true)
-                    open = false;
-                else
-                    open = true;
-            }
-        });
-
-        title_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                photoButton.setEnabled(true);
-                objectName.setEnabled(true);
-                objectCount.setEnabled(true);
-                objectRemarks.setEnabled(true);
-                objectOverdue.setEnabled(true);
-                objectType.setEnabled(true);
-                objectDate.setEnabled(true);
-                objectDate.setVisibility(View.VISIBLE);
-                objectShelfLife.setVisibility(View.VISIBLE);
-                objectShelfLife.setEnabled(true);
-                objectSubmit.setVisibility(View.VISIBLE);
-                objectNewPath.setVisibility(View.VISIBLE);
-                isPrivate.setVisibility(View.VISIBLE);
-                switchButton2();
-            }
-        });
-
-        photoButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                showCameraDialog();
-            }
-        });
-        title_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //HomeFragment.refresh();
-                finish(); }
-        });
-        objectOverdue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dateOptions2.show(v);
-            }
-        });
-        objectNewPath.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ShowActivity.this, PathSelectActivity.class);
-                startActivityForResult(intent, SELECT_PATH);
-            }
-        });
-        objectDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dateOptions1.show(v);
-            }
-        });
-        objectShelfLife.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shelfLifeOptions.show();
-            }
-        });
-        objectType.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                typeOptions.show();
-            }
-        });
-        objectSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String hint = "请输入：";
-                boolean legal = true;
-                String name = objectName.getText().toString();
-                int count = 0;
-                long path = (long)0;
-                String remarks = objectRemarks.getText().toString();
-                String overdue = objectOverdue.getText().toString();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date expireTime = null;
-                try {
-                    // 注意格式需要与上面一致，不然会出现异常
-                    expireTime = sdf.parse(overdue);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                String type = objectType.getText().toString();
-                String date = objectDate.getText().toString();
-                String shelfLife = objectShelfLife.getText().toString();
-                if(name.length() == 0)
-                {
-                    legal = false;
-                    hint += "名称 ";
-                }
-                if(objectCount.getText().toString().length() != 0)
-                {
-                    count = Integer.parseInt(objectCount.getText().toString());
-                }
-                else
-                {
-
-                    legal = false;
-                    hint += "数量 ";
-                }
-                if(type.length() == 0)
-                {
-                    legal = false;
-                    hint += "分类 ";
-                }
-                if(!legal)
-                {
-                    Toast.makeText(ShowActivity.this, hint, Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    //storageUnit = new StorageUnit();//TODO 后续传入数据之后删了它
-                    storageUnit.setName(name);
-                    storageUnit.setAccess(open);
-                    //storageUnit.setParentId(path);
-                    storageUnit.setAmount(count);
-                    if(newPath != null)
-                        storageUnit.setParentId(newPath);
-                    if(imageUri != null)
-                        storageUnit.setImage(imageUri.toString());
-                    storageUnit.setExpireTime(expireTime);
-                    storageUnit.setNote(remarks);
-                    storageUnit.setDeleted(false);
-                    storageUnitRepository = new StorageUnitRepository();
-                    storageUnitRepository.update(storageUnit);
-                    photoButton.setEnabled(false);
-                    objectName.setEnabled(false);
-                    objectCount.setEnabled(false);
-                    objectRemarks.setEnabled(false);
-                    objectOverdue.setEnabled(false);
-                    objectType.setEnabled(false);
-                    objectDate.setEnabled(false);
-                    objectShelfLife.setEnabled(false);
-                    objectSubmit.setVisibility(View.GONE);
-                    objectNewPath.setVisibility(View.GONE);
-                    isPrivate.setVisibility(View.GONE);
-                    switchButton1();
-                }
-            }
-        });
-
+        setListener();
+        showDataWhenShow();
     }
 
     @Override
@@ -488,36 +273,8 @@ public class ShowActivity extends AppCompatActivity
                 .setOptionsSelectChangeListener(new OnOptionsSelectChangeListener() {
                     @Override
                     public void onOptionsSelectChanged(int options1, int options2, int options3) {
-                        shelfLifeCount = Integer.parseInt(options2Items.get(options1).get(options2));
-                        shelfLifeType = options1Items.get(options1);
-                        String tx = shelfLifeCount + shelfLifeType;
-                        objectShelfLife.setText(tx);
-                        if(productionDate != null)
-                        {
-                            Calendar temp = Calendar.getInstance();
-                            temp.setTime(productionDate);
-                            if(shelfLifeType.equals("年"))
-                                temp.add(Calendar.YEAR, shelfLifeCount);
-                            else if(shelfLifeType.equals("月"))
-                                temp.add(Calendar.MONTH, shelfLifeCount);
-                            else
-                                temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
-                            overdueDate = temp.getTime();
-                            objectOverdue.setText(getTime(overdueDate));
-                        }
-                        else if(overdueDate != null)
-                        {
-                            Calendar temp = Calendar.getInstance();
-                            temp.setTime(overdueDate);
-                            if(shelfLifeType.equals("年"))
-                                temp.add(Calendar.YEAR, -1*shelfLifeCount);
-                            else if(shelfLifeType.equals("月"))
-                                temp.add(Calendar.MONTH, -1*shelfLifeCount);
-                            else
-                                temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
-                            productionDate = temp.getTime();
-                            objectDate.setText(getTime(productionDate));
-                        }
+                        String tx = optionsForType.get(options1);
+                        objectType.setText(tx);
                     }
                 })
                 .build();
@@ -568,8 +325,36 @@ public class ShowActivity extends AppCompatActivity
                 .setOptionsSelectChangeListener(new OnOptionsSelectChangeListener() {
                     @Override
                     public void onOptionsSelectChanged(int options1, int options2, int options3) {
-                        String tx = options2Items.get(options1).get(options2) + options1Items.get(options1);
+                        shelfLifeCount = Integer.parseInt(options2Items.get(options1).get(options2));
+                        shelfLifeType = options1Items.get(options1);
+                        String tx = shelfLifeCount + shelfLifeType;
                         objectShelfLife.setText(tx);
+                        if(productionDate != null)
+                        {
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(productionDate);
+                            if(shelfLifeType.equals("年"))
+                                temp.add(Calendar.YEAR, shelfLifeCount);
+                            else if(shelfLifeType.equals("月"))
+                                temp.add(Calendar.MONTH, shelfLifeCount);
+                            else
+                                temp.add(Calendar.DAY_OF_YEAR, shelfLifeCount);
+                            overdueDate = temp.getTime();
+                            objectOverdue.setText(getTime(overdueDate));
+                        }
+                        else if(overdueDate != null)
+                        {
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(overdueDate);
+                            if(shelfLifeType.equals("年"))
+                                temp.add(Calendar.YEAR, -1*shelfLifeCount);
+                            else if(shelfLifeType.equals("月"))
+                                temp.add(Calendar.MONTH, -1*shelfLifeCount);
+                            else
+                                temp.add(Calendar.DAY_OF_YEAR, -1*shelfLifeCount);
+                            productionDate = temp.getTime();
+                            objectDate.setText(getTime(productionDate));
+                        }
                     }
                 })
                 .build();
@@ -744,7 +529,6 @@ public class ShowActivity extends AppCompatActivity
 
             Window dialogWindow = mDialog.getWindow();
             if (dialogWindow != null) {
-                //dialogWindow.setWindowAnimations(com.bigkoo.pickerview.R.style.picker_view_slide_anim);//修改动画样式
                 dialogWindow.setGravity(Gravity.BOTTOM);
                 dialogWindow.setDimAmount(0.3f);
             }
@@ -752,7 +536,6 @@ public class ShowActivity extends AppCompatActivity
         dateOptions2 = new TimePickerBuilder(this, new OnTimeSelectListener() {
             @Override
             public void onTimeSelect(Date date, View v) {
-                //objectDate.setText(getTime(date));
                 overdueDate = date;
                 objectOverdue.setText(getTime(overdueDate));
                 if(!shelfLifeType.equals(""))
@@ -815,7 +598,6 @@ public class ShowActivity extends AppCompatActivity
 
             Window dialogWindow = mDialog2.getWindow();
             if (dialogWindow != null) {
-                //dialogWindow.setWindowAnimations(com.bigkoo.pickerview.R.style.picker_view_slide_anim);//修改动画样式
                 dialogWindow.setGravity(Gravity.BOTTOM);
                 dialogWindow.setDimAmount(0.3f);
             }
@@ -864,7 +646,6 @@ public class ShowActivity extends AppCompatActivity
 
     private void startCamera() {
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        // 指定图片的输出地址为imageUri
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, TAKE_PHOTO);
     }
@@ -885,5 +666,241 @@ public class ShowActivity extends AppCompatActivity
     {
         objectDate.setText("生产日期");
         objectShelfLife.setText("保质期");
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private void initModule()
+    {
+        Intent intent =getIntent();
+        Long Id = intent.getLongExtra("Id", 0);
+        categories = new HashSet<>();
+        storageUnitRepository = new StorageUnitRepository();
+        storageUnit = storageUnitRepository.findById(Id);
+        isPrivate = (Switch)findViewById(R.id.isPrivate);
+        thetitle = (TextView) findViewById(R.id.title_text);
+        title_back = (Button) findViewById(R.id.title_back);
+        title_search = (Button) findViewById(R.id.title_search);
+        photoButton = (ImageButton) findViewById(R.id.photoButton);
+        photoButton.setEnabled(false);
+        objectName = (EditText) findViewById(R.id.object_name);
+        objectName.setEnabled(false);
+        objectCount = (EditText) findViewById(R.id.object_count);
+        objectCount.setEnabled(false);
+        objectRemarks = (EditText) findViewById(R.id.object_remarks);
+        objectRemarks.setEnabled(false);
+        objectOverdue = (Button) findViewById(R.id.object_overdue);
+        objectOverdue.setEnabled(false);
+        objectType = (Button) findViewById(R.id.object_type);
+        objectType.setEnabled(false);
+        objectDate = (Button) findViewById(R.id.object_date);
+        objectDate.setEnabled(false);
+        objectShelfLife = (Button) findViewById(R.id.object_shelflife);
+        objectShelfLife.setEnabled(false);
+        switchButton1();
+        objectSubmit = (Button) findViewById(R.id.object_submit);
+        objectSubmit.setVisibility(INVISIBLE);
+        objectNewPath = (Button) findViewById(R.id.object_newPath);
+        thetitle.setText(R.string.title_show);
+        title_search.setBackgroundResource(R.mipmap.update);
+        objectCount.setInputType( InputType.TYPE_CLASS_NUMBER);
+    }
+
+    private void setListener()
+    {
+        isPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked == true)
+                    open = false;
+                else
+                    open = true;
+            }
+        });
+        title_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                photoButton.setEnabled(true);
+                objectName.setEnabled(true);
+                objectCount.setEnabled(true);
+                objectRemarks.setEnabled(true);
+                objectOverdue.setEnabled(true);
+                objectType.setEnabled(true);
+                objectDate.setEnabled(true);
+                objectDate.setVisibility(View.VISIBLE);
+                objectShelfLife.setVisibility(View.VISIBLE);
+                objectShelfLife.setEnabled(true);
+                objectSubmit.setVisibility(View.VISIBLE);
+                objectNewPath.setVisibility(View.VISIBLE);
+                isPrivate.setVisibility(View.VISIBLE);
+                showDataWhenUpdate();
+            }
+        });
+
+        photoButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                showCameraDialog();
+            }
+        });
+        title_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //HomeFragment.refresh();
+                finish(); }
+        });
+        objectOverdue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dateOptions2.show(v);
+            }
+        });
+        objectNewPath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ShowActivity.this, PathSelectActivity.class);
+                startActivityForResult(intent, SELECT_PATH);
+            }
+        });
+        objectDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dateOptions1.show(v);
+            }
+        });
+        objectShelfLife.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shelfLifeOptions.show();
+            }
+        });
+        objectType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                typeOptions.show();
+            }
+        });
+        objectSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String hint = "请输入：";
+                boolean legal = true;
+                String name = objectName.getText().toString();
+                int count = 0;
+                long path = (long)0;
+                String remarks = objectRemarks.getText().toString();
+                String overdue = objectOverdue.getText().toString();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date expireTime = null;
+                try {
+                    expireTime = sdf.parse(overdue);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                String type = objectType.getText().toString();
+                String date = objectDate.getText().toString();
+                String shelfLife = objectShelfLife.getText().toString();
+                if(name.length() == 0)
+                {
+                    legal = false;
+                    hint += "名称 ";
+                }
+                if(objectCount.getText().toString().length() != 0)
+                {
+                    count = Integer.parseInt(objectCount.getText().toString());
+                }
+                else
+                {
+                    legal = false;
+                    hint += "数量 ";
+                }
+                /*if(type.length() == 0)
+                {
+                    legal = false;
+                    hint += "分类 ";
+                }*/
+                //TODO 修好分类要在改回来
+                if(!legal)
+                {
+                    Toast.makeText(ShowActivity.this, hint, Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    storageUnit.setName(name);
+                    storageUnit.setAccess(open);
+                    storageUnit.setAmount(count);
+                    if(newPath != null)
+                        storageUnit.setParentId(newPath);
+                    if(imageUri != null)
+                        storageUnit.setImage(imageUri.toString());
+                    storageUnit.setExpireTime(expireTime);
+                    storageUnit.setNote(remarks);
+                    storageUnit.setDeleted(false);
+                    storageUnitRepository = new StorageUnitRepository();
+                    storageUnitRepository.update(storageUnit);
+                    photoButton.setEnabled(false);
+                    objectName.setEnabled(false);
+                    objectCount.setEnabled(false);
+                    objectRemarks.setEnabled(false);
+                    objectOverdue.setEnabled(false);
+                    objectType.setEnabled(false);
+                    objectDate.setEnabled(false);
+                    objectShelfLife.setEnabled(false);
+                    objectSubmit.setVisibility(View.GONE);
+                    objectNewPath.setVisibility(View.GONE);
+                    isPrivate.setVisibility(View.GONE);
+                    //switchButton1();
+                    showDataWhenShow();
+                }
+            }
+        });
+    }
+
+    private void showDataWhenShow()
+    {
+        isPrivate.setChecked(!storageUnit.getAccess());
+        imageUri = Uri.parse(storageUnit.getImage());
+        try {
+            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+            photoButton.setImageBitmap(bitmap);
+        }catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        objectName.setText("名称：" + storageUnit.getName());
+        objectCount.setText("数量：" + storageUnit.getAmount());
+        objectRemarks.setText("备注：" + storageUnit.getNote());
+        overdueDate = storageUnit.getExpireTime();
+        categories = storageUnit.getCategories();
+        /*for(Category it : categories)
+        {
+            System.out.println(it.getName());
+            objectType.setText(it.getName());
+        }*/
+        if(overdueDate != null)
+        {
+            String pattern="yyyy-MM-dd";
+            SimpleDateFormat sdf= new SimpleDateFormat(pattern);
+            String dateString=sdf.format(overdueDate);// format  为格式化方法
+            objectOverdue.setText("过期日期：" + dateString);
+        }
+        switchButton1();
+    }
+
+    private void showDataWhenUpdate()
+    {
+        isPrivate.setChecked(!storageUnit.getAccess());
+        objectName.setText(storageUnit.getName());
+        objectCount.setText(storageUnit.getAmount() + "");
+        objectRemarks.setText(storageUnit.getNote());
+        overdueDate = storageUnit.getExpireTime();
+        categories = storageUnit.getCategories();
+        if(overdueDate != null)
+        {
+            String pattern="yyyy-MM-dd";
+            SimpleDateFormat sdf= new SimpleDateFormat(pattern);
+            String dateString=sdf.format(overdueDate);// format  为格式化方法
+            objectOverdue.setText(dateString);
+        }
+        switchButton2();
     }
 }

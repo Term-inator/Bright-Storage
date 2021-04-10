@@ -43,7 +43,7 @@ public class PathSelectActivity extends AppCompatActivity
     private HomeViewModel homeViewModel;
     private static RecyclerView mRecyclerView;
     private static StorageUnitQuery select = new StorageUnitQuery();
-    private static Stack<Long> p_id = new Stack<>();
+    private static Stack<Long> p_id;
     private static List<StorageUnit> datas;
     private static HomeAdapter honmeAdapter;
     private Button title_back, title_search;
@@ -56,6 +56,7 @@ public class PathSelectActivity extends AppCompatActivity
         setContentView(R.layout.activity_select_path);
         TextView thetitle = (TextView) findViewById(R.id.title_text);
         thetitle.setText("选择路径");
+        p_id = new Stack<>();
         mRecyclerView = (RecyclerView) this.findViewById(R.id.id_recyclerview);
         title_back = (Button) this.findViewById(R.id.title_back);
         title_search = (Button) this.findViewById(R.id.title_search);

@@ -90,6 +90,8 @@ import static android.view.View.INVISIBLE;
 
 public class ShowActivity extends AppCompatActivity
 {
+    private List<Category> allCategories;
+    private String type;
     private Set<Category> categories;
     private Long newPath;
     private Date overdueDate, productionDate, createTime, updateTime;
@@ -637,11 +639,13 @@ public class ShowActivity extends AppCompatActivity
 
     private void initTypeData()
     {
-        optionsForType.add("食物");
-        optionsForType.add("服装");
-        optionsForType.add("书籍");
-        optionsForType.add("文件");
-        //TODO 传入分类数据
+        CategoryRepository categoryRepository = new CategoryRepository();
+        allCategories = categoryRepository.findAll();
+        for(Category it : allCategories)
+        {
+            optionsForType.add(it.getName());
+        }
+        //TODO 分为两类分类
     }
 
     private void startCamera() {
@@ -674,6 +678,14 @@ public class ShowActivity extends AppCompatActivity
         Intent intent =getIntent();
         Long Id = intent.getLongExtra("Id", 0);
         categories = new HashSet<>();
+        /*categories = storageUnit.getCategories();
+        for(Category it : categories)
+        {
+            type = it.getName();
+        }*/
+        /*Category temp = new Category();
+        temp.setName(type);
+        categories.add(temp);*/
         storageUnitRepository = new StorageUnitRepository();
         storageUnit = storageUnitRepository.findById(Id);
         isPrivate = (Switch)findViewById(R.id.isPrivate);
@@ -786,7 +798,7 @@ public class ShowActivity extends AppCompatActivity
                 boolean legal = true;
                 String name = objectName.getText().toString();
                 int count = 0;
-                long path = (long)0;
+                //long path = (long)0;
                 String remarks = objectRemarks.getText().toString();
                 String overdue = objectOverdue.getText().toString();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -796,9 +808,10 @@ public class ShowActivity extends AppCompatActivity
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                String type = objectType.getText().toString();
+                type = objectType.getText().toString();
+                /*String type = objectType.getText().toString();
                 String date = objectDate.getText().toString();
-                String shelfLife = objectShelfLife.getText().toString();
+                String shelfLife = objectShelfLife.getText().toString();*/
                 if(name.length() == 0)
                 {
                     legal = false;
@@ -813,11 +826,11 @@ public class ShowActivity extends AppCompatActivity
                     legal = false;
                     hint += "数量 ";
                 }
-                /*if(type.length() == 0)
+                if(type.length() == 0)
                 {
                     legal = false;
                     hint += "分类 ";
-                }*/
+                }
                 //TODO 修好分类要在改回来
                 if(!legal)
                 {
@@ -825,6 +838,15 @@ public class ShowActivity extends AppCompatActivity
                 }
                 else
                 {
+                    categories = new HashSet<Category>();
+                    Category temp = new Category();
+                    for(Category it : allCategories) {
+                        if(it.getName().equals(type)) {
+                            categories.add(it);
+                            break;
+                        }
+                    }
+                    storageUnit.setCategories(categories);
                     storageUnit.setName(name);
                     storageUnit.setAccess(open);
                     storageUnit.setAmount(count);
@@ -866,16 +888,17 @@ public class ShowActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+        //objectType.setText("分类：" + type);
         objectName.setText("名称：" + storageUnit.getName());
         objectCount.setText("数量：" + storageUnit.getAmount());
         objectRemarks.setText("备注：" + storageUnit.getNote());
         overdueDate = storageUnit.getExpireTime();
         categories = storageUnit.getCategories();
-        /*for(Category it : categories)
+        for(Category it : categories)
         {
             System.out.println(it.getName());
             objectType.setText(it.getName());
-        }*/
+        }
         if(overdueDate != null)
         {
             String pattern="yyyy-MM-dd";

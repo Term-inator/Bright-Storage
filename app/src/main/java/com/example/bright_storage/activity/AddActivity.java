@@ -84,6 +84,7 @@ import static android.view.View.INVISIBLE;
 
 public class AddActivity extends AppCompatActivity
 {
+    private List<Category> allCategories;
     private Set<Category> categories;
     private Date overdueDate, productionDate;
     private int shelfLifeCount = 0;
@@ -611,8 +612,8 @@ public class AddActivity extends AppCompatActivity
     private void initTypeData()
     {
         CategoryRepository categoryRepository = new CategoryRepository();
-        List<Category> temp = categoryRepository.findAll();
-        for(Category it : temp)
+        allCategories = categoryRepository.findAll();
+        for(Category it : allCategories)
         {
             optionsForType.add(it.getName());
         }
@@ -740,9 +741,12 @@ public class AddActivity extends AppCompatActivity
                 }
                 String type = objectType.getText().toString();
                 categories = new HashSet<Category>();
-                Category temp = new Category();
-                temp.setName(type);
-                categories.add(temp);
+                for(Category it : allCategories) {
+                    if(it.getName().equals(type)) {
+                        categories.add(it);
+                        break;
+                    }
+                }
                 //String date = objectDate.getText().toString();
                 //String shelfLife = objectShelfLife.getText().toString();
                 if(name.length() == 0)
@@ -803,6 +807,4 @@ public class AddActivity extends AppCompatActivity
             }
         });
     }
-
-
 }

@@ -11,6 +11,8 @@ import com.example.bright_storage.search.SearchActivity;
 import com.example.bright_storage.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;

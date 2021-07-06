@@ -23,6 +23,6 @@ public class App extends Application {
         // register exception handle
         new ExceptionHandler(getApplicationContext()).register();
         //
-        SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID + "=0c1d0b77");
+//        SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID + "=0c1d0b77");
     }
 }

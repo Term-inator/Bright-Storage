@@ -81,6 +81,7 @@ dependencies {
     implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.21'
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.0.0'
+    implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.76'
     implementation group: 'com.baidu.aip', name: 'java-sdk', version: '4.16.2'
 
 

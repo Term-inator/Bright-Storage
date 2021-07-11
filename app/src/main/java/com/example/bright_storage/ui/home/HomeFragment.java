@@ -1,19 +1,15 @@
 package com.example.bright_storage.ui.home;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bright_storage.activity.ShowActivity;
-import com.example.bright_storage.repository.AbstractRepository;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.query.StorageUnitQuery;
 
@@ -28,7 +24,7 @@ import com.example.bright_storage.R;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.search.SearchActivity;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
@@ -41,7 +37,8 @@ public class HomeFragment extends Fragment {
     private static Stack<Long> p_id = new Stack<>();
     private static Stack<String> title_name = new Stack<>();
     private static List<StorageUnit> datas;
-    private static HomeAdapter honmeAdapter;
+    private static HashSet<StorageUnit> dataToDelete = new HashSet<>();
+    private static HomeAdapter homeAdapter;
     private Button title_back, title_search;
     private TextView title_text;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -107,9 +104,9 @@ public class HomeFragment extends Fragment {
     }
 
     protected void SetOnClick() {
-        //      调用按钮返回事件回调的方法
-        honmeAdapter.layoutSetOnclick(new HomeAdapter.layoutInterface() {
 
+        //      调用按钮返回事件回调的方法
+        homeAdapter.layoutSetOnclick(new HomeAdapter.layoutInterface() {
             @Override
             public void onclick(View view, StorageUnit TstorageUnit) {
 //                Toast.makeText(root.getContext(), "点击条目上的按钮" + position, Toast.LENGTH_SHORT).show();
@@ -128,6 +125,17 @@ public class HomeFragment extends Fragment {
                     startActivity(intent);
                 }
             }
+
+            @Override
+            public void onLongClick(View v) {
+                RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
+                //HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
+                for (int i = 0; i < manager.getChildCount();i++) {
+                    View view = manager.getChildAt(i);
+                    HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
+                    holder.deleteCheckBox.setVisibility(View.VISIBLE);
+                }
+            }
         });
     }
 
@@ -139,8 +147,8 @@ public class HomeFragment extends Fragment {
 
     protected static void refresh() {
         initData();
-        honmeAdapter = new HomeAdapter(root.getContext(), datas);
-        mRecyclerView.setAdapter(honmeAdapter);
+        homeAdapter = new HomeAdapter(root.getContext(), datas);
+        mRecyclerView.setAdapter(homeAdapter);
     }
 
     protected void setTitle() {

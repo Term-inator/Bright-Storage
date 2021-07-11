@@ -141,6 +141,11 @@ public class PathSelectActivity extends AppCompatActivity
                     SetOnClick();
                 }
             }
+
+            @Override
+            public void onLongClick(View view) {
+                // todo: 长按出现checkbox
+            }
         });
     }
 //    private ViewGroup viewGroup;

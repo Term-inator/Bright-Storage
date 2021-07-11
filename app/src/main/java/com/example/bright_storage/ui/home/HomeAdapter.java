@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,11 +38,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
         this.layoutInterface = layoutInterface;
     }
 
+//    public void layoutSetOnLongClick(layoutInterface layoutInterface) {
+//        this.layoutInterface = layoutInterface;
+//    }
+
     /**
      * 按钮点击事件对应的接口
      */
     public interface layoutInterface {
         public void onclick(View view, StorageUnit TstorageUnit);
+        public void onLongClick(View view);
     }
 
     @Override
@@ -49,6 +55,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
         MyViewHolder holder = new MyViewHolder(LayoutInflater.from(
                 context).inflate(R.layout.storage_unit, parent,
                 false));
+        //holder.deleteCheckBox.setVisibility(View.VISIBLE);
         return holder;
     }
 
@@ -78,6 +85,17 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
                     .into(holder.th);
         }
 
+        holder.id_clicklayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (layoutInterface != null) {
+//                  接口实例化后的而对象，调用重写后的方法
+                    layoutInterface.onLongClick(v);
+                }
+                return true;
+            }
+        });
+
         holder.id_clicklayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,16 +117,18 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
     /**
      * ViewHolder的类，用于缓存控件
      */
-    class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tv;
         ImageView th;
-        View id_clicklayout;
+        public View id_clicklayout;
+        public CheckBox deleteCheckBox;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             th = (ImageView) itemView.findViewById(R.id.id_picture);
             tv = (TextView) itemView.findViewById(R.id.id_name);
             id_clicklayout = (View) itemView.findViewById(R.id.id_clicklayout);
+            deleteCheckBox = (CheckBox) itemView.findViewById(R.id.delete_checkbox);
 
         }
 

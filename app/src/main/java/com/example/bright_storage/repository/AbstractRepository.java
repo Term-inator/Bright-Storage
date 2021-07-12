@@ -318,4 +318,13 @@ public abstract class AbstractRepository<ENTITY extends BaseEntity, ID> implemen
         return entity;
     }
 
+//    public ENTITY findByParentId(ID parentId){
+//        Assert.notNull(parentId, "ParentId must be null");
+//        try {
+//            return postQuery(manager.findById(actualClass, parentId));
+//        } catch (DbException e) {
+//            throw new DBException(e.getMessage());
+//        }
+//    }
+
 }

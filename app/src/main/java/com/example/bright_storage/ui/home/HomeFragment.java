@@ -2,6 +2,7 @@ package com.example.bright_storage.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +10,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.bright_storage.activity.SettingActivity;
 import com.example.bright_storage.activity.ShowActivity;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.query.StorageUnitQuery;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -23,13 +26,29 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.bright_storage.R;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.search.SearchActivity;
+import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
+import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
+import com.kongzue.dialog.util.BaseDialog;
+import com.kongzue.dialog.util.DialogSettings;
+import com.kongzue.dialog.util.InputInfo;
+import com.kongzue.dialog.v3.InputDialog;
+import com.kongzue.dialog.v3.MessageDialog;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
-public class HomeFragment extends Fragment {
+import javax.inject.Inject;
 
+public class HomeFragment extends Fragment {
+    @Inject
+    StorageUnitService storageUnitService;
+
+    private StorageUnitRepository storageUnitRepository;
     private HomeViewModel homeViewModel;
     private static View root;
     private static RecyclerView mRecyclerView;
@@ -37,7 +56,7 @@ public class HomeFragment extends Fragment {
     private static Stack<Long> p_id = new Stack<>();
     private static Stack<String> title_name = new Stack<>();
     private static List<StorageUnit> datas;
-    private static HashSet<StorageUnit> dataToDelete = new HashSet<>();
+    private static List<StorageUnit> dataToDelete = new ArrayList<>();
     private static HomeAdapter homeAdapter;
     private Button title_back, title_search;
     private TextView title_text;
@@ -127,16 +146,41 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onLongClick(View v) {
+            public void onLongClick(View view, StorageUnit TstorageUnit) {
+                /*FloatingActionButton fab = root.findViewById(R.id.fab);
                 RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
                 //HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
                 for (int i = 0; i < manager.getChildCount();i++) {
                     View view = manager.getChildAt(i);
                     HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
                     holder.deleteCheckBox.setVisibility(View.VISIBLE);
-                }
+                }*/
+                MessageDialog.show((AppCompatActivity) root.getContext(), "删除", "确定要删除" + TstorageUnit.getName() + "吗？", "确定", "取消")
+                        .setOkButton("确定", new OnDialogButtonClickListener() {
+                            @Override
+                            public boolean onClick(BaseDialog baseDialog, View v) {
+                                storageUnitRepository = new StorageUnitRepository();
+                                delete(TstorageUnit, storageUnitRepository);
+                                refresh();
+                                //Toast.makeText(getActivity(), "点击了OK！", Toast.LENGTH_SHORT).show();
+                                return false;
+                            }
+                        });
             }
         });
+    }
+
+    private void delete(StorageUnit storageUnit , StorageUnitRepository storageUnitRepository) {
+        StorageUnitQuery query = new StorageUnitQuery();
+        query.setParentId(storageUnit.getLocalId());
+        storageUnitRepository.delete(storageUnit);
+        storageUnitService = new StorageUnitServiceImpl();
+        List<StorageUnit> res = storageUnitService.query(query);
+        if(res == null || res.size() == 0)
+            return;
+        for(StorageUnit it : res) {
+            delete(it, storageUnitRepository);
+        }
     }
 
     public static Long getPid() {

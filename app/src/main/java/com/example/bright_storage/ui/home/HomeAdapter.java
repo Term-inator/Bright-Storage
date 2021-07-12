@@ -47,7 +47,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
      */
     public interface layoutInterface {
         public void onclick(View view, StorageUnit TstorageUnit);
-        public void onLongClick(View view);
+        public void onLongClick(View view, StorageUnit TstorageUnit);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> 
             public boolean onLongClick(View v) {
                 if (layoutInterface != null) {
 //                  接口实例化后的而对象，调用重写后的方法
-                    layoutInterface.onLongClick(v);
+                    layoutInterface.onLongClick(v, list.get(position));
                 }
                 return true;
             }

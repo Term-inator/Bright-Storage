@@ -310,11 +310,11 @@ public class ApiTest {
                     else if(op_type == 1) {
                         long p_id;
                         String name;
-                        if(l_id == -1) { // 右中加左 不常有 // TODO Necessary?
+                        if(l_id == -1) { // 右中加左 将A加入B 把A放入B
                             p_id = r_id;
                             name = this.getNewItemName(-1, head.getId(),ban_id);
                         }
-                        else { // 左中加右 在A中添加B 将A加入B 把A放入B
+                        else { // 左中加右 在A中添加B
                             p_id = l_id;
                             name = this.getNewItemName(1, head.getId(),ban_id);
                         }
@@ -371,6 +371,7 @@ public class ApiTest {
                 long l_id = match(l_word);
                 if(l_id == -1) { // 要查询的不在数据库中
                     System.out.println("查无此物");
+                    this.err();
                 }
                 else if(l_id != -1) {
                     // TODO 逐级查询物品的路径，直到最上层

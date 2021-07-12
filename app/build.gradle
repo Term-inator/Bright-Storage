@@ -92,4 +92,6 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.4'
 
     implementation files('libs/Msc.jar')
+
+    implementation("com.squareup.okhttp3:okhttp:4.8.1")
 }

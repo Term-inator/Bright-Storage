@@ -393,7 +393,12 @@ public class ShowActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 mCameraDialog.dismiss();
-                File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+//                String path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM+File.separator+"Camera"+File.separator;
+//                System.out.println(path);
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd|HH:mm:ss");
+                Date date = new Date(System.currentTimeMillis());
+                String name = format.format(date);
+                File outputImage = new File(getExternalFilesDir(null), name);
                 // 对照片的更换设置
                 try {
                     // 如果上一次的照片存在，就删除

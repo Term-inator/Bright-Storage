@@ -33,6 +33,12 @@ import androidx.core.content.FileProvider;
 
 import com.example.bright_storage.R;
 import com.example.bright_storage.holder.MyBaseExpandableListAdapter;
+import com.example.bright_storage.model.entity.Category;
+import com.example.bright_storage.repository.StorageUnitCategoryRepository;
+import com.example.bright_storage.service.CategoryService;
+import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.impl.CategoryServiceImpl;
+import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
@@ -48,12 +54,24 @@ import com.uuzuche.lib_zxing.activity.CodeUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
+import javax.inject.Inject;
 
 import static android.view.View.INVISIBLE;
 
 public class SettingActivity extends AppCompatActivity
 {
+    @Inject
+    StorageUnitService storageUnitService;
+
+    @Inject
+    CategoryService categoryService;
+
+    @Inject
+    StorageUnitCategoryRepository storageUnitCategoryRepository;
     public static final int TAKE_PHOTO = 2;
     private Uri imageUri;
     private String oldPassword = "123456";
@@ -66,6 +84,9 @@ public class SettingActivity extends AppCompatActivity
     private MyBaseExpandableListAdapter myAdapter = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        storageUnitService = new StorageUnitServiceImpl();
+        categoryService = new CategoryServiceImpl();
+        storageUnitCategoryRepository = new StorageUnitCategoryRepository();
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_setting);
@@ -105,7 +126,8 @@ public class SettingActivity extends AppCompatActivity
 
         lData = new ArrayList<>();
         lData.add("管理分类");
-        lData.add("新建分类");
+        lData.add("新建物品分类");
+        lData.add("新建容器分类");
         iData.add(lData);
 
         lData = new ArrayList<>();
@@ -220,11 +242,11 @@ public class SettingActivity extends AppCompatActivity
                     intent.putExtra("types", types);
                     startActivity(intent);
                 }
-                else
+                else if(childPosition == 1)
                 {
                     InputDialog.build(SettingActivity.this)
                             .setStyle(DialogSettings.STYLE.STYLE_IOS)
-                            .setTitle("新建分类")
+                            .setTitle("新建物品分类")
                             .setMessage("请输入您想添加的新分类")
                             .setInputInfo(new InputInfo()
                                     .setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL)
@@ -232,7 +254,7 @@ public class SettingActivity extends AppCompatActivity
                             .setOkButton("确定", new OnInputDialogButtonClickListener() {
                                 @Override
                                 public boolean onClick(BaseDialog baseDialog, View v, String inputStr) {
-                                    types = getMyTypes();
+                                    /*types = getMyTypes();
                                     for(String it : types)
                                     {
                                         if(inputStr.equals(it))
@@ -241,7 +263,36 @@ public class SettingActivity extends AppCompatActivity
                                             return true;
                                         }
                                     }
-                                    Toast.makeText(SettingActivity.this, inputStr, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(SettingActivity.this, inputStr, Toast.LENGTH_SHORT).show();*/
+                                    Category c1 = new Category(null, null, inputStr);
+                                    categoryService.create(c1);
+                                    return false;
+                                }
+                            })
+                            .show();
+                } else {
+                    InputDialog.build(SettingActivity.this)
+                            .setStyle(DialogSettings.STYLE.STYLE_IOS)
+                            .setTitle("新建容器分类")
+                            .setMessage("请输入您想添加的新分类")
+                            .setInputInfo(new InputInfo()
+                                    .setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                    .setMultipleLines(true))
+                            .setOkButton("确定", new OnInputDialogButtonClickListener() {
+                                @Override
+                                public boolean onClick(BaseDialog baseDialog, View v, String inputStr) {
+                                    /*types = getMyTypes();
+                                    for(String it : types)
+                                    {
+                                        if(inputStr.equals(it))
+                                        {
+                                            TipDialog.show(SettingActivity.this, "此分类已经存在", TipDialog.TYPE.WARNING);
+                                            return true;
+                                        }
+                                    }*/
+                                    Category c1 = new Category(null, null, inputStr);
+                                    categoryService.create(c1);
+                                    //Toast.makeText(SettingActivity.this, inputStr, Toast.LENGTH_SHORT).show();
                                     return false;
                                 }
                             })
@@ -305,7 +356,12 @@ public class SettingActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 mCameraDialog.dismiss();
-                File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+//                String path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM+File.separator+"Camera"+File.separator;
+//                System.out.println(path);
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd|HH:mm:ss");
+                Date date = new Date(System.currentTimeMillis());
+                String name = format.format(date);
+                File outputImage = new File(getExternalFilesDir(null), name);
                 // 对照片的更换设置
                 try {
                     // 如果上一次的照片存在，就删除
@@ -317,6 +373,7 @@ public class SettingActivity extends AppCompatActivity
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
                 // 如果Android版本大于等于7.0
                 if (Build.VERSION.SDK_INT >= 24) {
                     // 将File对象转换成一个封装过的Uri对象

@@ -21,7 +21,7 @@ import static android.view.View.INVISIBLE;
 public class TypeActivity extends AppCompatActivity
 {
     private ArrayList<String> types;
-    String[] countryArray = {"China", "India", "Pakistan", "USA", "UK"};
+    String[] typesArray = {"China", "India", "Pakistan", "USA", "UK"};
 
 
     @Override
@@ -46,7 +46,7 @@ public class TypeActivity extends AppCompatActivity
         Intent intent =getIntent();
         types = intent.getStringArrayListExtra("types");
         ArrayAdapter adapter = new ArrayAdapter<String>(this,
-                R.layout.type_list, countryArray);
+                R.layout.type_list, typesArray);
 
         ListView listView = (ListView) findViewById(R.id.type_list);
         listView.setAdapter(adapter);

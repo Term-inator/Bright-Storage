@@ -11,12 +11,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ApiTest {
 
@@ -28,6 +36,29 @@ public class ApiTest {
     private TreeMap<String, Word> sentence = new TreeMap<>();
     private StorageUnitRepository storageUnitRepo = new StorageUnitRepository();
 
+    @Test
+    public void barcode() {
+        String mAPI_KEY = "a07d8456772095170c102e523d07eea3";
+        OkHttpClient okHttpClient = new OkHttpClient();
+        RequestBody requestBody = new FormBody.Builder() .add("key", mAPI_KEY) .add("barcode", "6923599932108").build();
+        final Request request = new Request.Builder()
+                .url("http://api.tianapi.com/txapi/barcode/index")
+                .post(requestBody)
+                .build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                System.out.println("onResponse: " + response.body().string());
+            }
+        });
+    }
+    
     @Test
     public void baidu() throws Exception {
 

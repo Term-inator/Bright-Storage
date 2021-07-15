@@ -6,7 +6,7 @@ plugins {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    buildToolsVersion '30.0.2'
 
     defaultConfig {
         applicationId "com.example.bright_storage"
@@ -47,6 +47,7 @@ android {
 }
 
 dependencies {
+
     implementation 'com.kongzue.dialog_v3x:dialog:3.2.4'
     implementation 'cn.yipianfengye.android:zxing-library:2.2'
     implementation 'me.texy.treeview:treeview_lib:1.0.6'
@@ -80,18 +81,17 @@ dependencies {
     implementation group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: '2.9.0'
     implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.21'
 
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.0.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.8.1'
     implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.76'
     implementation group: 'com.baidu.aip', name: 'java-sdk', version: '4.16.2'
 
-
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/bdasr_V3_20201116_93b546d.jar')
+    api files('libs/bdasr_V3_20201116_93b546d.jar')
 
     compileOnly 'org.projectlombok:lombok:1.18.4'
     annotationProcessor 'org.projectlombok:lombok:1.18.4'
     testCompileOnly 'org.projectlombok:lombok:1.18.4'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.4'
 
-    implementation files('libs/Msc.jar')
-
-    implementation("com.squareup.okhttp3:okhttp:4.8.1")
 }

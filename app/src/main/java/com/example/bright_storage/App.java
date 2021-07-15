@@ -4,8 +4,6 @@ import android.app.Application;
 import android.util.Log;
 
 import com.example.bright_storage.exception.handler.ExceptionHandler;
-import com.iflytek.cloud.SpeechConstant;
-import com.iflytek.cloud.SpeechUtility;
 
 import org.xutils.x;
 

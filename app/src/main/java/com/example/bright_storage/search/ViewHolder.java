@@ -9,6 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.bright_storage.R;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+
 /**
  * Created by yetwish on 2015-05-11
  */
@@ -83,6 +88,21 @@ public class ViewHolder {
     public ViewHolder setImageBitmap(int viewId, Bitmap bitmap){
         ImageView iv = getView(viewId);
         iv.setImageBitmap(bitmap);
+        return this;
+    }
+    /**
+     *  set image bitmap using Picasso
+     */
+    public ViewHolder setImage(int viewId, String imageuri){
+        ImageView iv = getView(viewId);
+        Picasso.get()
+                .load(imageuri)//"https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3155097781,4164517483&fm=26&gp=0.jpg"
+                .centerCrop()
+                .error(R.mipmap.ic_launcher)
+                .fit()
+                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                .networkPolicy(NetworkPolicy.NO_CACHE, NetworkPolicy.NO_STORE)
+                .into(iv);
         return this;
     }
 }

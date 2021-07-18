@@ -162,6 +162,7 @@ public class HomeFragment extends Fragment {
                                 storageUnitRepository = new StorageUnitRepository();
                                 delete(TstorageUnit, storageUnitRepository);
                                 refresh();
+
                                 SetOnClick();
                                 //Toast.makeText(getActivity(), "点击了OK！", Toast.LENGTH_SHORT).show();
                                 return false;

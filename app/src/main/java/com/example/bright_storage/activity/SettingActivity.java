@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.view.Gravity;
@@ -57,6 +58,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Queue;
 
 import javax.inject.Inject;
 
@@ -75,8 +78,9 @@ public class SettingActivity extends AppCompatActivity
     public static final int TAKE_PHOTO = 2;
     private Uri imageUri;
     private String oldPassword = "123456";
-    private ArrayList<String> types;
+    private int[] types;
     private ArrayList<String> gData = null;
+    private List<Category> temp;
     private ArrayList<ArrayList<String>> iData = null;
     private ArrayList<String> lData = null;
     private Context mContext;
@@ -238,6 +242,12 @@ public class SettingActivity extends AppCompatActivity
             {
                 if(childPosition == 0)
                 {
+                    temp = categoryService.listAll();
+                    types = new int[temp.size()];
+                    int count = 0;
+                    for(Category it : temp) {
+                        types[count ++] = it.getLocalId().intValue();
+                    }
                     Intent intent = new Intent(SettingActivity.this, TypeActivity.class);
                     intent.putExtra("types", types);
                     startActivity(intent);
@@ -266,6 +276,7 @@ public class SettingActivity extends AppCompatActivity
                                     Toast.makeText(SettingActivity.this, inputStr, Toast.LENGTH_SHORT).show();*/
                                     Category c1 = new Category(null, null, inputStr);
                                     categoryService.create(c1);
+                                    temp = categoryService.listAll();
                                     return false;
                                 }
                             })
@@ -292,6 +303,7 @@ public class SettingActivity extends AppCompatActivity
                                     }*/
                                     Category c1 = new Category(null, null, inputStr);
                                     categoryService.create(c1);
+                                    temp = categoryService.listAll();
                                     //Toast.makeText(SettingActivity.this, inputStr, Toast.LENGTH_SHORT).show();
                                     return false;
                                 }
@@ -426,15 +438,4 @@ public class SettingActivity extends AppCompatActivity
                 break;
         }
     }
-
-    private ArrayList<String> getMyTypes()
-    {
-        ArrayList<String> temp = new ArrayList<>();
-        temp.add("食物");
-        temp.add("服装");
-        temp.add("书籍");
-        temp.add("文件");
-        return temp;
-    }
-
 }

@@ -1,6 +1,7 @@
 package com.example.bright_storage.search;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -13,6 +14,10 @@ import com.example.bright_storage.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.bright_storage.activity.ShowActivity;
+import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.repository.StorageUnitRepository;
 
 public class SearchActivity extends Activity implements SearchView.SearchViewListener {
 
@@ -45,7 +50,7 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
     /**
      * 数据库数据，总数据
      */
-    private List<Bean> dbData;
+    private List<StorageUnit> dbData;
 
     /**
      * 热搜版数据
@@ -60,7 +65,7 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
     /**
      * 搜索结果的数据
      */
-    private List<Bean> resultData;
+    private List<StorageUnit> resultData;
 
     /**
      * 默认提示框显示项的个数
@@ -86,9 +91,9 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_search);
-        initData();
-        initViews();
+//        setContentView(R.layout.activity_search);
+//        initData();
+//        initViews();
     }
 
     /**
@@ -107,6 +112,12 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Toast.makeText(SearchActivity.this, position + "", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.putExtra("Id", resultData.get(position).getLocalId());
+                intent.setClass(searchView.getContext(), ShowActivity.class);
+                autoCompleteAdapter = null;
+                resultAdapter = null;
+                startActivity(intent);
             }
         });
     }
@@ -129,11 +140,13 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
      * 获取db 数据
      */
     private void getDbData() {
-        int size = 100;
-        dbData = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            dbData.add(new Bean(R.drawable.icon, "android开发必备技能" + (i + 1), "Android自定义view——自定义搜索view", i * 20 + 2 + ""));
-        }
+        StorageUnitRepository StorageUnitRepo = new StorageUnitRepository();
+        dbData=StorageUnitRepo.findAll();
+//        int size = 100;
+//        dbData = new ArrayList<>(size);
+//        for (int i = 0; i < size; i++) {
+//            dbData.add(new Bean(R.drawable.icon, "android开发必备技能" + (i + 1), "Android自定义view——自定义搜索view", i * 20 + 2 + ""));
+//        }
     }
 
     /**
@@ -154,13 +167,15 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
         if (autoCompleteData == null) {
             //初始化
             autoCompleteData = new ArrayList<>(hintSize);
+        } else if(text == null){
+            autoCompleteData.clear();
         } else {
             // 根据text 获取auto data
             autoCompleteData.clear();
             for (int i = 0, count = 0; i < dbData.size()
                     && count < hintSize; i++) {
-                if (dbData.get(i).getTitle().contains(text.trim())) {
-                    autoCompleteData.add(dbData.get(i).getTitle());
+                if (dbData.get(i).getName().contains(text.trim())) {
+                    autoCompleteData.add(dbData.get(i).getName());
                     count++;
                 }
             }
@@ -179,10 +194,12 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
         if (resultData == null) {
             // 初始化
             resultData = new ArrayList<>();
+        }else if (text == null){
+            resultData.clear();
         } else {
             resultData.clear();
             for (int i = 0; i < dbData.size(); i++) {
-                if (dbData.get(i).getTitle().contains(text.trim())) {
+                if (dbData.get(i).getName().contains(text.trim())) {
                     resultData.add(dbData.get(i));
                 }
             }
@@ -223,6 +240,14 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
             resultAdapter.notifyDataSetChanged();
         }
         Toast.makeText(this, "完成搜素", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setContentView(R.layout.activity_search);
+        initData();
+        initViews();
     }
 
 }

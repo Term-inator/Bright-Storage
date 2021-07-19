@@ -10,6 +10,8 @@ import com.example.bright_storage.recog.listener.RecogEventAdapter;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -25,6 +27,8 @@ public class MyRecognizer {
 
     // SDK 内部核心 事件回调类， 用于开发者写自己的识别回调逻辑
     private EventListener eventListener;
+
+    private Context context;
 
     // 是否加载离线资源
     private static boolean isOfflineEngineLoaded = false;
@@ -55,6 +59,7 @@ public class MyRecognizer {
             throw new RuntimeException("还未调用release()，请勿新建一个新类");
         }
         isInited = true;
+        this.context = context;
         this.eventListener = eventListener;
         // SDK集成步骤 初始化asr的EventManager示例，多次得到的类，只能选一个使用
         asr = EventManagerFactory.create(context, "asr");
@@ -75,12 +80,22 @@ public class MyRecognizer {
         isOfflineEngineLoaded = true;
      }
 
+    public void start(){
+        start(new HashMap<>());
+     }
+
     /**
      * @param params
      */
     public void start(Map<String, Object> params) {
         if (!isInited) {
             throw new RuntimeException("release() was called");
+        }
+        if(params != null){
+            // API KEY
+            params.put(SpeechConstant.APP_ID, "24527486");
+            params.put(SpeechConstant.SECRET, "f6zBiQBeaSYGYcaQctFqbyfxDE63wlRo");
+            params.put(SpeechConstant.APP_KEY, "uOB9Z59NFMoUtGHWDvj3qcn7");
         }
         // SDK集成步骤 拼接识别参数
         String json = new JSONObject(params).toString();

@@ -3,6 +3,8 @@ package com.example.bright_storage.recog.listener;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.baidu.speech.asr.SpeechConstant;
 import com.example.bright_storage.recog.RecogResult;
 
@@ -11,7 +13,7 @@ import com.example.bright_storage.recog.RecogResult;
  */
 
 public class MessageStatusRecogListener extends StatusRecogListener {
-    private Handler handler;
+    private final Handler handler;
 
     private long speechEndTime = 0;
 
@@ -46,6 +48,9 @@ public class MessageStatusRecogListener extends StatusRecogListener {
 
     @Override
     public void onAsrPartialResult(String[] results, RecogResult recogResult) {
+
+        // TODO 可显示result
+
         sendStatusMessage(SpeechConstant.CALLBACK_EVENT_ASR_PARTIAL,
                 "临时识别结果，结果是“" + results[0] + "”；原始json：" + recogResult.getOrigalJson());
         super.onAsrPartialResult(results, recogResult);
@@ -54,6 +59,9 @@ public class MessageStatusRecogListener extends StatusRecogListener {
     @Override
     public void onAsrFinalResult(String[] results, RecogResult recogResult) {
         super.onAsrFinalResult(results, recogResult);
+
+        // TODO nlp处理
+
         String message = "识别结束，结果是”" + results[0] + "”";
         sendStatusMessage(SpeechConstant.CALLBACK_EVENT_ASR_PARTIAL,
                 message + "；原始json：" + recogResult.getOrigalJson());

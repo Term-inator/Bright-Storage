@@ -7,17 +7,24 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.bright_storage.R;
-import com.example.bright_storage.search.SearchActivity;
-import com.example.bright_storage.ui.home.HomeFragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import com.baidu.speech.asr.SpeechConstant;
+import com.example.bright_storage.R;
+import com.example.bright_storage.api.Analyzer;
+import com.example.bright_storage.recog.MyRecognizer;
+import com.example.bright_storage.recog.listener.IRecogListener;
+import com.example.bright_storage.recog.listener.MessageStatusRecogListener;
+import com.example.bright_storage.ui.home.HomeFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -51,6 +58,17 @@ public class MainActivity extends AppCompatActivity {
 //                startActivity(intent);
 //            }
 //        });
+        IRecogListener listener = new MessageStatusRecogListener(null);
+        MyRecognizer myRecognizer = new MyRecognizer(this, listener);
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put(SpeechConstant.ACCEPT_AUDIO_VOLUME, false);
+
+//        findViewById(R.id.btn_start_record).setOnClickListener(v -> myRecognizer.start(params));
+//        findViewById(R.id.btn_stop_record).setOnClickListener(v -> myRecognizer.stop());
+
+        Analyzer analyzer = new Analyzer();
+
         FloatingActionButton fab = findViewById(R.id.fab);
         System.out.println(fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +78,21 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("pid",HomeFragment.getPid());
                 intent.setClass(MainActivity.this, AddActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                myRecognizer.start(params);
+                String result = "";
+                System.out.println(result);
+                try {
+                    analyzer.analyze(result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return true;
             }
         });
         BottomNavigationView navView = findViewById(R.id.nav_view);

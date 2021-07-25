@@ -3,7 +3,6 @@ package com.example.bright_storage.recog.listener;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.baidu.speech.asr.SpeechConstant;
 import com.example.bright_storage.recog.RecogResult;

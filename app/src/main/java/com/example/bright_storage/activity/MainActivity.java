@@ -1,13 +1,20 @@
 package com.example.bright_storage.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.baidu.speech.asr.SpeechConstant;
 import com.example.bright_storage.R;
+import com.example.bright_storage.recog.MyRecognizer;
+import com.example.bright_storage.recog.listener.IRecogListener;
+import com.example.bright_storage.recog.listener.MessageStatusRecogListener;
 import com.example.bright_storage.search.SearchActivity;
 import com.example.bright_storage.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -19,8 +26,18 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
+import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_UP;
+
 
 public class MainActivity extends AppCompatActivity {
+    private static boolean longClicked = false;
     public static DisplayMetrics dm;
     public static int width;
     @Override
@@ -35,33 +52,40 @@ public class MainActivity extends AppCompatActivity {
         View titleView = this.findViewById(R.id.title_bar);
         Button title_search = (Button) titleView.findViewById(R.id.title_search);
         Button title_back = (Button) titleView.findViewById(R.id.title_back);
-//        title_back.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //finish();
-////                Intent intent = new Intent(BSProActivity.this, MainActivity.class);
-////                startActivity(intent);
-//                HomeFragment.back();
-//            }
-//        });
-//        title_search.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(titleView.getContext(), SearchActivity.class);
-//                startActivity(intent);
-//            }
-//        });
+        IRecogListener listener = new MessageStatusRecogListener(null);
+        MyRecognizer myRecognizer = new MyRecognizer(this, listener);
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put(SpeechConstant.ACCEPT_AUDIO_VOLUME, false);
+
         FloatingActionButton fab = findViewById(R.id.fab);
         System.out.println(fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.putExtra("pid",HomeFragment.getPid());
-                intent.setClass(MainActivity.this, AddActivity.class);
-                startActivity(intent);
+                if(longClicked == false) {
+                    Intent intent = new Intent();
+                    intent.putExtra("pid",HomeFragment.getPid());
+                    intent.setClass(MainActivity.this, AddActivity.class);
+                    startActivity(intent);
+                } else {
+
+                    myRecognizer.stop();
+                    longClicked = false;
+                }
             }
         });
+
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                myRecognizer.start(params);
+                longClicked = true;
+                return true;
+            }
+        });
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         // Passing each menu ID as a set of Ids because each

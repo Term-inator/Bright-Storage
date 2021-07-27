@@ -70,22 +70,6 @@ public class MainActivity extends AppCompatActivity {
         View titleView = this.findViewById(R.id.title_bar);
         Button title_search = (Button) titleView.findViewById(R.id.title_search);
         Button title_back = (Button) titleView.findViewById(R.id.title_back);
-//        title_back.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //finish();
-////                Intent intent = new Intent(BSProActivity.this, MainActivity.class);
-////                startActivity(intent);
-//                HomeFragment.back();
-//            }
-//        });
-//        title_search.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(titleView.getContext(), SearchActivity.class);
-//                startActivity(intent);
-//            }
-//        });
 
         initPermission();
         IRecogListener listener = new MessageStatusRecogListener(null);
@@ -94,9 +78,6 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put(SpeechConstant.ACCEPT_AUDIO_VOLUME, false);
         params.put(SpeechConstant.DISABLE_PUNCTUATION, true);
-
-//        findViewById(R.id.btn_start_record).setOnClickListener(v -> myRecognizer.start(params));
-//        findViewById(R.id.btn_stop_record).setOnClickListener(v -> myRecognizer.stop());
 
         FloatingActionButton fab = findViewById(R.id.fab);
         System.out.println(fab);
@@ -117,6 +98,33 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @SuppressLint("ResourceAsColor")
+//            @Override
+//            public void onClick(View view) {
+//                if(longClicked == false) {
+//                    Intent intent = new Intent();
+//                    intent.putExtra("pid",HomeFragment.getPid());
+//                    intent.setClass(MainActivity.this, AddActivity.class);
+//                    startActivity(intent);
+//                } else {
+//
+//                    myRecognizer.stop();
+//                    longClicked = false;
+//                }
+//            }
+//        });
+//
+//        fab.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//                myRecognizer.start(params);
+//                longClicked = true;
+//                return true;
+//            }
+//        });
+        
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         // Passing each menu ID as a set of Ids because each

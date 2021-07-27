@@ -1,6 +1,8 @@
 package com.example.bright_storage.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.DisplayMetrics;
@@ -8,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -15,7 +19,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.baidu.speech.asr.SpeechConstant;
 import com.example.bright_storage.R;
-import com.example.bright_storage.api.Analyzer;
 import com.example.bright_storage.recog.MyRecognizer;
 import com.example.bright_storage.recog.listener.IRecogListener;
 import com.example.bright_storage.recog.listener.MessageStatusRecogListener;
@@ -23,6 +26,7 @@ import com.example.bright_storage.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,6 +34,30 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     public static DisplayMetrics dm;
     public static int width;
+
+    private void initPermission() {
+        String permissions[] = {Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.INTERNET,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+
+        ArrayList<String> toApplyList = new ArrayList<String>();
+
+        for (String perm :permissions){
+            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, perm)) {
+                toApplyList.add(perm);
+                //进入到这里代表没有权限.
+
+            }
+        }
+        String tmpList[] = new String[toApplyList.size()];
+        if (!toApplyList.isEmpty()){
+            ActivityCompat.requestPermissions(this, toApplyList.toArray(tmpList), 123);
+        }
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,16 +86,17 @@ public class MainActivity extends AppCompatActivity {
 //                startActivity(intent);
 //            }
 //        });
+
+        initPermission();
         IRecogListener listener = new MessageStatusRecogListener(null);
         MyRecognizer myRecognizer = new MyRecognizer(this, listener);
 
         Map<String, Object> params = new LinkedHashMap<>();
         params.put(SpeechConstant.ACCEPT_AUDIO_VOLUME, false);
+        params.put(SpeechConstant.DISABLE_PUNCTUATION, true);
 
 //        findViewById(R.id.btn_start_record).setOnClickListener(v -> myRecognizer.start(params));
 //        findViewById(R.id.btn_stop_record).setOnClickListener(v -> myRecognizer.stop());
-
-        Analyzer analyzer = new Analyzer();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         System.out.println(fab);
@@ -85,13 +114,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View view) {
                 myRecognizer.start(params);
-                String result = "";
-                System.out.println(result);
-                try {
-                    analyzer.analyze(result);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 return true;
             }
         });

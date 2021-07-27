@@ -11,10 +11,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.TreeMap;
 
+/**
+ * 已测试：
+ * 在抽屉中添加面包
+ * 去除抽屉/去除抽屉中的面包
+ * 将抽屉里的面包移动到柜子里
+ * （告诉我）面包在哪（里/儿）/（告诉我）面包的位置
+ */
 public class Analyzer {
     private final String APP_ID = "24504515";
     private final String API_KEY = "bTG7ohvMjG6Md5x8XQ3BxGOd";
@@ -26,32 +35,6 @@ public class Analyzer {
 
     public Analyzer() {
         this.init_dict();
-    }
-
-    /**
-     * （同级或只差一级）
-     * a属于b -> 1
-     * b属于a -> -1
-     * 其他 -> 0
-     * @param a_id
-     * @param b_id
-     * @return
-     */
-    private int belongTo(long a_id, long b_id) {
-        if(a_id == b_id) {
-            return 0;
-        }
-        StorageUnit s_a = storageUnitRepo.findById(a_id);
-        StorageUnit s_b = storageUnitRepo.findById(b_id);
-        if(s_a.getParentId() == b_id) {
-            return 1;
-        }
-        else if(s_b.getParentId() == a_id) {
-            return -1;
-        }
-        else {
-            return 0;
-        }
     }
 
     /**
@@ -125,7 +108,7 @@ public class Analyzer {
     }
 
     /**
-     * 匹配路径，找到物品的父节点id
+     * 顺路径一层一层深入，找到物品的父节点id
      * @param s 物品名称（包含所有修饰词，如定语、状语等）
      * @return
      */
@@ -146,17 +129,49 @@ public class Analyzer {
                 if (s.indexOf(name) != -1) {
                     i += name.length();
                     --i; // 抵消for的++i
-                    p_id = su.getId(); // 更新p_id
+                    p_id = su.getLocalId(); // 更新p_id
                     found = true;
                     break;
                 }
             }
 
-            if(!found) {
+            if(!found && p_id == 0) {
                 return -1;
             }
         }
         return p_id;
+    }
+
+    /**
+     * 查找物品是否在数据库中，不关心其父节点
+     * @param s 物品名称（包含所有修饰词，如定语、状语等）
+     * @return
+     */
+    private long search(String s) { //dfs
+        if(s.length() == 0) {
+            return -1;
+        }
+        Queue<Long> queue = new LinkedList<>();
+        queue.offer(0L); // 父节点id
+        StorageUnitQuery storageUnit = new StorageUnitQuery();
+        while(!queue.isEmpty()) {
+            long id = queue.poll();
+            if(id != 0) {
+                StorageUnit self = this.storageUnitRepo.findById(id);
+                String name = self.getName();
+                if(s.indexOf(name) != -1) {
+                    return id;
+                }
+            }
+
+            storageUnit.setParentId(id);
+            List<StorageUnit> data = this.storageUnitRepo.query(storageUnit);
+
+            for(StorageUnit su : data) {
+                queue.offer(su.getLocalId());
+            }
+        }
+        return -1;
     }
 
     /**
@@ -218,7 +233,8 @@ public class Analyzer {
                 continue;
             }
             String key = String.valueOf(id);
-            if(this.isDecoration(this.sentence.get(key))) {
+            Word word = this.sentence.get(key);
+            if(this.isDecoration(word) || Integer.parseInt(word.getHead()) == h_id) {
                 s += this.sentence.get(key).getWord();
             }
         }
@@ -237,7 +253,7 @@ public class Analyzer {
             Word value = entry.getValue();
 
             int tmp = this.getType(value.getWord());
-            if(tmp != -1) { // 属于内置操作符
+            if(tmp != 0) { // 属于内置操作符
                 type.add(tmp);
                 id.add(key);
             }
@@ -259,7 +275,7 @@ public class Analyzer {
             int op_type = type.get(i);
             // 对于一个字符串的功能，决定操作类型和做StorageUnit的名字是互斥的
             String ban_id = id.get(i);
-            if (op_type == 1 || op_type == 2 || op_type == 3) { // op: 添加、删除或移动 二元操作符
+            if (op_type == 1 || op_type == 3) { // op: 添加、移动 二元操作符
                 // 以head为界分割字符串，并ban掉操作符
                 String l_word = this.banText(-1, head.getId(), ban_id);
                 String r_word = this.banText(1, head.getId(), ban_id);
@@ -267,13 +283,15 @@ public class Analyzer {
                 System.out.println("r:" + r_word);
                 long l_id = match(l_word);
                 long r_id = match(r_word);
+                System.out.println(l_id);
+                System.out.println(r_id);
                 if(l_id == -1 && r_id == -1) { // 都不在数据库中
                     this.err();
                     System.out.println("找不到对应的存储单元");
                     return;
                 }
                 else if(l_id == -1 || r_id == -1) { // 都为-1的情况已经被特判。此处为一个在；一个不在
-                    if(op_type == 2 || op_type == 3) { // 删除、移动要保证两边都在数据库中
+                    if(op_type == 3) { // 移动要保证两边都在数据库中
                         this.err();
                         System.out.println("你可能想添加物品？");
                         return;
@@ -306,51 +324,64 @@ public class Analyzer {
                 else if(l_id != -1 && r_id != -1) { //都存在与数据库
                     if(op_type == 1) {
                         this.err();
-                        System.out.println("你可能想删除或移动物品？");
+                        System.out.println("你可能想移动物品？");
                         return;
                     }
-                    else {
-                        if (op_type == 2) {
-                            int belong_to = this.belongTo(l_id, r_id);
-                            long be_to_del = -1; // 将被删除的StorageUnit的id
-                            if (belong_to == 0) {
-                                this.err();
-                                System.out.println("两边互不包含");
-                                return;
-                            }
-                            else if (belong_to == 1) { //右中删左 不常有 // TODO Necessary?
-                                be_to_del = l_id;
-                            }
-                            else if (belong_to == -1) { //左中删右 删除A中的B；删除A下的B
-                                be_to_del = r_id;
-                            }
-                            StorageUnit su = storageUnitRepo.findById(be_to_del);
-                            this.storageUnitRepo.delete(su);
-                            succeed = true;
-                        } else if (op_type == 3) { // TODO 无法证明只有将左移动到右之下
-                            long be_to_move = l_id; // 将被移动的StorageUnit的id
-                            StorageUnit su = storageUnitRepo.findById(be_to_move);
-                            this.storageUnitRepo.update(su);
-                            succeed = true;
-                        }
+                    else if (op_type == 3) { // TODO 无法证明只有将左移动到右之下
+                        long be_to_move = l_id; // 将被移动的StorageUnit的id
+                        StorageUnit su = storageUnitRepo.findById(be_to_move);
+                        su.setParentId(r_id);
+                        this.storageUnitRepo.update(su);
+                        succeed = true;
                     }
                 }
             }
-            if (type.get(i) == 4) { // op: 查询 一元操作符 // TODO 无法证明物品字符串一定在操作符左侧
+            if (op_type == 2 || op_type == 4) { // op: 删除或查询 一元操作符
                 String l_word = this.banText(-1, head.getId(), ban_id);
-                System.out.println("l:" + l_word);
-                long l_id = match(l_word);
-                if(l_id == -1) { // 要查询的不在数据库中
-                    System.out.println("查无此物");
-                    this.err();
+                String r_word = "";
+                long l_id = 0L, r_id = 0L;
+                if(op_type == 2) {
+                     l_id = this.match(l_word);
                 }
-                else if(l_id != -1) {
-                    // TODO 逐级查询物品的路径，直到最上层
+                else if(op_type == 4) {
+                    l_id = this.search(l_word);
+                }
+                long res_id;
+                if (l_id == -1) {
+                    r_word = this.banText(1, head.getId(), ban_id);
+                    if(op_type == 2) {
+                        r_id = this.match(r_word);
+                    }
+                    else if(op_type == 4) {
+                        r_id = this.search(r_word);
+                    }
+                    if (r_id == -1) {
+                        this.err();
+                        System.out.println("查无此物");
+                        System.out.println("l:" + l_word + " " + "l_id:" + l_id);
+                        System.out.println("r:" + r_word + " " + "r_id:" + r_id);
+                        return;
+                    } else {
+                        res_id = r_id;
+                        System.out.println("r:" + r_word + " " + "r_id:" + r_id);
+                    }
+                } else {
+                    res_id = l_id;
+                    System.out.println("l:" + l_word + " " + "l_id:" + l_id);
+                }
+                if (op_type == 2) {
+                    this.cascadeDelete(res_id);
+                    succeed = true;
+                }
+                else if(op_type == 4) {
+                    // TODO 根据res_id逐级向上查找路径
+                    succeed = true;
                 }
             }
 
             // TODO 贪心
             if(succeed) {
+                System.out.println("成功");
                 break;
             }
         }
@@ -358,6 +389,27 @@ public class Analyzer {
 
     private void err() {
         System.out.println("error!");
+    }
+
+    private void cascadeDelete(long container_id) {
+        Queue<Long> queue = new LinkedList<>();
+        queue.offer(container_id);
+        List<Long> ids = new ArrayList<>();
+
+        while(!queue.isEmpty()) {
+            long id = queue.poll();
+            ids.add(id);
+
+            StorageUnitQuery storageUnit = new StorageUnitQuery();
+            storageUnit.setParentId(id);
+            List<StorageUnit> data = this.storageUnitRepo.query(storageUnit);
+
+            for(StorageUnit su : data) {
+                queue.offer(su.getLocalId());
+            }
+        }
+
+        this.storageUnitRepo.deleteByIds(ids);
     }
 }
 

@@ -5,6 +5,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.baidu.speech.asr.SpeechConstant;
+import com.example.bright_storage.api.Analyzer;
 import com.example.bright_storage.recog.RecogResult;
 
 /**
@@ -20,8 +21,11 @@ public class MessageStatusRecogListener extends StatusRecogListener {
 
     private static final String TAG = "MesStatusRecogListener";
 
+    private Analyzer analyzer;
+
     public MessageStatusRecogListener(Handler handler) {
         this.handler = handler;
+        this.analyzer = new Analyzer();
     }
 
 
@@ -60,6 +64,12 @@ public class MessageStatusRecogListener extends StatusRecogListener {
         super.onAsrFinalResult(results, recogResult);
 
         // TODO nlp处理
+        try {
+            this.analyzer.analyze(results[0]);
+        } catch (Exception e) {
+            System.out.println("失败");
+            e.printStackTrace();
+        }
 
         String message = "识别结束，结果是”" + results[0] + "”";
         sendStatusMessage(SpeechConstant.CALLBACK_EVENT_ASR_PARTIAL,

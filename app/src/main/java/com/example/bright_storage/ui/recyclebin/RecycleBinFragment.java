@@ -1,20 +1,12 @@
-package com.example.bright_storage.ui.home;
+package com.example.bright_storage.ui.recyclebin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.bright_storage.activity.SettingActivity;
-import com.example.bright_storage.activity.ShowActivity;
-import com.example.bright_storage.model.entity.StorageUnit;
-import com.example.bright_storage.model.query.StorageUnitQuery;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -22,34 +14,29 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.example.bright_storage.R;
+import com.example.bright_storage.activity.ShowActivity;
+import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.model.query.StorageUnitQuery;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.search.SearchActivity;
 import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.util.InputInfo;
-import com.kongzue.dialog.v3.InputDialog;
 import com.kongzue.dialog.v3.MessageDialog;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
-import javax.inject.Inject;
-
-public class HomeFragment extends Fragment {
+public class RecycleBinFragment extends Fragment {
     @Inject
     StorageUnitService storageUnitService;
 
     private StorageUnitRepository storageUnitRepository;
-    private HomeViewModel homeViewModel;
+    private RecycleBinViewModel homeViewModel;
     private static View root;
     private static RecyclerView mRecyclerView;
     private static StorageUnitQuery select = new StorageUnitQuery();
@@ -57,7 +44,7 @@ public class HomeFragment extends Fragment {
     private static Stack<String> title_name = new Stack<>();
     private static List<StorageUnit> datas;
     private static List<StorageUnit> dataToDelete = new ArrayList<>();
-    private static HomeAdapter homeAdapter;
+    private static RecycleBinAdapter homeAdapter;
     private Button title_back, title_search;
     private TextView title_text;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -65,8 +52,8 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
-        root = inflater.inflate(R.layout.fragment_home, container, false);
+                new ViewModelProvider(this).get(RecycleBinViewModel.class);
+        root = inflater.inflate(R.layout.fragment_recyclebin, container, false);
 //        初始化RecyclerView
         mRecyclerView = (RecyclerView) root.findViewById(R.id.id_recyclerview);
         title_back = (Button) root.findViewById(R.id.title_back);
@@ -117,12 +104,11 @@ public class HomeFragment extends Fragment {
     }
 
     protected static void initData() {
-        select.setParentId(getPid());
         StorageUnitRepository StorageUnitRepo = new StorageUnitRepository();
         datas = new ArrayList<>();
-        List<StorageUnit> all = StorageUnitRepo.query(select);
+        List<StorageUnit> all = StorageUnitRepo.findAll();
         for(StorageUnit it : all) {
-            if(!it.getDeleted()) {
+            if(it.getDeleted()) {
                 datas.add(it);
             }
         }
@@ -131,7 +117,7 @@ public class HomeFragment extends Fragment {
     protected void SetOnClick() {
 
         //      调用按钮返回事件回调的方法
-        homeAdapter.layoutSetOnclick(new HomeAdapter.layoutInterface() {
+        homeAdapter.layoutSetOnclick(new RecycleBinAdapter.layoutInterface() {
             @Override
             public void onclick(View view, StorageUnit TstorageUnit) {
 //                Toast.makeText(root.getContext(), "点击条目上的按钮" + position, Toast.LENGTH_SHORT).show();
@@ -200,7 +186,7 @@ public class HomeFragment extends Fragment {
 
     protected static void refresh() {
         initData();
-        homeAdapter = new HomeAdapter(root.getContext(), datas);
+        homeAdapter = new RecycleBinAdapter(root.getContext(), datas);
         mRecyclerView.setAdapter(homeAdapter);
     }
 

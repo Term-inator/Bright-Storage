@@ -703,6 +703,7 @@ public class AddActivity extends AppCompatActivity
                     objectDate.setVisibility(View.VISIBLE);
                     objectShelfLife.setVisibility(View.VISIBLE);
                     objectOverdue.setVisibility(View.VISIBLE);
+                    objectType.setVisibility(View.VISIBLE);
                 }
                 else{
                     box = true;
@@ -711,6 +712,7 @@ public class AddActivity extends AppCompatActivity
                     objectDate.setVisibility(View.GONE);
                     objectShelfLife.setVisibility(View.GONE);
                     objectOverdue.setVisibility(View.GONE);
+                    objectType.setVisibility(View.GONE);
                 }
             }
         });
@@ -760,25 +762,22 @@ public class AddActivity extends AppCompatActivity
                     legal = false;
                     hint += "名称 ";
                 }
-                if(objectCount.getText().toString().length() != 0)
-                {
+                if(objectCount.getText().toString().length() != 0) {
                     count = Integer.parseInt(objectCount.getText().toString());
                 }
-                else
-                {
-                    if(box == false)
-                    {
+                else {
+                    if(box == false) {
                         legal = false;
                         hint += "数量 ";
                     }
                 }
-                if(type.length() == 0)
-                {
-                    legal = false;
-                    hint += "分类 ";
+                if(type.length() == 0 ) {
+                    if(box == false) {
+                        legal = false;
+                        hint += "分类 ";
+                    }
                 }
-                if(!legal)
-                {
+                if(!legal) {
                     Toast.makeText(AddActivity.this, hint, Toast.LENGTH_SHORT).show();
                 }
                 else
@@ -793,7 +792,6 @@ public class AddActivity extends AppCompatActivity
                     storageUnit.setParentId(path);
                     //System.out.println(categories.size());
                     storageUnit.setCategories(categories);
-
                     //System.out.println(storageUnit.getCategories().size());
                     storageUnit.setAmount(count);
                     if(imageUri != null)

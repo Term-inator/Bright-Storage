@@ -49,6 +49,7 @@ public class ExampleInstrumentedTest {
     @Inject
     StorageUnitCategoryRepository storageUnitCategoryRepository;
 
+
     @Before
     public void before(){
         storageUnitService = new StorageUnitServiceImpl();
@@ -75,13 +76,21 @@ public class ExampleInstrumentedTest {
     @Test
     public void insertStorageUnit(){
         StorageUnit storageUnit = new StorageUnit();
-        storageUnit.setName("777");
+        storageUnit.setName("7778888@@@@@@");
         storageUnit.setAmount(7);
         storageUnit.setNote("777");
         storageUnit.setCategories(new HashSet<>(categoryService.listAll()));
 
         storageUnitService.create(storageUnit);
+        int i = 0;
 
+    }
+
+    @Test
+    public void queryRecentActiveStorageUnit(){
+        List<StorageUnit> storageUnits = storageUnitService.listRecentActiveStorageUnit();
+        List<StorageUnit> storageUnits1 = storageUnitService.listLongestVisitedStorageUnits(null, 3);
+        int i = 0;
     }
 
     @Test

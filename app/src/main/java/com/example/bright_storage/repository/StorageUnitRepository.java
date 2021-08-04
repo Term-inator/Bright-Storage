@@ -9,6 +9,7 @@ import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.entity.StorageUnitCategory;
 
+import org.xutils.db.Selector;
 import org.xutils.ex.DbException;
 
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ public class StorageUnitRepository extends AbstractRepository<StorageUnit, Long>
     @Inject
     StorageUnitCategoryRepository storageUnitCategoryRepository;
 
+    @Inject
+    AccessLogRepository accessLogRepository;
+
     public StorageUnitRepository() {
         super();
         DaggerRepositoryComponent.builder()
@@ -42,6 +46,28 @@ public class StorageUnitRepository extends AbstractRepository<StorageUnit, Long>
             ids.add(re.getStorageUnitId());
         }
         return findByIds(ids);
+    }
+
+    /**
+     * 查询最久远访问的存储单元
+     * @param storageUnitType 存储单元类型（0：物品，1：容器）
+     * @param limit 查询数量
+     * @return
+     */
+    public List<StorageUnit> listLongestVisitedStorageUnits(Integer storageUnitType, Integer limit){
+        try {
+            Selector<StorageUnit> selector = manager.selector(StorageUnit.class)
+                    .orderBy("last_access_time", true);
+            if(storageUnitType != null){
+                selector.and("type", "=", storageUnitType);
+            }
+            if(limit != null && limit > 0){
+                selector.limit(limit);
+            }
+            return selector.findAll();
+        } catch (DbException e) {
+            throw new DBException(e.getMessage());
+        }
     }
 
     @Override
@@ -90,6 +116,7 @@ public class StorageUnitRepository extends AbstractRepository<StorageUnit, Long>
         List<StorageUnitCategory> suc =
                 storageUnitCategoryRepository.listByStorageUnitId(entity.getLocalId());
         storageUnitCategoryRepository.delete(suc);
+        accessLogRepository.deleteByStorageUnitId(entity.getLocalId());
         return entity;
     }
 }

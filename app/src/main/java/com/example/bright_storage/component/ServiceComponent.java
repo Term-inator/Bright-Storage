@@ -1,5 +1,6 @@
 package com.example.bright_storage.component;
 
+import com.example.bright_storage.service.impl.AccessLogServiceImpl;
 import com.example.bright_storage.service.impl.CategoryServiceImpl;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
@@ -21,4 +22,6 @@ public interface ServiceComponent {
     void inject(StorageUnitServiceImpl storageUnitService);
 
     void inject(CategoryServiceImpl categoryService);
+
+    void inject(AccessLogServiceImpl accessLogService);
 }

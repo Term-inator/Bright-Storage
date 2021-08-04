@@ -6,22 +6,17 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -34,7 +29,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -47,7 +41,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.bigkoo.pickerview.adapter.ArrayWheelAdapter;
 import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
 import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.OnOptionsSelectChangeListener;
@@ -56,25 +49,22 @@ import com.bigkoo.pickerview.listener.OnTimeSelectChangeListener;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.bigkoo.pickerview.view.TimePickerView;
-import com.contrarywind.listener.OnItemSelectedListener;
-import com.contrarywind.view.WheelView;
 import com.example.bright_storage.R;
+import com.example.bright_storage.model.entity.AccessLog;
 import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.repository.CategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
-import com.example.bright_storage.ui.home.HomeFragment;
-import com.uuzuche.lib_zxing.activity.CaptureActivity;
-import com.uuzuche.lib_zxing.activity.CaptureFragment;
+import com.example.bright_storage.service.AccessLogService;
+import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.impl.AccessLogServiceImpl;
+import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -97,7 +87,8 @@ public class ShowActivity extends AppCompatActivity
     private Date overdueDate, productionDate, createTime, updateTime;
     private int shelfLifeCount = 0;
     private String shelfLifeType = "";
-    private StorageUnitRepository storageUnitRepository;
+    private StorageUnitService storageUnitService;
+    private AccessLogService accessLogService;
     private StorageUnit storageUnit;
     private Switch isPrivate;
     private Uri imageUri;
@@ -142,7 +133,7 @@ public class ShowActivity extends AppCompatActivity
                 if(data != null)
                 {
                     newPath = data.getExtras().getLong("pathName");
-                    StorageUnit father = storageUnitRepository.findById(newPath);
+                    StorageUnit father = storageUnitService.getById(newPath);
                     objectNewPath.setText(father.getName());
                 }
                 break;
@@ -691,8 +682,11 @@ public class ShowActivity extends AppCompatActivity
         /*Category temp = new Category();
         temp.setName(type);
         categories.add(temp);*/
-        storageUnitRepository = new StorageUnitRepository();
-        storageUnit = storageUnitRepository.findById(Id);
+        storageUnitService = new StorageUnitServiceImpl();
+        accessLogService = new AccessLogServiceImpl();
+        storageUnit = storageUnitService.getById(Id);
+        accessLogService.create(AccessLog.storageUnitVisited(Id)); // 记录访问信息
+        storageUnitService.update(storageUnit); // 更新最后访问时间
         isPrivate = (Switch)findViewById(R.id.isPrivate);
         thetitle = (TextView) findViewById(R.id.title_text);
         title_back = (Button) findViewById(R.id.title_back);
@@ -727,10 +721,7 @@ public class ShowActivity extends AppCompatActivity
         isPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked == true)
-                    open = false;
-                else
-                    open = true;
+                open = !isChecked;
             }
         });
         title_search.setOnClickListener(new View.OnClickListener() {
@@ -862,8 +853,8 @@ public class ShowActivity extends AppCompatActivity
                     storageUnit.setExpireTime(expireTime);
                     storageUnit.setNote(remarks);
                     storageUnit.setDeleted(false);
-                    storageUnitRepository = new StorageUnitRepository();
-                    storageUnitRepository.update(storageUnit);
+                    storageUnitService = new StorageUnitServiceImpl();
+                    storageUnitService.update(storageUnit);
                     photoButton.setEnabled(false);
                     objectName.setEnabled(false);
                     objectCount.setEnabled(false);

@@ -60,6 +60,9 @@ public class StorageUnit extends OwnershipEntity {
     @Column(name = "note")
     private String note;
 
+    @Column(name = "last_access_time")
+    private Date lastAccessTime;
+
     private Set<Category> categories;
 
     @Override
@@ -89,10 +92,14 @@ public class StorageUnit extends OwnershipEntity {
         if(note == null){
             note = "";
         }
+        if(lastAccessTime == null){
+            lastAccessTime = new Date();
+        }
     }
 
     @Override
     public void preUpdate() {
         super.preUpdate();
+        lastAccessTime = new Date();
     }
 }

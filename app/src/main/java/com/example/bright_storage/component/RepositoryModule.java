@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.entity.StorageUnitCategory;
+import com.example.bright_storage.repository.AccessLogRepository;
 import com.example.bright_storage.repository.CategoryRepository;
 import com.example.bright_storage.repository.StorageUnitCategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
@@ -71,5 +72,11 @@ public class RepositoryModule {
     @Provides
     public StorageUnitCategoryRepository providerStorageUnitCategoryRepository(){
         return new StorageUnitCategoryRepository();
+    }
+
+    @Singleton
+    @Provides
+    public AccessLogRepository providerAccessLogRepository(){
+        return new AccessLogRepository();
     }
 }

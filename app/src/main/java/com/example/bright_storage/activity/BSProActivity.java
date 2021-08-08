@@ -15,10 +15,13 @@ import com.baidu.speech.EventManager;
 import com.baidu.speech.EventManagerFactory;
 import com.baidu.speech.asr.SpeechConstant;
 import com.example.bright_storage.R;
+import com.example.bright_storage.model.param.RegisterParam;
 import com.example.bright_storage.recog.MyRecognizer;
 import com.example.bright_storage.recog.listener.IRecogListener;
 import com.example.bright_storage.recog.listener.MessageStatusRecogListener;
 import com.example.bright_storage.search.SearchActivity;
+import com.example.bright_storage.service.UserService;
+import com.example.bright_storage.service.impl.UserServiceImpl;
 import com.example.bright_storage.util.AudioRecordUtil;
 import com.example.bright_storage.util.RecogUtil;
 
@@ -53,14 +56,7 @@ public class BSProActivity extends AppCompatActivity
             }
         });
 
-
-        IRecogListener listener = new MessageStatusRecogListener(null);
-        MyRecognizer myRecognizer = new MyRecognizer(this, listener);
-
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put(SpeechConstant.ACCEPT_AUDIO_VOLUME, false);
-
-        findViewById(R.id.btn_start_record).setOnClickListener(v -> myRecognizer.start(params));
-        findViewById(R.id.btn_stop_record).setOnClickListener(v -> myRecognizer.stop());
+        UserService userService = new UserServiceImpl();
+        findViewById(R.id.btn_start_record).setOnClickListener(v -> userService.register(new RegisterParam()));
     }
 }

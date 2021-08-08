@@ -12,6 +12,7 @@ import com.example.bright_storage.model.entity.StorageUnitCategory;
 import com.example.bright_storage.model.query.StorageUnitQuery;
 import com.example.bright_storage.model.support.Pageable;
 import com.example.bright_storage.repository.StorageUnitCategoryRepository;
+import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.service.CategoryService;
 import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.impl.CategoryServiceImpl;
@@ -44,6 +45,9 @@ public class ExampleInstrumentedTest {
     StorageUnitService storageUnitService;
 
     @Inject
+    StorageUnitRepository storageUnitRepository;
+
+    @Inject
     CategoryService categoryService;
 
     @Inject
@@ -53,6 +57,7 @@ public class ExampleInstrumentedTest {
     @Before
     public void before(){
         storageUnitService = new StorageUnitServiceImpl();
+        storageUnitRepository = new StorageUnitRepository();
         categoryService = new CategoryServiceImpl();
         storageUnitCategoryRepository = new StorageUnitCategoryRepository();
     }
@@ -90,6 +95,7 @@ public class ExampleInstrumentedTest {
     public void queryRecentActiveStorageUnit(){
         List<StorageUnit> storageUnits = storageUnitService.listRecentActiveStorageUnit();
         List<StorageUnit> storageUnits1 = storageUnitService.listLongestVisitedStorageUnits(null, 3);
+        List<StorageUnit> storageUnits2 = storageUnitRepository.listLongestVisitedStorageUnits(null, 3);
         int i = 0;
     }
 

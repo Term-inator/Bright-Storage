@@ -20,6 +20,7 @@ public class CategoryRepository extends AbstractRepository<Category, Long> {
                 .repositoryModule(new RepositoryModule())
                 .build()
                 .inject(this);
+        createTableIfNotExists();
     }
 
     @Override

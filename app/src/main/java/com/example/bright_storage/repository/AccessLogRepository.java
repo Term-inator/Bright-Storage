@@ -22,6 +22,7 @@ public class AccessLogRepository extends AbstractRepository<AccessLog, Long>{
                 .repositoryModule(new RepositoryModule())
                 .build()
                 .inject(this);
+        createTableIfNotExists();
     }
 
     public List<AccessLog> deleteByStorageUnitId(Long id){

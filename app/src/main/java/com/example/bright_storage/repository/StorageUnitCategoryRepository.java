@@ -21,6 +21,7 @@ public class StorageUnitCategoryRepository
                 .repositoryModule(new RepositoryModule())
                 .build()
                 .inject(this);
+        createTableIfNotExists();
     }
 
     public List<StorageUnitCategory> listByStorageUnitId(Long id){

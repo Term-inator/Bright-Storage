@@ -14,6 +14,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
+        e.printStackTrace();
         // TODO
     }
 

@@ -318,4 +318,13 @@ public abstract class AbstractRepository<ENTITY extends BaseEntity, ID> implemen
         return entity;
     }
 
+    protected void createTableIfNotExists(){
+        if(manager != null){
+            try {
+                manager.getTable(actualClass).createTableIfNotExists();
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

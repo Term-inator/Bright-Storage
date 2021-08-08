@@ -36,6 +36,7 @@ public class StorageUnitRepository extends AbstractRepository<StorageUnit, Long>
                 .repositoryModule(new RepositoryModule())
                 .build()
                 .inject(this);
+        createTableIfNotExists();
     }
 
     public List<StorageUnit> listByCategoriesIn(Collection<Category> categories){

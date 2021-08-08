@@ -128,10 +128,11 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
                     startActivity(intent);
                 }else
                 {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("title", resultData.get(position).getName());
-                    bundle.putLong("id",resultData.get(position).getLocalId());
-//                    Navigation.findNavController(MainActivity,R.id.nav_host_fragment).navigate(R.id.nav_host_fragment,bundle);
+                    Intent intent = new Intent();
+                    intent.putExtra("pid",resultData.get(position).getLocalId());
+                    intent.putExtra("name",resultData.get(position).getName());
+                    setResult(Activity.RESULT_OK,intent);
+                    finish();
                 }
             }
         });
@@ -172,9 +173,9 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
         hintData = new ArrayList<>(hintSize);
         StorageUnitQuery query = new StorageUnitQuery();
         StorageUnitService StorageUnitService = new StorageUnitServiceImpl();
-        List<StorageUnit> longestnouse = StorageUnitService.listLongestVisitedStorageUnits(0,1);
+//        List<StorageUnit> longestnouse = StorageUnitService.listLongestVisitedStorageUnits(0,1);
         for (int i = 1; i <= hintSize; i++) {
-            hintData.add(longestnouse.get(i).getName());
+            hintData.add(dbData.get(i).getName());
         }
         hintAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, hintData);
     }

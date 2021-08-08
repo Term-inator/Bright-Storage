@@ -173,7 +173,8 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
         hintData = new ArrayList<>(hintSize);
         StorageUnitQuery query = new StorageUnitQuery();
         StorageUnitService StorageUnitService = new StorageUnitServiceImpl();
-//        List<StorageUnit> longestnouse = StorageUnitService.listLongestVisitedStorageUnits(0,1);
+        // TODO 下面注释掉的加上for循环里dbData改成longestnouse
+//        List<StorageUnit> longestnouse = StorageUnitService.listLongestVisitedStorageUnits(0,4);
         for (int i = 1; i <= hintSize; i++) {
             hintData.add(dbData.get(i).getName());
         }

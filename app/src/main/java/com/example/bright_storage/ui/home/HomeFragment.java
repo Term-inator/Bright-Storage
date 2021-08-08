@@ -216,5 +216,6 @@ public class HomeFragment extends Fragment {
         super.onResume();
         refresh();
         SetOnClick();
+        setTitle();
     }
 }

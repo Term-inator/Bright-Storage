@@ -10,14 +10,20 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.navigation.Navigation;
+
 import com.example.bright_storage.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.bright_storage.activity.MainActivity;
 import com.example.bright_storage.activity.ShowActivity;
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.model.query.StorageUnitQuery;
 import com.example.bright_storage.repository.StorageUnitRepository;
+import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 
 public class SearchActivity extends Activity implements SearchView.SearchViewListener {
 
@@ -112,12 +118,21 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Toast.makeText(SearchActivity.this, position + "", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.putExtra("Id", resultData.get(position).getLocalId());
-                intent.setClass(searchView.getContext(), ShowActivity.class);
-                autoCompleteAdapter = null;
-                resultAdapter = null;
-                startActivity(intent);
+                if (resultData.get(position).getType() == 0l){
+
+                    Intent intent = new Intent();
+                    intent.putExtra("Id", resultData.get(position).getLocalId());
+                    intent.setClass(searchView.getContext(), ShowActivity.class);
+                    autoCompleteAdapter = null;
+                    resultAdapter = null;
+                    startActivity(intent);
+                }else
+                {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("title", resultData.get(position).getName());
+                    bundle.putLong("id",resultData.get(position).getLocalId());
+//                    Navigation.findNavController(MainActivity,R.id.nav_host_fragment).navigate(R.id.nav_host_fragment,bundle);
+                }
             }
         });
     }
@@ -140,8 +155,9 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
      * 获取db 数据
      */
     private void getDbData() {
-        StorageUnitRepository StorageUnitRepo = new StorageUnitRepository();
-        dbData=StorageUnitRepo.findAll();
+        StorageUnitQuery query = new StorageUnitQuery();
+        StorageUnitService StorageUnitService = new StorageUnitServiceImpl();
+        dbData=StorageUnitService.query(query);
 //        int size = 100;
 //        dbData = new ArrayList<>(size);
 //        for (int i = 0; i < size; i++) {
@@ -154,8 +170,11 @@ public class SearchActivity extends Activity implements SearchView.SearchViewLis
      */
     private void getHintData() {
         hintData = new ArrayList<>(hintSize);
+        StorageUnitQuery query = new StorageUnitQuery();
+        StorageUnitService StorageUnitService = new StorageUnitServiceImpl();
+        List<StorageUnit> longestnouse = StorageUnitService.listLongestVisitedStorageUnits(0,1);
         for (int i = 1; i <= hintSize; i++) {
-            hintData.add("热搜版" + i + "：Android自定义View");
+            hintData.add(longestnouse.get(i).getName());
         }
         hintAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, hintData);
     }

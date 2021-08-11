@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import com.example.bright_storage.api.UserRequest;
 import com.example.bright_storage.exception.BadRequestException;
 import com.example.bright_storage.model.support.BaseResponse;
+import com.example.bright_storage.util.SharedPreferencesUtil;
+import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +20,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -30,9 +33,13 @@ public class RequestModule {
     private final OkHttpClient client;
 
     public RequestModule(){
+        Gson gson = new Gson();
+
         client = new OkHttpClient.Builder()
+                // add token
                 .addInterceptor(chain -> {
-                    String token = ""; // TODO
+                    String token = SharedPreferencesUtil.getString("token", "");
+//                    String token = "";
                     Request request = chain.request()
                             .newBuilder()
                             .addHeader("Authorization", token)
@@ -43,10 +50,14 @@ public class RequestModule {
                 .addInterceptor(chain -> {
                     Request request = chain.request();
                     Response response = chain.proceed(request);
-                    int code = response.code();
-                    if(code >= 400){
-                        String responseString = response.body().string();
-                        throw new BadRequestException();
+                    if(response.code() >= 400){
+                        String errorString = "网络请求失败";
+                        ResponseBody body = response.body();
+                        if(body != null){
+                            BaseResponse<?> baseResponse = gson.fromJson(body.string(), BaseResponse.class);
+                            errorString = baseResponse.getMessage();
+                        }
+                        throw new BadRequestException(errorString);
                     }
                     return response;
                 })

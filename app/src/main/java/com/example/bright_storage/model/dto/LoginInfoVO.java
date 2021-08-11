@@ -1,19 +1,15 @@
 package com.example.bright_storage.model.dto;
 
-
 import com.example.bright_storage.model.vo.UserInfoVO;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class RelationDTO {
+public class LoginInfoVO {
 
-    private Long id;
+    private String token;
 
-    private String name;
-
-    private String avatar;
-
-    private UserInfoVO owner;
-
+    private UserDTO user;
 }
+

@@ -32,16 +32,10 @@ public class RepositoryModule {
     public RepositoryModule(){
         DbManager.DaoConfig daoConfig = new DbManager.DaoConfig()
                 .setDbName("brightstorage.db")
-                .setDbVersion(4)
+                .setDbVersion(6)
                 .setAllowTransaction(false)
                 .setDbOpenListener(db -> {
                     db.getDatabase().enableWriteAheadLogging();
-                })
-                .setDbUpgradeListener((db, oldVersion, newVersion) -> {
-                    db.dropTable(Category.class);
-                    db.dropTable(StorageUnit.class);
-                    db.dropTable(StorageUnitCategory.class);
-                    // 不设置监听器自动drop所有table
                 })
                 .setTableCreateListener((db, table) -> {
                     Log.i(TAG, "onCreate: " + table.getName());

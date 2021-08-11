@@ -1,6 +1,6 @@
 package com.example.bright_storage.model.dto;
 
-import com.example.bright_storage.model.vo.UserVO;
+import com.example.bright_storage.model.vo.UserInfoVO;
 
 import java.util.Date;
 import java.util.List;
@@ -13,7 +13,7 @@ public class StorageUnitDTO {
 
     private Long id;
 
-    private UserVO owner;
+    private UserInfoVO owner;
 
     private Integer type;
 

@@ -1,8 +1,6 @@
 package com.example.bright_storage.activity;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -12,7 +10,6 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -32,6 +29,7 @@ import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.service.CategoryService;
 import com.example.bright_storage.service.impl.CategoryServiceImpl;
 import com.example.bright_storage.ui.home.HomeFragment;
+import com.example.bright_storage.util.SharedPreferencesUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -45,11 +43,17 @@ public class MainActivity extends AppCompatActivity {
     public static DisplayMetrics dm;
     public static int width;
 
+    private static SharedPreferences sharedPreferences;
+
+    public static SharedPreferences getSharedPreferences(){
+        return sharedPreferences;
+    }
+
     @Inject
     CategoryService categoryService;
 
     private void initPermission() {
-        String permissions[] = {Manifest.permission.RECORD_AUDIO,
+        String[] permissions = {Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.ACCESS_NETWORK_STATE,
                 Manifest.permission.INTERNET,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -64,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
-        String tmpList[] = new String[toApplyList.size()];
+        String[] tmpList = new String[toApplyList.size()];
         if (!toApplyList.isEmpty()){
             ActivityCompat.requestPermissions(this, toApplyList.toArray(tmpList), 123);
         }
@@ -74,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         categoryService = new CategoryServiceImpl();
+        sharedPreferences = getSharedPreferences("BrightStorage", MODE_PRIVATE);
+        SharedPreferencesUtil.setSharedPreferences(sharedPreferences);
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         SharedPreferences preferences = getSharedPreferences("isFirst",MODE_PRIVATE);

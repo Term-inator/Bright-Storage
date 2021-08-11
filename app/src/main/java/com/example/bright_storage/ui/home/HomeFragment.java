@@ -61,6 +61,7 @@ public class HomeFragment extends Fragment {
     private Button title_back, title_search;
     private TextView title_text;
     private SwipeRefreshLayout swipeRefreshLayout;
+    public static final int SELECT_PATH = 1;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -90,7 +91,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(root.getContext(), SearchActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, SELECT_PATH);
             }
         });
 //      RecyclerView设置展示的的样式（listView样子，gridView样子，瀑布流样子）
@@ -118,9 +119,9 @@ public class HomeFragment extends Fragment {
 
     protected static void initData() {
         select.setParentId(getPid());
-        StorageUnitRepository StorageUnitRepo = new StorageUnitRepository();
+        StorageUnitService StorageUnitService = new StorageUnitServiceImpl();
         datas = new ArrayList<>();
-        List<StorageUnit> all = StorageUnitRepo.query(select);
+        List<StorageUnit> all = StorageUnitService.query(select);
         for(StorageUnit it : all) {
             if(!it.getDeleted()) {
                 datas.add(it);
@@ -216,5 +217,21 @@ public class HomeFragment extends Fragment {
         super.onResume();
         refresh();
         SetOnClick();
+        setTitle();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case SELECT_PATH:
+                if (data != null) {
+                    p_id.push(data.getExtras().getLong("pid"));
+                    title_name.push(data.getExtras().getString("name"));
+                    refresh();
+                    SetOnClick();
+                    setTitle();
+                }
+        }
     }
 }

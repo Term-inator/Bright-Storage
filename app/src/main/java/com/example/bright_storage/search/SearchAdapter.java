@@ -22,9 +22,13 @@ public class SearchAdapter extends CommonAdapter<StorageUnit>{
 
     @Override
     public void convert(ViewHolder holder, int position) {
-        holder.setImage(R.id.item_search_iv_icon,mData.get(position).getImage())
-                .setText(R.id.item_search_tv_title,mData.get(position).getName())
-                .setText(R.id.item_search_tv_content,mData.get(position).getNote());
+        if (mData.get(position).getImage().trim().length() == 0l)
+            holder.setText(R.id.item_search_tv_title, mData.get(position).getName())
+                    .setText(R.id.item_search_tv_content, mData.get(position).getNote());
+        else
+            holder.setImage(R.id.item_search_iv_icon, mData.get(position).getImage())
+                    .setText(R.id.item_search_tv_title, mData.get(position).getName())
+                    .setText(R.id.item_search_tv_content, mData.get(position).getNote());
 //                .setText(R.id.item_search_tv_comments,mData.get(position).getComments());
     }
 }

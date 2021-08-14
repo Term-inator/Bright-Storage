@@ -1,7 +1,7 @@
 package com.example.bright_storage.model.dto;
 
 
-import com.example.bright_storage.model.vo.UserInfoVO;
+import com.example.bright_storage.model.vo.UserVO;
 
 import lombok.Data;
 
@@ -14,6 +14,6 @@ public class RelationDTO {
 
     private String avatar;
 
-    private UserInfoVO owner;
+    private UserVO owner;
 
 }

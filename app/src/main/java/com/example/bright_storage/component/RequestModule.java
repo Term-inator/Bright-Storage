@@ -2,6 +2,7 @@ package com.example.bright_storage.component;
 
 import android.content.SharedPreferences;
 
+import com.example.bright_storage.api.RelationRequest;
 import com.example.bright_storage.api.UserRequest;
 import com.example.bright_storage.exception.BadRequestException;
 import com.example.bright_storage.model.support.BaseResponse;
@@ -39,10 +40,9 @@ public class RequestModule {
                 // add token
                 .addInterceptor(chain -> {
                     String token = SharedPreferencesUtil.getString("token", "");
-//                    String token = "";
                     Request request = chain.request()
                             .newBuilder()
-                            .addHeader("Authorization", token)
+                            .addHeader("Authorization", "Bearer " + token)
                             .build();
                     return chain.proceed(request);
                 })
@@ -75,6 +75,12 @@ public class RequestModule {
     @Provides
     public UserRequest providerUserRequest(){
         return retrofit.create(UserRequest.class);
+    }
+
+    @Singleton
+    @Provides
+    public RelationRequest providerRelationRequest(){
+        return retrofit.create(RelationRequest.class);
     }
 
 }

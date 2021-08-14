@@ -11,7 +11,7 @@ public class SharedPreferencesUtil {
     }
 
     public static void putString(String key, String value){
-        sharedPreferences.edit().putString(key, value).apply();
+        sharedPreferences.edit().putString(key, value).commit();
     }
 
     public static String getString(String key, String defValue){

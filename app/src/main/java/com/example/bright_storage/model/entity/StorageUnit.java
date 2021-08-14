@@ -41,6 +41,7 @@ public class StorageUnit extends OwnershipEntity {
     @Column(name = "parent_id")
     private Long parentId;
 
+
     /**
      * true: 向关系成员公开
      * false: 私有
@@ -64,6 +65,8 @@ public class StorageUnit extends OwnershipEntity {
     private Date lastAccessTime;
 
     private Set<Category> categories;
+
+
 
     @Override
     public void prePersist() {

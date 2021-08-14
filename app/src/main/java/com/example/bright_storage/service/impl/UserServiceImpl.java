@@ -13,6 +13,7 @@ import com.example.bright_storage.model.param.RegisterParam;
 import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.util.Assert;
+import com.example.bright_storage.util.SharedPreferencesUtil;
 
 import java.io.IOException;
 
@@ -47,7 +48,12 @@ public class UserServiceImpl implements UserService {
     public BaseResponse<LoginInfoVO> loginPassword(LoginParam param) {
         Assert.notNull(param, "LoginParam must not be null");
         try {
-            return userRequest.loginPassword(param).execute().body();
+            BaseResponse<LoginInfoVO> response = userRequest.loginPassword(param).execute().body();
+            LoginInfoVO loginInfo = response.getData();
+            if(loginInfo != null){
+                SharedPreferencesUtil.putString("token",loginInfo.getToken());
+            }
+            return response;
         } catch (IOException e) {
             Log.e(TAG, "loginPassword: ", e);
             throw new BadRequestException(e.getMessage());
@@ -58,7 +64,12 @@ public class UserServiceImpl implements UserService {
     public BaseResponse<LoginInfoVO> loginPhone(LoginParam param) {
         Assert.notNull(param, "LoginParam must not be null");
         try {
-            return userRequest.loginPhone(param).execute().body();
+            BaseResponse<LoginInfoVO> response = userRequest.loginPhone(param).execute().body();
+            LoginInfoVO loginInfo = response.getData();
+            if(loginInfo != null){
+                SharedPreferencesUtil.putString("token",loginInfo.getToken());
+            }
+            return response;
         } catch (IOException e) {
             Log.e(TAG, "loginPhone: ", e);
             throw new BadRequestException(e.getMessage());

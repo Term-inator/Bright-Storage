@@ -44,6 +44,9 @@
             android:name=".activity.RelationActivity"
             android:label="@string/title_Relation" />
         <activity
+            android:name=".activity.RelationMemberActivity"
+            android:label="@string/title_relation_member" />
+        <activity
             android:name=".activity.SettingActivity"
             android:label="@string/title_Settings" />
         <activity

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.RelationMemberActivity"
+    android:overScrollMode="never"
+    android:scrollbars="none" >
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/title_bar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/relation_member_rv"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="55dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

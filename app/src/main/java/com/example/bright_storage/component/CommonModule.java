@@ -10,11 +10,4 @@ import dagger.Provides;
 @Module
 public class CommonModule {
 
-    @Singleton
-    @Provides
-    public Gson providerGson(){
-        Gson gson = new Gson();
-        return gson;
-    }
-
 }

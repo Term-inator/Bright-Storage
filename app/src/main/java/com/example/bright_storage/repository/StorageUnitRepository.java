@@ -1,6 +1,7 @@
 package com.example.bright_storage.repository;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.bright_storage.component.DaggerRepositoryComponent;
 import com.example.bright_storage.component.RepositoryModule;
@@ -20,6 +21,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class StorageUnitRepository extends AbstractRepository<StorageUnit, Long>{
+
+    private static final String TAG = "StorageUnitRepository";
 
     @Inject
     CategoryRepository categoryRepository;
@@ -47,6 +50,17 @@ public class StorageUnitRepository extends AbstractRepository<StorageUnit, Long>
             ids.add(re.getStorageUnitId());
         }
         return findByIds(ids);
+    }
+
+    public List<StorageUnit> listByParentId(Long localParentId){
+        try {
+            return manager.selector(StorageUnit.class)
+                    .where("local_parent_id", "=", localParentId)
+                    .findAll();
+        } catch (DbException e) {
+            Log.e(TAG, "listByParentId: ", e);
+            throw new DBException(e.getMessage());
+        }
     }
 
     /**

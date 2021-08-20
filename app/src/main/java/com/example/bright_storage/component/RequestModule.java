@@ -3,11 +3,14 @@ package com.example.bright_storage.component;
 import android.content.SharedPreferences;
 
 import com.example.bright_storage.api.RelationRequest;
+import com.example.bright_storage.api.StorageUnitRequest;
+import com.example.bright_storage.api.SyncRequest;
 import com.example.bright_storage.api.UserRequest;
 import com.example.bright_storage.exception.BadRequestException;
 import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.util.SharedPreferencesUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -33,8 +36,12 @@ public class RequestModule {
 
     private final OkHttpClient client;
 
+    private final Gson gson;
+
     public RequestModule(){
-        Gson gson = new Gson();
+        gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+            .create();
 
         client = new OkHttpClient.Builder()
                 // add token
@@ -67,8 +74,15 @@ public class RequestModule {
                 .baseUrl("http://192.168.1.3/api/")
                 .client(client)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
+
+    }
+
+    @Singleton
+    @Provides
+    public Gson providerGson(){
+        return gson;
     }
 
     @Singleton
@@ -81,6 +95,18 @@ public class RequestModule {
     @Provides
     public RelationRequest providerRelationRequest(){
         return retrofit.create(RelationRequest.class);
+    }
+
+    @Singleton
+    @Provides
+    public SyncRequest providerSyncRequest(){
+        return retrofit.create(SyncRequest.class);
+    }
+
+    @Singleton
+    @Provides
+    public StorageUnitRequest providerStorageUnitRequest(){
+        return retrofit.create(StorageUnitRequest.class);
     }
 
 }

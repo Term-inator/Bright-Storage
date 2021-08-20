@@ -1,12 +1,20 @@
 package com.example.bright_storage.service;
 
+import com.example.bright_storage.model.dto.StorageUnitDTO;
 import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.service.base.AbstractCrudService;
 import com.example.bright_storage.service.base.CrudService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface StorageUnitService extends CrudService<StorageUnit, Long> {
 
@@ -40,5 +48,20 @@ public interface StorageUnitService extends CrudService<StorageUnit, Long> {
      * @return /
      */
     List<StorageUnit> listLongestVisitedStorageUnits(Integer storageUnitType, Integer limit);
+
+    /**
+     * 查询关系共享的物品
+     * @param relationId 关系id
+     * @return /
+     */
+    List<StorageUnitDTO> listStorageUnitByRelationId(Long relationId);
+
+    /**
+     * 对关系共享物品，未同步（拥有服务器ID）的物品无法共享
+     * @param relationId 关系ID
+     * @param storageUnitId 物品服务器ID
+     * @return ignore
+     */
+    BaseResponse<Object> shareStorageUnit(Long relationId, Long storageUnitId);
 
 }

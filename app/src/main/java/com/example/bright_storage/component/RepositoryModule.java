@@ -7,6 +7,7 @@ import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.entity.StorageUnitCategory;
 import com.example.bright_storage.repository.AccessLogRepository;
 import com.example.bright_storage.repository.CategoryRepository;
+import com.example.bright_storage.repository.OperationLogRepository;
 import com.example.bright_storage.repository.StorageUnitCategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
 
@@ -32,7 +33,7 @@ public class RepositoryModule {
     public RepositoryModule(){
         DbManager.DaoConfig daoConfig = new DbManager.DaoConfig()
                 .setDbName("brightstorage.db")
-                .setDbVersion(6)
+                .setDbVersion(7)
                 .setAllowTransaction(false)
                 .setDbOpenListener(db -> {
                     db.getDatabase().enableWriteAheadLogging();
@@ -72,5 +73,11 @@ public class RepositoryModule {
     @Provides
     public AccessLogRepository providerAccessLogRepository(){
         return new AccessLogRepository();
+    }
+
+    @Singleton
+    @Provides
+    public OperationLogRepository providerOperationLogRepository(){
+        return new OperationLogRepository();
     }
 }

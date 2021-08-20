@@ -1,6 +1,7 @@
 package com.example.bright_storage.api;
 
 import com.example.bright_storage.model.dto.RelationDTO;
+import com.example.bright_storage.model.dto.StorageUnitDTO;
 import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.model.vo.UserVO;
 
@@ -53,4 +54,5 @@ public interface RelationRequest {
 
     @GET("relation/members")
     Call<BaseResponse<List<UserVO>>> listMembersByRelationId(@Query("id") Long id);
+
 }

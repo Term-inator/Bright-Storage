@@ -18,4 +18,12 @@ public class SharedPreferencesUtil {
         return sharedPreferences.getString(key, defValue);
     }
 
+    public static void putLong(String key, long value){
+        sharedPreferences.edit().putLong(key, value).commit();
+    }
+
+    public static long getLong(String key, long defValue){
+        return sharedPreferences.getLong(key, defValue);
+    }
+
 }

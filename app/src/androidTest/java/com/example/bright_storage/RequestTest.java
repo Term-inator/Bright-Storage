@@ -11,8 +11,10 @@ import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.param.RegisterParam;
 import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.service.RelationService;
+import com.example.bright_storage.service.SyncService;
 import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.RelationServiceImpl;
+import com.example.bright_storage.service.impl.SyncServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
 import com.example.bright_storage.util.SharedPreferencesUtil;
 
@@ -27,8 +29,11 @@ public class RequestTest {
 
     private RelationService relationService;
 
+    private SyncService syncService;
+
     @Before
     public void init(){
+        syncService = new SyncServiceImpl();
         userService = new UserServiceImpl();
         relationService = new RelationServiceImpl();
         SharedPreferences sharedPreferences = InstrumentationRegistry.getInstrumentation().getContext().getSharedPreferences("token", Context.MODE_PRIVATE);
@@ -67,5 +72,10 @@ public class RequestTest {
     @Test
     public void listRelationByCurrentUser(){
         List<RelationDTO> relationDTOS = relationService.listByCurrentUser();
+    }
+
+    @Test
+    public void push(){
+        syncService.push();
     }
 }

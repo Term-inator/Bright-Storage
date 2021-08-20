@@ -1,5 +1,6 @@
 package com.example.bright_storage.model.entity;
 
+import org.jetbrains.annotations.NotNull;
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
@@ -10,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -38,9 +38,11 @@ public class StorageUnit extends OwnershipEntity {
     @Column(name = "amount")
     private Integer amount;
 
-    @Column(name = "parent_id")
-    private Long parentId;
+    @Column(name = "local_parent_id")
+    private Long localParentId;
 
+    @Column(name = "remote_parent_id")
+    private Long parentId;
 
     /**
      * true: 向关系成员公开
@@ -66,7 +68,10 @@ public class StorageUnit extends OwnershipEntity {
 
     private Set<Category> categories;
 
-
+    public void setParent(@NotNull StorageUnit storageUnit){
+        this.localParentId = storageUnit.getLocalId();
+        this.parentId = storageUnit.getId();
+    }
 
     @Override
     public void prePersist() {
@@ -80,8 +85,8 @@ public class StorageUnit extends OwnershipEntity {
         if(amount == null){
             amount = 1;
         }
-        if(parentId == null){
-            parentId = 0L;
+        if(localParentId == null){
+            localParentId = 0L;
         }
         if(access == null){
             access = false;

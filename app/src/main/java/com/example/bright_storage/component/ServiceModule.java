@@ -3,10 +3,12 @@ package com.example.bright_storage.component;
 import com.example.bright_storage.service.CategoryService;
 import com.example.bright_storage.service.RelationService;
 import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.SyncService;
 import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.CategoryServiceImpl;
 import com.example.bright_storage.service.impl.RelationServiceImpl;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
+import com.example.bright_storage.service.impl.SyncServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
 
 import javax.inject.Singleton;
@@ -39,5 +41,11 @@ public class ServiceModule {
     @Provides
     public RelationService providerRelationService(){
         return new RelationServiceImpl();
+    }
+
+    @Singleton
+    @Provides
+    public SyncService providerSyncService(){
+        return new SyncServiceImpl();
     }
 }

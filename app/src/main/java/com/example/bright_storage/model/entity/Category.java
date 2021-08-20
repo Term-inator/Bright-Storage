@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "category")
 public class Category extends OwnershipEntity {
 
-    @Column(name = "category_id", isId = true, autoGen = true)
+    @Column(name = "category_id", isId = true)
     private Long localId;
 
     @Column(name = "remote_id")

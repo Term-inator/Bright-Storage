@@ -7,17 +7,22 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.bright_storage.model.entity.Category;
+import com.example.bright_storage.model.entity.OperationLog;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.entity.StorageUnitCategory;
 import com.example.bright_storage.model.query.StorageUnitQuery;
 import com.example.bright_storage.model.support.Pageable;
+import com.example.bright_storage.repository.OperationLogRepository;
 import com.example.bright_storage.repository.StorageUnitCategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.service.CategoryService;
 import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.SyncService;
 import com.example.bright_storage.service.impl.CategoryServiceImpl;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
+import com.example.bright_storage.service.impl.SyncServiceImpl;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,21 +50,24 @@ public class ExampleInstrumentedTest {
     StorageUnitService storageUnitService;
 
     @Inject
-    StorageUnitRepository storageUnitRepository;
-
-    @Inject
     CategoryService categoryService;
 
     @Inject
     StorageUnitCategoryRepository storageUnitCategoryRepository;
 
+    @Inject
+    OperationLogRepository operationLogRepository;
+
+    @Inject
+    SyncService syncService;
 
     @Before
     public void before(){
         storageUnitService = new StorageUnitServiceImpl();
-        storageUnitRepository = new StorageUnitRepository();
         categoryService = new CategoryServiceImpl();
         storageUnitCategoryRepository = new StorageUnitCategoryRepository();
+        operationLogRepository = new OperationLogRepository();
+        syncService = new SyncServiceImpl();
     }
 
     @Test
@@ -80,45 +88,48 @@ public class ExampleInstrumentedTest {
 
     @Test
     public void insertStorageUnit(){
-        StorageUnit storageUnit = new StorageUnit();
-        storageUnit.setName("7778888@@@@@@");
-        storageUnit.setAmount(7);
-        storageUnit.setNote("777");
-        storageUnit.setCategories(new HashSet<>(categoryService.listAll()));
+        List<Category> categories = categoryService.listAll();
+        for(int i=0;i<5;i++){
+            StorageUnit storageUnit = new StorageUnit();
+            storageUnit.setName(i + "@@@@@@");
+            storageUnit.setAmount(i*10);
+            storageUnit.setNote("Note: " + i);
+            storageUnit.setCategories(new HashSet<>(categories));
+            storageUnitService.create(storageUnit);
 
-        storageUnitService.create(storageUnit);
-        int i = 0;
-
-    }
-
-    @Test
-    public void queryRecentActiveStorageUnit(){
-        List<StorageUnit> storageUnits = storageUnitService.listRecentActiveStorageUnit();
-        List<StorageUnit> storageUnits1 = storageUnitService.listLongestVisitedStorageUnits(null, 3);
-        List<StorageUnit> storageUnits2 = storageUnitRepository.listLongestVisitedStorageUnits(null, 3);
-        int i = 0;
-    }
-
-    @Test
-    public void queryStorageUnit(){
-        StorageUnitQuery query = new StorageUnitQuery();
-//        query.setName("cate");
-//        query.setAmount(3);
-        Pageable pageable = new Pageable();
-        pageable.getOrderByList().clear();
-        pageable.getOrderByList().add(new Selector.OrderBy("amount", true));
-        List<StorageUnit> res = storageUnitService.query(query, pageable);
-        for(StorageUnit storageUnit: res){
-            Log.i(TAG, "query storage unit: " + storageUnit);
         }
     }
 
     @Test
-    public void insertSUC(){
-        List<StorageUnitCategory> suc = storageUnitCategoryRepository.findAll();
-        for (StorageUnitCategory storageUnitCategory : suc) {
-            Log.i(TAG, "insertSUC: suc" + storageUnitCategory);
-        }
+    public void updateStorageUnit(){
+        StorageUnit storageUnit = storageUnitService.getById(20L);
+        storageUnit.setAmount(1233);
+        storageUnit.setName("Changed");
+        storageUnitService.update(storageUnit);
+    }
 
+    @Test
+    public void updateStorageUnitSetParent(){
+        StorageUnit parent = storageUnitService.getById(1L);
+        StorageUnit storageUnit = storageUnitService.getById(4L);
+        storageUnit.setParent(parent);
+        storageUnitService.update(storageUnit);
+    }
+
+    @Test
+    public void deleteStorageUnit(){
+        storageUnitService.deleteById(17L);
+    }
+
+    @Test
+    public void deleteOperationLog(){
+        operationLogRepository.delete(operationLogRepository.findAll());
+    }
+
+    @After
+    public void after(){
+        // 查看数据用
+        List<StorageUnit> storageUnits = storageUnitService.listAll();
+        List<OperationLog> operationLogs = operationLogRepository.findAll();
     }
 }

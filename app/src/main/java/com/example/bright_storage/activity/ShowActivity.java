@@ -54,7 +54,6 @@ import com.example.bright_storage.model.entity.AccessLog;
 import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.repository.CategoryRepository;
-import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.service.AccessLogService;
 import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.impl.AccessLogServiceImpl;
@@ -847,7 +846,7 @@ public class ShowActivity extends AppCompatActivity
                     storageUnit.setAccess(open);
                     storageUnit.setAmount(count);
                     if(newPath != null)
-                        storageUnit.setParentId(newPath);
+                        storageUnit.setLocalParentId(newPath);
                     if(imageUri != null)
                         storageUnit.setImage(imageUri.toString());
                     storageUnit.setExpireTime(expireTime);

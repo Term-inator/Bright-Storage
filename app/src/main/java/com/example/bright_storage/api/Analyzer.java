@@ -316,7 +316,7 @@ public class Analyzer {
 
                         StorageUnit storageUnit = new StorageUnit();
                         storageUnit.setName(name);
-                        storageUnit.setParentId(p_id);
+                        storageUnit.setLocalParentId(p_id);
                         this.storageUnitRepo.save(storageUnit);
                         succeed = true;
                     }
@@ -330,7 +330,7 @@ public class Analyzer {
                     else if (op_type == 3) { // TODO 无法证明只有将左移动到右之下
                         long be_to_move = l_id; // 将被移动的StorageUnit的id
                         StorageUnit su = storageUnitRepo.findById(be_to_move);
-                        su.setParentId(r_id);
+                        su.setLocalParentId(r_id);
                         this.storageUnitRepo.update(su);
                         succeed = true;
                     }

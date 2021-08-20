@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     private void initRoom() {
         StorageUnit storageUnit = new StorageUnit();
         storageUnit.setName("客厅");
-        storageUnit.setParentId(0L);
+        storageUnit.setLocalParentId(0L);
         storageUnit.setType(1);
         storageUnit.setAmount(1);
         storageUnit.setAccess(true);

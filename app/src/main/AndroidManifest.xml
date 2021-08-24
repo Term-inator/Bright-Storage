@@ -64,6 +64,10 @@
             android:label="@string/title_add">
         </activity>
         <activity
+            android:name=".activity.NewRelationActivity"
+            android:label="新建关系">
+        </activity>
+        <activity
             android:name=".activity.ShowActivity"
             android:label="@string/title_show">
         </activity>

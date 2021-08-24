@@ -29,6 +29,8 @@ public class StorageUnitQuery extends BaseQuery<StorageUnit>{
 
     private Integer amount;
 
+    private Long localParentId;
+
     /**
      * true: 向关系成员公开
      * false: 私有
@@ -52,8 +54,11 @@ public class StorageUnitQuery extends BaseQuery<StorageUnit>{
         if(type != null){
             selector.and("type", "=", type);
         }
-        if(parentId != null){
+        if(parentId != null) {
             selector.and("parent_id", "=", parentId);
+        }
+        if(localParentId != null) {
+            selector.and("local_parent_id", "=", localParentId);
         }
         if(amount != null){
             selector.and("amount", "=", amount);

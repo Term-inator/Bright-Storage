@@ -118,7 +118,7 @@ public class HomeFragment extends Fragment {
     }
 
     protected static void initData() {
-        select.setParentId(getPid());
+        select.setLocalParentId(getPid());
         StorageUnitService StorageUnitService = new StorageUnitServiceImpl();
         datas = new ArrayList<>();
         List<StorageUnit> all = StorageUnitService.query(select);
@@ -180,7 +180,7 @@ public class HomeFragment extends Fragment {
 
     private void delete(StorageUnit storageUnit , StorageUnitRepository storageUnitRepository) {
         StorageUnitQuery query = new StorageUnitQuery();
-        query.setParentId(storageUnit.getLocalId());
+        query.setLocalParentId(storageUnit.getLocalId());
         storageUnit.setDeleted(true);
         storageUnitRepository.update(storageUnit);
         // storageUnitRepository.delete(storageUnit);

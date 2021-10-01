@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.bright_storage.R;
+import com.example.bright_storage.model.dto.StorageUnitDTO;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.query.StorageUnitQuery;
 import com.example.bright_storage.repository.StorageUnitRepository;
@@ -36,14 +37,15 @@ public class RelationShowActivity extends AppCompatActivity {
     private StorageUnitRepository storageUnitRepository;
     private static RecyclerView mRecyclerView;
     private static StorageUnitQuery select = new StorageUnitQuery();
-    private static Stack<Long> p_id = new Stack<>();
+    private static Stack<StorageUnitDTO> p_id = new Stack<>();
     private static Stack<String> title_name = new Stack<>();
-    private static List<StorageUnit> datas;
+    private static List<StorageUnitDTO> datas;
     private static List<StorageUnit> dataToDelete = new ArrayList<>();
-    private static HomeAdapter homeAdapter;
+    private static RelationShowAdapter RelationShowAdapter;
     private Button title_back, title_search;
     private TextView title_text;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Long relateid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,27 +98,40 @@ public class RelationShowActivity extends AppCompatActivity {
         });
         SetOnClick();
     }
-    protected static void initData() {
-        select.setParentId(getPid());
+    protected void initData() {
+        relateid = getIntent().getLongExtra("id",0l);
         StorageUnitService StorageUnitService = new StorageUnitServiceImpl();
         datas = new ArrayList<>();
-        List<StorageUnit> all = StorageUnitService.query(select);
-        for(StorageUnit it : all) {
-            if(!it.getDeleted()) {
-                datas.add(it);
+        if (p_id.empty())
+        {
+            List<StorageUnitDTO> all = storageUnitService.listStorageUnitByRelationId(relateid);
+            for(StorageUnitDTO it : all) {
+                if(!it.getDeleted()) {
+                    datas.add(it);
+                }
             }
         }
+        else
+        {
+            List<StorageUnitDTO> all = p_id.peek().getChildren();
+            for(StorageUnitDTO it : all) {
+                if(!it.getDeleted()) {
+                    datas.add(it);
+                }
+            }
+        }
+
     }
 
     protected void SetOnClick() {
 
         //      调用按钮返回事件回调的方法
-        homeAdapter.layoutSetOnclick(new HomeAdapter.layoutInterface() {
+        RelationShowAdapter.layoutSetOnclick(new RelationShowAdapter.layoutInterface() {
             @Override
-            public void onclick(View view, StorageUnit TstorageUnit) {
+            public void onclick(View view, StorageUnitDTO TstorageUnit) {
 //                Toast.makeText(root.getContext(), "点击条目上的按钮" + position, Toast.LENGTH_SHORT).show();
                 if (TstorageUnit.getType() == 1) {
-                    p_id.push(TstorageUnit.getLocalId());  //将pid设置为点击的storageunit的id
+                    p_id.push(TstorageUnit);  //将pid设置为点击的storageunit的id
                     title_name.push(TstorageUnit.getName()); //将titlename设置成点击的路径；
                     setTitle();
                 }
@@ -125,35 +140,35 @@ public class RelationShowActivity extends AppCompatActivity {
                     SetOnClick();
                 } else {
                     Intent intent = new Intent();
-                    intent.putExtra("Id", TstorageUnit.getLocalId());
+                    intent.putExtra("Id", TstorageUnit.getId());
                     intent.setClass(RelationShowActivity.this, ShowActivity.class);
                     startActivity(intent);
                 }
             }
 
-            @Override
-            public void onLongClick(View view, StorageUnit TstorageUnit) {
-                /*FloatingActionButton fab = root.findViewById(R.id.fab);
-                RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
-                //HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
-                for (int i = 0; i < manager.getChildCount();i++) {
-                    View view = manager.getChildAt(i);
-                    HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
-                    holder.deleteCheckBox.setVisibility(View.VISIBLE);
-                }*/
-                MessageDialog.show((AppCompatActivity) RelationShowActivity.this, "删除", "确定要删除" + TstorageUnit.getName() + "吗？", "确定", "取消")
-                        .setOkButton("确定", new OnDialogButtonClickListener() {
-                            @Override
-                            public boolean onClick(BaseDialog baseDialog, View v) {
-                                storageUnitRepository = new StorageUnitRepository();
-                                delete(TstorageUnit, storageUnitRepository);
-                                refresh();
-                                SetOnClick();
-                                //Toast.makeText(getActivity(), "点击了OK！", Toast.LENGTH_SHORT).show();
-                                return false;
-                            }
-                        });
-            }
+//            @Override
+//            public void onLongClick(View view, StorageUnitDTO TstorageUnit) {
+//                /*FloatingActionButton fab = root.findViewById(R.id.fab);
+//                RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
+//                //HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
+//                for (int i = 0; i < manager.getChildCount();i++) {
+//                    View view = manager.getChildAt(i);
+//                    HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
+//                    holder.deleteCheckBox.setVisibility(View.VISIBLE);
+//                }*/
+//                MessageDialog.show((AppCompatActivity) RelationShowActivity.this, "删除", "确定要删除" + TstorageUnit.getName() + "吗？", "确定", "取消")
+//                        .setOkButton("确定", new OnDialogButtonClickListener() {
+//                            @Override
+//                            public boolean onClick(BaseDialog baseDialog, View v) {
+//                                storageUnitRepository = new StorageUnitRepository();
+//                                delete(TstorageUnit, storageUnitRepository);
+//                                refresh();
+//                                SetOnClick();
+//                                //Toast.makeText(getActivity(), "点击了OK！", Toast.LENGTH_SHORT).show();
+//                                return false;
+//                            }
+//                        });
+//            }
         });
     }
 
@@ -172,16 +187,16 @@ public class RelationShowActivity extends AppCompatActivity {
         }
     }
 
-    public static Long getPid() {
-        if (!p_id.empty())
-            return p_id.peek();
-        return 0l;
-    }
+//    public static StorageUnitDTO getPid() {
+//        if (!p_id.empty())
+//            return p_id.peek();
+//        return 0l;
+//    }
 
     protected void refresh() {
         initData();
-        homeAdapter = new HomeAdapter(this, datas);
-        mRecyclerView.setAdapter(homeAdapter);
+        RelationShowAdapter = new RelationShowAdapter(this, datas);
+        mRecyclerView.setAdapter(RelationShowAdapter);
     }
 
     protected void setTitle() {

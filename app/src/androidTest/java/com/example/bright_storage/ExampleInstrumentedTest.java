@@ -50,6 +50,9 @@ public class ExampleInstrumentedTest {
     StorageUnitService storageUnitService;
 
     @Inject
+    StorageUnitRepository storageUnitRepository;
+
+    @Inject
     CategoryService categoryService;
 
     @Inject
@@ -63,6 +66,7 @@ public class ExampleInstrumentedTest {
 
     @Before
     public void before(){
+        storageUnitRepository = new StorageUnitRepository();
         storageUnitService = new StorageUnitServiceImpl();
         categoryService = new CategoryServiceImpl();
         storageUnitCategoryRepository = new StorageUnitCategoryRepository();
@@ -118,7 +122,7 @@ public class ExampleInstrumentedTest {
 
     @Test
     public void deleteStorageUnit(){
-        storageUnitService.deleteById(17L);
+        storageUnitRepository.delete(storageUnitRepository.findAll());
     }
 
     @Test

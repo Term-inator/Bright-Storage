@@ -34,4 +34,11 @@ public interface UserService {
      * @return 可以忽略
      */
     BaseResponse<Object> register(RegisterParam registerParam);
+
+    /**
+     * 通过存储的Token获取用户信息，登录失败则返回null
+     * 同时获取到的用户信息被存入{@link com.example.bright_storage.util.SecurityUtil}
+     * @return
+     */
+    UserDTO getUserInfo();
 }

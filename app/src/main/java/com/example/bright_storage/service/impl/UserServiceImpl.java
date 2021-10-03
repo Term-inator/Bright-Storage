@@ -14,6 +14,7 @@ import com.example.bright_storage.model.param.RegisterParam;
 import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.util.Assert;
+import com.example.bright_storage.util.SecurityUtil;
 import com.example.bright_storage.util.SharedPreferencesUtil;
 
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class UserServiceImpl implements UserService {
             BaseResponse<LoginInfoVO> response = userRequest.loginPassword(param).execute().body();
             LoginInfoVO loginInfo = response.getData();
             if(loginInfo != null){
+                SecurityUtil.setCurrentUser(loginInfo.getUser());
                 SharedPreferencesUtil.putString("token",loginInfo.getToken());
                 user_login = loginInfo.getUser();
             }
@@ -79,6 +81,7 @@ public class UserServiceImpl implements UserService {
             BaseResponse<LoginInfoVO> response = userRequest.loginPhone(param).execute().body();
             LoginInfoVO loginInfo = response.getData();
             if(loginInfo != null){
+                SecurityUtil.setCurrentUser(loginInfo.getUser());
                 SharedPreferencesUtil.putString("token",loginInfo.getToken());
             }
             return response;
@@ -88,4 +91,15 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserDTO getUserInfo() {
+        try {
+            UserDTO userDTO = userRequest.getUserInfo().execute().body().getData();
+            SecurityUtil.setCurrentUser(userDTO);
+            return userDTO;
+        } catch (IOException e) {
+            Log.e(TAG, "getUserInfo: ", e);
+            throw new BadRequestException(e.getMessage());
+        }
+    }
 }

@@ -1,7 +1,5 @@
 package com.example.bright_storage.component;
 
-import android.content.SharedPreferences;
-
 import com.example.bright_storage.api.RelationRequest;
 import com.example.bright_storage.api.StorageUnitRequest;
 import com.example.bright_storage.api.SyncRequest;
@@ -12,15 +10,10 @@ import com.example.bright_storage.util.SharedPreferencesUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -71,7 +64,7 @@ public class RequestModule {
                 .build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.3/api/")
+                .baseUrl("http://47.117.118.139:8848/api/")
                 .client(client)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))

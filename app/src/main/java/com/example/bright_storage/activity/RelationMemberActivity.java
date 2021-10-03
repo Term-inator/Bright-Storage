@@ -42,7 +42,7 @@ public class RelationMemberActivity extends AppCompatActivity {
 
         title_back = (Button) findViewById(R.id.title_back);
         title_exit = (Button) findViewById(R.id.title_search);
-        title_exit.setBackgroundResource(R.mipmap.exit);
+//        title_exit.setBackgroundResource(R.mipmap.exit);
         title_text = (TextView) findViewById(R.id.title_text);
         title_text.setText("关系成员");
 

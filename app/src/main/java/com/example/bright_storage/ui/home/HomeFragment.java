@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.example.bright_storage.activity.SettingActivity;
 import com.example.bright_storage.activity.ShowActivity;
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.query.StorageUnitQuery;
 
 import androidx.annotation.NonNull;
@@ -24,10 +25,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.bright_storage.R;
+import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.search.SearchActivity;
 import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.SyncService;
+import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
+import com.example.bright_storage.service.impl.SyncServiceImpl;
+import com.example.bright_storage.service.impl.UserServiceImpl;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
@@ -62,6 +68,8 @@ public class HomeFragment extends Fragment {
     private TextView title_text;
     private SwipeRefreshLayout swipeRefreshLayout;
     public static final int SELECT_PATH = 1;
+    private SyncService syncService;
+    private UserService userService;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -199,10 +207,13 @@ public class HomeFragment extends Fragment {
         return 0l;
     }
 
-    protected static void refresh() {
+    protected void refresh() {
         initData();
         homeAdapter = new HomeAdapter(root.getContext(), datas);
         mRecyclerView.setAdapter(homeAdapter);
+        login();
+        syncService = new SyncServiceImpl();
+        syncService.push();
     }
 
     protected void setTitle() {
@@ -233,5 +244,12 @@ public class HomeFragment extends Fragment {
                     setTitle();
                 }
         }
+    }
+    protected void login(){
+        LoginParam loginParam = new LoginParam();
+        loginParam.setPhone("15822222222");
+        loginParam.setPassword("ab123456");
+        userService = new UserServiceImpl();
+        BaseResponse<?> response = userService.loginPassword(loginParam);
     }
 }

@@ -14,11 +14,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.bright_storage.R;
 import com.example.bright_storage.model.dto.StorageUnitDTO;
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.query.StorageUnitQuery;
+import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.search.SearchActivity;
 import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
+import com.example.bright_storage.service.impl.UserServiceImpl;
 import com.example.bright_storage.ui.home.HomeAdapter;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
@@ -33,8 +37,6 @@ import javax.inject.Inject;
 public class RelationShowActivity extends AppCompatActivity {
     @Inject
     StorageUnitService storageUnitService;
-
-    private StorageUnitRepository storageUnitRepository;
     private static RecyclerView mRecyclerView;
     private static StorageUnitQuery select = new StorageUnitQuery();
     private static Stack<StorageUnitDTO> p_id = new Stack<>();
@@ -42,28 +44,35 @@ public class RelationShowActivity extends AppCompatActivity {
     private static List<StorageUnitDTO> datas;
     private static List<StorageUnit> dataToDelete = new ArrayList<>();
     private static RelationShowAdapter RelationShowAdapter;
-    private Button title_back, title_search;
+    private Button title_back, title_add;
     private TextView title_text;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Long relateid;
+    private String name;
+    public static final int SELECT_PATH = 1;
+    private UserService userService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
-        setContentView(R.layout.activity_relation);
+        setContentView(R.layout.activity_relation_member);
         //        初始化RecyclerView
-        mRecyclerView = (RecyclerView)findViewById(R.id.id_recyclerview);
+        mRecyclerView = (RecyclerView)findViewById(R.id.relation_member_rv);
         title_back = (Button)findViewById(R.id.title_back);
-        title_search = (Button)findViewById(R.id.title_search);
+        title_add = (Button)findViewById(R.id.title_search);
+        title_add.setBackgroundResource(R.drawable.ic_baseline_add_72dp);
         title_text = (TextView)findViewById(R.id.title_text);
-        title_text.setText("智存");
+        name = getIntent().getBundleExtra("relate").getString("name");
+        title_text.setText(name);
         refresh();
         title_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!p_id.empty())
                     p_id.pop();
+                else
+                    finish();
                 if (!title_name.empty())
                     title_name.pop();
                 setTitle();
@@ -71,11 +80,11 @@ public class RelationShowActivity extends AppCompatActivity {
                 SetOnClick();
             }
         });
-        title_search.setOnClickListener(new View.OnClickListener() {
+        title_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RelationShowActivity.this, SearchActivity.class);
-//                startActivityForResult(intent, SELECT_PATH);
+                Intent intent = new Intent(RelationShowActivity.this, StorageUnitSelectActivity.class);
+                startActivityForResult(intent, SELECT_PATH);
             }
         });
 //      RecyclerView设置展示的的样式（listView样子，gridView样子，瀑布流样子）
@@ -99,8 +108,8 @@ public class RelationShowActivity extends AppCompatActivity {
         SetOnClick();
     }
     protected void initData() {
-        relateid = getIntent().getLongExtra("id",0l);
-        StorageUnitService StorageUnitService = new StorageUnitServiceImpl();
+        relateid = getIntent().getBundleExtra("relate").getLong("id");
+        storageUnitService = new StorageUnitServiceImpl();
         datas = new ArrayList<>();
         if (p_id.empty())
         {
@@ -172,20 +181,20 @@ public class RelationShowActivity extends AppCompatActivity {
         });
     }
 
-    private void delete(StorageUnit storageUnit , StorageUnitRepository storageUnitRepository) {
-        StorageUnitQuery query = new StorageUnitQuery();
-        query.setParentId(storageUnit.getLocalId());
-        storageUnit.setDeleted(true);
-        storageUnitRepository.update(storageUnit);
-        // storageUnitRepository.delete(storageUnit);
-        storageUnitService = new StorageUnitServiceImpl();
-        List<StorageUnit> res = storageUnitService.query(query);
-        if(res == null || res.size() == 0)
-            return;
-        for(StorageUnit it : res) {
-            delete(it, storageUnitRepository);
-        }
-    }
+//    private void delete(StorageUnit storageUnit , StorageUnitRepository storageUnitRepository) {
+//        StorageUnitQuery query = new StorageUnitQuery();
+//        query.setParentId(storageUnit.getLocalId());
+//        storageUnit.setDeleted(true);
+//        storageUnitRepository.update(storageUnit);
+//        // storageUnitRepository.delete(storageUnit);
+//        storageUnitService = new StorageUnitServiceImpl();
+//        List<StorageUnit> res = storageUnitService.query(query);
+//        if(res == null || res.size() == 0)
+//            return;
+//        for(StorageUnit it : res) {
+//            delete(it, storageUnitRepository);
+//        }
+//    }
 
 //    public static StorageUnitDTO getPid() {
 //        if (!p_id.empty())
@@ -201,7 +210,7 @@ public class RelationShowActivity extends AppCompatActivity {
 
     protected void setTitle() {
         if (title_name.empty())
-            title_text.setText("智存");
+            title_text.setText(name);
         else
             title_text.setText(title_name.peek());
     }
@@ -214,18 +223,27 @@ public class RelationShowActivity extends AppCompatActivity {
         setTitle();
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data){
-//        super.onActivityResult(requestCode, resultCode, data);
-//        switch(requestCode) {
-//            case SELECT_PATH:
-//                if (data != null) {
-//                    p_id.push(data.getExtras().getLong("pid"));
-//                    title_name.push(data.getExtras().getString("name"));
-//                    refresh();
-//                    SetOnClick();
-//                    setTitle();
-//                }
-//        }
-//    }
+    protected void login(){
+        LoginParam loginParam = new LoginParam();
+        loginParam.setPhone("15822222222");
+        loginParam.setPassword("ab123456");
+        userService = new UserServiceImpl();
+        BaseResponse<?> response = userService.loginPassword(loginParam);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case SELECT_PATH:
+                if (data != null) {
+                    login();
+                    StorageUnitService storageUnitService =  new StorageUnitServiceImpl();
+                    storageUnitService.shareStorageUnit(relateid,data.getExtras().getLong("id"));
+                    refresh();
+                    SetOnClick();
+                    setTitle();
+                }
+        }
+    }
 }

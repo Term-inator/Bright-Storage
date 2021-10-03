@@ -8,6 +8,7 @@ import com.example.bright_storage.component.DaggerServiceComponent;
 import com.example.bright_storage.component.RequestModule;
 import com.example.bright_storage.exception.BadRequestException;
 import com.example.bright_storage.model.dto.LoginInfoVO;
+import com.example.bright_storage.model.dto.UserDTO;
 import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.param.RegisterParam;
 import com.example.bright_storage.model.support.BaseResponse;
@@ -24,13 +25,20 @@ public class UserServiceImpl implements UserService {
     private static final String TAG = "LoginServiceImpl";
 
     @Inject
-    UserRequest userRequest;
+    UserRequest userRequest = null;
+
+    static UserDTO user_login;
 
     public UserServiceImpl(){
         DaggerServiceComponent.builder()
                 .requestModule(new RequestModule())
                 .build()
                 .inject(this);
+    }
+
+    @Override
+    public UserDTO getUserInfo() {
+        return user_login;
     }
 
     @Override
@@ -52,6 +60,10 @@ public class UserServiceImpl implements UserService {
             LoginInfoVO loginInfo = response.getData();
             if(loginInfo != null){
                 SharedPreferencesUtil.putString("token",loginInfo.getToken());
+                user_login = loginInfo.getUser();
+            }
+            else {
+                user_login = null;
             }
             return response;
         } catch (IOException e) {

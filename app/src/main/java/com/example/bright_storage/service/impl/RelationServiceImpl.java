@@ -71,6 +71,16 @@ public class RelationServiceImpl implements RelationService {
     }
 
     @Override
+    public String getNewInviteCode(Long id) {
+        try {
+            return relationRequest.getNewInviteCode(id).execute().body().getData();
+        } catch (IOException e) {
+            Log.e(TAG, "getNewInviteCode: ", e);
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
+    @Override
     public BaseResponse<Object> joinRelation(String uuid) {
         try {
             return relationRequest.joinRelation(uuid).execute().body();

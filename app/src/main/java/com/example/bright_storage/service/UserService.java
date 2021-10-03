@@ -1,11 +1,18 @@
 package com.example.bright_storage.service;
 
 import com.example.bright_storage.model.dto.LoginInfoVO;
+import com.example.bright_storage.model.dto.UserDTO;
 import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.param.RegisterParam;
 import com.example.bright_storage.model.support.BaseResponse;
 
 public interface UserService {
+
+    /**
+     * 获取登录的用户信息
+     * @return 用户信息/null
+     */
+    UserDTO getUserInfo();
 
     /**
      * 通过密码登录，如果登录成功自动设置token

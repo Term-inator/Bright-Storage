@@ -37,13 +37,13 @@ public class RequestTest {
         relationService = new RelationServiceImpl();
         SharedPreferences sharedPreferences = InstrumentationRegistry.getInstrumentation().getContext().getSharedPreferences("token", Context.MODE_PRIVATE);
         SharedPreferencesUtil.setSharedPreferences(sharedPreferences);
-        // loginPassword();
+//        loginPassword();
     }
 
     @Test
     public void register(){
         RegisterParam param = new RegisterParam();
-        param.setPhone("15822222222");
+        param.setPhone("15855555555");
         param.setPassword("ab123456");
         param.setCode("1234");
         try {
@@ -53,28 +53,39 @@ public class RequestTest {
         }
     }
 
-    @Test
-    public void loginPassword(){
+    public void loginPassword(String phone, String password){
         LoginParam loginParam = new LoginParam();
-        loginParam.setPhone("15822222222");
-        loginParam.setPassword("ab123456");
+        loginParam.setPhone(phone);
+        loginParam.setPassword(password);
         BaseResponse<?> response = userService.loginPassword(loginParam);
     }
 
     @Test
     public void createRelation(){
+        loginPassword("15822222222", "ab123456");
         RelationDTO relationDTO = new RelationDTO();
-        relationDTO.setName("Di yi ge guan xi");
+        relationDTO.setName("家");
         RelationDTO relation = relationService.createRelation(relationDTO);
     }
 
     @Test
     public void listRelationByCurrentUser(){
+        loginPassword("15822222222", "ab123456");
         List<RelationDTO> relationDTOS = relationService.listByCurrentUser();
     }
 
     @Test
     public void push(){
+        loginPassword("15822222222", "ab123456");
         syncService.push();
+    }
+
+    @Test
+    public void joinRelation() {
+        loginPassword("15822222222", "ab123456");
+        String code = relationService.getInviteCode(1L);
+        System.out.println(code);
+        loginPassword("15833333333", "ab123456");
+        relationService.joinRelation(code);
     }
 }

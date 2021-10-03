@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.bright_storage.R;
 import com.example.bright_storage.activity.BSProActivity;
 import com.example.bright_storage.activity.RecycleBinActivity;
-import com.example.bright_storage.activity.RelationActivity;
 import com.example.bright_storage.activity.RelationMemberActivity;
 import com.example.bright_storage.activity.SettingActivity;
 
@@ -52,7 +51,7 @@ public class PersonalInfoFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Intent intent = new Intent(root.getContext(), RelationActivity.class);
-                Intent intent = new Intent(root.getContext(), RelationActivity.class);
+                Intent intent = new Intent(root.getContext(), RelationMemberActivity.class);
                 startActivity(intent);
             }
         });

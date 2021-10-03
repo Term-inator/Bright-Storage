@@ -18,7 +18,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bright_storage.R;
-import com.example.bright_storage.model.dto.UserDTO;
+import com.example.bright_storage.model.dto.RelationDTO;
+import com.example.bright_storage.model.param.LoginParam;
+import com.example.bright_storage.model.support.BaseResponse;
+import com.example.bright_storage.model.vo.UserVO;
+import com.example.bright_storage.service.impl.RelationServiceImpl;
+import com.example.bright_storage.service.impl.UserServiceImpl;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.v3.MessageDialog;
@@ -29,10 +34,20 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class RelationMemberActivity extends AppCompatActivity {
-    private ArrayList<UserDTO> members = new ArrayList<>();
+    private ArrayList<UserVO> members = new ArrayList<>();
+    private RelationServiceImpl relationService = new RelationServiceImpl();
     Button title_back;
     TextView title_text;
     Button title_exit;
+
+    // tmp
+    public void loginPassword(){
+        LoginParam loginParam = new LoginParam();
+        loginParam.setPhone("15822222222");
+        loginParam.setPassword("ab123456");
+        UserServiceImpl userService = new UserServiceImpl();
+        BaseResponse<?> response = userService.loginPassword(loginParam);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,16 +74,16 @@ public class RelationMemberActivity extends AppCompatActivity {
                     });
         });
 
-        for (int i = 0; i < 5; ++i) {
-            UserDTO u = new UserDTO();
+        loginPassword();
+
+        RelationDTO relation = relationService.getRelationById(1L);
+        UserVO relation_owner = relation.getOwner();
+
+        members.add(relation_owner);
+        members.addAll(relationService.listMembersByRelationId(1L));
+
+        for(UserVO u: members) {
             u.setAvatar("https://img.fulaishiji.com/images/goods/19883/big/03957c4d-6869-4cef-ad3e-824852f9da2b_800x800.png");
-            u.setNickname("张三");
-            members.add(u);
-        }for (int i = 0; i < 5; ++i) {
-            UserDTO u = new UserDTO();
-            u.setAvatar("https://img.fulaishiji.com/images/goods/19883/big/03957c4d-6869-4cef-ad3e-824852f9da2b_800x800.png");
-            u.setNickname("李四");
-            members.add(u);
         }
 
         RelationMemberAdapter adapter = new RelationMemberAdapter(members);
@@ -115,9 +130,9 @@ public class RelationMemberActivity extends AppCompatActivity {
 }
 
 class RelationMemberAdapter extends RecyclerView.Adapter<RelationMemberAdapter.MyViewHolder> {
-    private ArrayList<UserDTO> members;
+    private ArrayList<UserVO> members;
 
-    public RelationMemberAdapter(ArrayList<UserDTO> members) {
+    public RelationMemberAdapter(ArrayList<UserVO> members) {
         this.members = members;
     }
 

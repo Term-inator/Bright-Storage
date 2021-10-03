@@ -9,12 +9,6 @@ import com.example.bright_storage.model.support.BaseResponse;
 public interface UserService {
 
     /**
-     * 获取登录的用户信息
-     * @return 用户信息/null
-     */
-    UserDTO getUserInfo();
-
-    /**
      * 通过密码登录，如果登录成功自动设置token
      * @param loginParam not null
      * @return 可以忽略

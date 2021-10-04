@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -13,27 +12,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.bright_storage.R;
-import com.example.bright_storage.exception.BadRequestException;
 import com.example.bright_storage.model.dto.RelationDTO;
-import com.example.bright_storage.model.entity.Relation;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.query.StorageUnitQuery;
 import com.example.bright_storage.model.support.BaseResponse;
-import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.service.RelationService;
-import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.SyncService;
 import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.RelationServiceImpl;
+import com.example.bright_storage.service.impl.SyncServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
 
-
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
-
-import static android.view.View.INVISIBLE;
 
 public class RelationActivity extends AppCompatActivity
 {
@@ -45,11 +37,16 @@ public class RelationActivity extends AppCompatActivity
     private static RelationAdapter relationAdapter;
     private TextView title_text;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private UserService userService;
+    private UserService userService = new UserServiceImpl();
+    private SyncService syncService = new SyncServiceImpl();
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        login();
+        System.out.println(userService.getUserInfo().getNickname());
+        syncService.push();
+        System.out.println("pushed");
         getSupportActionBar().hide();
         setContentView(R.layout.activity_relation_member);
         mRecyclerView = (RecyclerView) this.findViewById(R.id.relation_member_rv);
@@ -70,7 +67,6 @@ public class RelationActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RelationActivity.this,NewRelationActivity.class);
-                login();
                 startActivity(intent);
 //                Intent intent = new Intent(RelationActivity.this, MainActivity.class);
 //                startActivity(intent);
@@ -98,7 +94,7 @@ public class RelationActivity extends AppCompatActivity
         RelationService RelationService = new RelationServiceImpl();
         datas = new ArrayList<>();
 //        try {
-            login();
+//            login();
             datas = RelationService.listByCurrentUser();
             System.out.println(datas.get(0));
 //        }catch (Exception e)
@@ -117,7 +113,6 @@ public class RelationActivity extends AppCompatActivity
         LoginParam loginParam = new LoginParam();
         loginParam.setPhone("15822222222");
         loginParam.setPassword("ab123456");
-        userService = new UserServiceImpl();
         BaseResponse<?> response = userService.loginPassword(loginParam);
     }
 

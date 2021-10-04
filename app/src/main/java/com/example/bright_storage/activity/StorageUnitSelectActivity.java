@@ -2,20 +2,12 @@ package com.example.bright_storage.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -27,20 +19,17 @@ import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.search.SearchActivity;
 import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
-import com.example.bright_storage.tree.MyNodeViewFactory;
 import com.example.bright_storage.ui.home.HomeAdapter;
 import com.example.bright_storage.ui.home.HomeViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
+import com.kongzue.dialog.util.BaseDialog;
+import com.kongzue.dialog.v3.MessageDialog;
 
 import java.util.List;
 import java.util.Stack;
 
-import me.texy.treeview.TreeNode;
-import me.texy.treeview.TreeView;
-
-import static android.view.View.INVISIBLE;
-
-public class PathSelectActivity extends AppCompatActivity
+public class StorageUnitSelectActivity extends AppCompatActivity
 {
     private HomeViewModel homeViewModel;
     private static RecyclerView mRecyclerView;
@@ -50,6 +39,7 @@ public class PathSelectActivity extends AppCompatActivity
     private static HomeAdapter honmeAdapter;
     private Button title_back, title_search;
     private FloatingActionButton mCheck;
+    public static final int SELECT_PATH = 1;
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -73,7 +63,7 @@ public class PathSelectActivity extends AppCompatActivity
                     finish();
                 }
                 initData();
-                honmeAdapter = new HomeAdapter(PathSelectActivity.this, datas);
+                honmeAdapter = new HomeAdapter(StorageUnitSelectActivity.this, datas);
                 mRecyclerView.setAdapter(honmeAdapter); //can change like this  重新加载list中的数据到页面上
                 SetOnClick();
             }
@@ -81,7 +71,7 @@ public class PathSelectActivity extends AppCompatActivity
         title_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(PathSelectActivity.this, SearchActivity.class);
+                Intent intent = new Intent(StorageUnitSelectActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
         });
@@ -89,18 +79,18 @@ public class PathSelectActivity extends AppCompatActivity
             @Override
             public void onClick(View view){
                 Intent intent = new Intent();
-                intent.putExtra("pathName",getPid());
+                intent.putExtra("id",getPid());
                 setResult(Activity.RESULT_OK,intent);
                 finish();
             }
         });
 //      RecyclerView设置展示的的样式（listView样子，gridView样子，瀑布流样子）
-        mRecyclerView.setLayoutManager(new GridLayoutManager(PathSelectActivity.this, 3));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(StorageUnitSelectActivity.this, 3));
 
 
 //      获取数据，向适配器传数据，绑定适配器
         initData();
-        honmeAdapter = new HomeAdapter(PathSelectActivity.this, datas);
+        honmeAdapter = new HomeAdapter(StorageUnitSelectActivity.this, datas);
         mRecyclerView.setAdapter(honmeAdapter);
         //      初始化SwipeRefreshLayout
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) this.findViewById(R.id.id_pull_flush);
@@ -108,7 +98,7 @@ public class PathSelectActivity extends AppCompatActivity
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                honmeAdapter = new HomeAdapter(PathSelectActivity.this, datas);
+                honmeAdapter = new HomeAdapter(StorageUnitSelectActivity.this, datas);
                 mRecyclerView.setAdapter(honmeAdapter); //can change like this  重新加载list中的数据到页面上
                 SetOnClick();
                 swipeRefreshLayout.setRefreshing(false);    //隐藏刷新图标
@@ -118,7 +108,6 @@ public class PathSelectActivity extends AppCompatActivity
     }
     protected void initData() {
         select.setLocalParentId(getPid());
-        select.setType(1);
 //        StorageUnitRepository StorageUnitRepo = new StorageUnitRepository();
         StorageUnitService storageUnitservice = new StorageUnitServiceImpl();
         datas = storageUnitservice.query(select);
@@ -134,14 +123,21 @@ public class PathSelectActivity extends AppCompatActivity
 
             @Override
             public void onclick(View view, StorageUnit TstorageUnit) {
-                p_id.push(TstorageUnit.getLocalId());  //将pid设置为点击的storageunit的id
                 if(TstorageUnit.getType()== 1) {
+                    p_id.push(TstorageUnit.getLocalId());  //将pid设置为点击的storageunit的id
 //                    swipeRefreshLayout.setRefreshing(true); //显示刷新图标
                     initData();   //根据pid初始化list
-                    honmeAdapter = new HomeAdapter(PathSelectActivity.this, datas);
+                    honmeAdapter = new HomeAdapter(StorageUnitSelectActivity.this, datas);
                     mRecyclerView.setAdapter(honmeAdapter);     //can change like this
 //                    swipeRefreshLayout.setRefreshing(false);    //隐藏刷新图标
                     SetOnClick();
+                }
+                else
+                {
+                    Intent intent = new Intent();
+                    intent.putExtra("Id", TstorageUnit.getLocalId());
+                    intent.setClass(StorageUnitSelectActivity.this, ShareSelectShowActivity.class);
+                    startActivityForResult(intent,SELECT_PATH);
                 }
             }
 
@@ -213,4 +209,18 @@ public class PathSelectActivity extends AppCompatActivity
 //            }
 //        });
 //    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case SELECT_PATH:
+                if (data != null) {
+                    Intent intent = new Intent();
+                    intent.putExtra("id",data.getLongExtra("id",0));
+                    setResult(Activity.RESULT_OK,intent);
+                    System.out.println("OK");
+                    finish();
+                }
+        }
+    }
 }

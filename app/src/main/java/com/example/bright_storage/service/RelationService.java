@@ -1,7 +1,6 @@
 package com.example.bright_storage.service;
 
 import com.example.bright_storage.model.dto.RelationDTO;
-import com.example.bright_storage.model.entity.Relation;
 import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.model.vo.UserVO;
 
@@ -37,6 +36,13 @@ public interface RelationService {
      * @return uuid
      */
     String getInviteCode(Long id);
+
+    /**
+     * 获取新的邀请码uuid
+     * @param id 关系id
+     * @return uuid
+     */
+    String getNewInviteCode(Long id);
 
     /**
      * 通过邀请码加入关系

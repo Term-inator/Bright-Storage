@@ -44,6 +44,9 @@
             android:name=".activity.RelationActivity"
             android:label="@string/title_Relation" />
         <activity
+            android:name=".activity.RelationShowActivity"
+            android:label="@string/title_Relation" />
+        <activity
             android:name=".activity.RelationMemberActivity"
             android:label="@string/title_relation_member" />
         <activity
@@ -62,6 +65,14 @@
         <activity
             android:name=".activity.PathSelectActivity"
             android:label="@string/title_add">
+        </activity>
+        <activity
+            android:name=".activity.ShareSelectShowActivity"
+            android:label="共享物品">
+        </activity>
+        <activity
+            android:name=".activity.StorageUnitSelectActivity"
+            android:label="共享容器">
         </activity>
         <activity
             android:name=".activity.NewRelationActivity"

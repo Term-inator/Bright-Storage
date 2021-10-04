@@ -18,10 +18,16 @@ import com.example.bright_storage.activity.RecycleBinActivity;
 import com.example.bright_storage.activity.RelationActivity;
 import com.example.bright_storage.activity.RelationMemberActivity;
 import com.example.bright_storage.activity.SettingActivity;
+import com.example.bright_storage.model.param.LoginParam;
+import com.example.bright_storage.model.support.BaseResponse;
+import com.example.bright_storage.service.UserService;
+import com.example.bright_storage.service.impl.UserServiceImpl;
+
 
 public class PersonalInfoFragment extends Fragment {
 
     private PersonalInfoViewModel PersonalInfoViewModel;
+    private UserService userService;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +59,11 @@ public class PersonalInfoFragment extends Fragment {
             public void onClick(View view) {
                 // Intent intent = new Intent(root.getContext(), RelationActivity.class);
                 Intent intent = new Intent(root.getContext(), RelationActivity.class);
+                LoginParam loginParam = new LoginParam();
+                loginParam.setPhone("15822222222");
+                loginParam.setPassword("ab123456");
+                userService = new UserServiceImpl();
+                BaseResponse<?> response = userService.loginPassword(loginParam);
                 startActivity(intent);
             }
         });

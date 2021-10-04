@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     private static final String TAG = "LoginServiceImpl";
 
     @Inject
-    UserRequest userRequest;
+    UserRequest userRequest = null;
 
     public UserServiceImpl(){
         DaggerServiceComponent.builder()

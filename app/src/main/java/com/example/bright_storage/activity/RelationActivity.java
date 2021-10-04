@@ -17,11 +17,15 @@ import com.example.bright_storage.exception.BadRequestException;
 import com.example.bright_storage.model.dto.RelationDTO;
 import com.example.bright_storage.model.entity.Relation;
 import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.query.StorageUnitQuery;
+import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.service.RelationService;
 import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.RelationServiceImpl;
+import com.example.bright_storage.service.impl.UserServiceImpl;
 
 
 import java.net.SocketTimeoutException;
@@ -39,21 +43,21 @@ public class RelationActivity extends AppCompatActivity
     private static List<RelationDTO> datas;
     private static List<StorageUnit> dataToDelete = new ArrayList<>();
     private static RelationAdapter relationAdapter;
-    private Button title_back, title_search;
     private TextView title_text;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private UserService userService;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
-        setContentView(R.layout.activity_relation);
+        setContentView(R.layout.activity_relation_member);
+        mRecyclerView = (RecyclerView) this.findViewById(R.id.relation_member_rv);
         title_text = findViewById(R.id.title_text);
         title_text.setText("我的关系");
         Button title_back = (Button) findViewById(R.id.title_back);
-        Button title_search = (Button) findViewById(R.id.title_search);
-        title_search.setVisibility(INVISIBLE);
-        refresh();
+        Button title_add = (Button) findViewById(R.id.title_search);
+        title_add.setBackgroundResource(R.drawable.ic_baseline_add_72dp);
         title_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,7 +66,18 @@ public class RelationActivity extends AppCompatActivity
 //                startActivity(intent);
             }
         });
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        title_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RelationActivity.this,NewRelationActivity.class);
+                login();
+                startActivity(intent);
+//                Intent intent = new Intent(RelationActivity.this, MainActivity.class);
+//                startActivity(intent);
+            }
+        });
+        mRecyclerView.setLayoutManager(new GridLayoutManager(RelationActivity.this, 3));
+        refresh();
 
 
 //      获取数据，向适配器传数据，绑定适配器
@@ -82,12 +97,14 @@ public class RelationActivity extends AppCompatActivity
     protected void initData() {
         RelationService RelationService = new RelationServiceImpl();
         datas = new ArrayList<>();
-        try {
+//        try {
+            login();
             datas = RelationService.listByCurrentUser();
-        }catch (Exception e)
-        {
-            Toast.makeText(RelationActivity.this,"请登录后尝试",Toast.LENGTH_LONG).show();
-        }
+            System.out.println(datas.get(0));
+//        }catch (Exception e)
+//        {
+////            Toast.makeText(RelationActivity.this,"请登录后尝试",Toast.LENGTH_LONG).show();
+//        }
         //        List<StorageUnit> all = StorageUnitService.query(select);
 //        for(StorageUnit it : all) {
 //            if(!it.getDeleted()) {
@@ -96,15 +113,28 @@ public class RelationActivity extends AppCompatActivity
 //        }
     }
 
+    protected void login(){
+        LoginParam loginParam = new LoginParam();
+        loginParam.setPhone("15822222222");
+        loginParam.setPassword("ab123456");
+        userService = new UserServiceImpl();
+        BaseResponse<?> response = userService.loginPassword(loginParam);
+    }
+
     protected void SetOnClick() {
 
         //      调用按钮返回事件回调的方法
         relationAdapter.layoutSetOnclick(new RelationAdapter.layoutInterface() {
             @Override
             public void onclick(View view, RelationDTO TstorageUnit) {
+                    System.out.println(TstorageUnit.getId());
                     Intent intent = new Intent();
-                    intent.putExtra("Id", TstorageUnit.getId());
+                    final Bundle bundle = new Bundle();
+                    bundle.putLong("id", TstorageUnit.getId());
+                    bundle.putString("name",TstorageUnit.getName());
                     intent.setClass(RelationActivity.this, RelationShowActivity.class);
+                    intent.putExtra("relate",bundle);
+                    login();
                     startActivity(intent);
             }
 

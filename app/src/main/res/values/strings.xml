@@ -4,6 +4,7 @@
     <string name="title_personal_info">我</string>
     <string name="title_BSPro">购买智存Pro</string>
     <string name="title_Relation">我的关系</string>
+    <string name="title_RelationShow">关系内容</string>
     <string name="title_relation_member">关系成员</string>
     <string name="title_Settings">设置</string>
     <string name="title_RecycleBin">回收站</string>

@@ -196,13 +196,12 @@ public class StorageUnitServiceImpl extends AbstractCrudService<StorageUnit, Lon
 
     @Override
     public void delete(StorageUnit storageUnit) {
-        if(storageUnit.getType().equals(0L)){
-            repository.delete(storageUnit);
-            return;
-        }
-        List<StorageUnit> children = storageUnitRepository.listByParentId(storageUnit.getLocalId());
-        for (StorageUnit child : children) {
-            delete(child);
+        if(Integer.valueOf(1).equals(storageUnit.getType())){
+            // 是容器
+            List<StorageUnit> children = storageUnitRepository.listByParentId(storageUnit.getLocalId());
+            for (StorageUnit child : children) {
+                delete(child);
+            }
         }
         repository.delete(storageUnit);
 

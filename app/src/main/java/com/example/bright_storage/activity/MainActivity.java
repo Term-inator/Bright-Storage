@@ -25,18 +25,20 @@ import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.recog.MyRecognizer;
 import com.example.bright_storage.recog.listener.IRecogListener;
 import com.example.bright_storage.recog.listener.MessageStatusRecogListener;
-import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.service.CategoryService;
+import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.impl.CategoryServiceImpl;
+import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import com.example.bright_storage.ui.home.HomeFragment;
 import com.example.bright_storage.util.SharedPreferencesUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -149,16 +151,16 @@ public class MainActivity extends AppCompatActivity {
         storageUnit.setType(1);
         storageUnit.setAmount(1);
         storageUnit.setAccess(true);
-        StorageUnitRepository storageUnitRepository = new StorageUnitRepository();
-        storageUnitRepository.save(storageUnit);
+        StorageUnitService storageUnitService = new StorageUnitServiceImpl();
+        storageUnitService.create(storageUnit);
         storageUnit.setName("餐厅");
-        storageUnitRepository.save(storageUnit);
+        storageUnitService.create(storageUnit);
         storageUnit.setName("主卧");
-        storageUnitRepository.save(storageUnit);
+        storageUnitService.create(storageUnit);
         storageUnit.setName("次卧");
-        storageUnitRepository.save(storageUnit);
+        storageUnitService.create(storageUnit);
         storageUnit.setName("卫生间");
-        storageUnitRepository.save(storageUnit);
+        storageUnitService.create(storageUnit);
     }
 
     private void initCategory() {

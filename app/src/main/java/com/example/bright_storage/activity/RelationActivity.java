@@ -43,10 +43,10 @@ public class RelationActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        login();
-        System.out.println(userService.getUserInfo().getNickname());
-        syncService.push();
-        System.out.println("pushed");
+//        login();
+//        System.out.println(userService.getUserInfo().getNickname());
+//        syncService.push();
+//        System.out.println("pushed");
         getSupportActionBar().hide();
         setContentView(R.layout.activity_relation_member);
         mRecyclerView = (RecyclerView) this.findViewById(R.id.relation_member_rv);

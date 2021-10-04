@@ -2,19 +2,11 @@ package com.example.bright_storage.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.bright_storage.activity.SettingActivity;
-import com.example.bright_storage.activity.ShowActivity;
-import com.example.bright_storage.model.entity.StorageUnit;
-import com.example.bright_storage.model.param.LoginParam;
-import com.example.bright_storage.model.query.StorageUnitQuery;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,26 +17,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.bright_storage.R;
+import com.example.bright_storage.activity.ShowActivity;
+import com.example.bright_storage.model.entity.StorageUnit;
+import com.example.bright_storage.model.param.LoginParam;
+import com.example.bright_storage.model.query.StorageUnitQuery;
 import com.example.bright_storage.model.support.BaseResponse;
-import com.example.bright_storage.repository.StorageUnitRepository;
 import com.example.bright_storage.search.SearchActivity;
 import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.SyncService;
 import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
-import com.example.bright_storage.service.impl.SyncServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.util.InputInfo;
-import com.kongzue.dialog.v3.InputDialog;
 import com.kongzue.dialog.v3.MessageDialog;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
@@ -209,8 +197,8 @@ public class HomeFragment extends Fragment {
         homeAdapter = new HomeAdapter(root.getContext(), datas);
         mRecyclerView.setAdapter(homeAdapter);
         login();
-        syncService = new SyncServiceImpl();
-        syncService.push();
+//        syncService = new SyncServiceImpl();
+//        syncService.push();
     }
 
     protected void setTitle() {

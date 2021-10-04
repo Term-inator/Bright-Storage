@@ -16,7 +16,9 @@ import com.example.bright_storage.R;
 import com.example.bright_storage.activity.*;
 import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.support.BaseResponse;
+import com.example.bright_storage.service.SyncService;
 import com.example.bright_storage.service.UserService;
+import com.example.bright_storage.service.impl.SyncServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
 
 
@@ -60,6 +62,8 @@ public class PersonalInfoFragment extends Fragment {
                 loginParam.setPassword("ab123456");
                 userService = new UserServiceImpl();
                 BaseResponse<?> response = userService.loginPassword(loginParam);
+                SyncService syncService = new SyncServiceImpl();
+                syncService.push();
                 startActivity(intent);
             }
         });

@@ -52,9 +52,12 @@ import com.example.bright_storage.model.entity.Category;
 import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.repository.CategoryRepository;
 import com.example.bright_storage.repository.StorageUnitRepository;
+import com.example.bright_storage.service.StorageUnitService;
+import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -71,12 +74,14 @@ import static android.view.View.INVISIBLE;
 
 public class AddActivity extends AppCompatActivity
 {
+    @Inject
+    StorageUnitService storageUnitService;
     private List<Category> allCategories;
     private Set<Category> categories;
     private Date overdueDate, productionDate;
     private int shelfLifeCount = 0;
     private String shelfLifeType = "";
-    private StorageUnitRepository storageUnitRepository;
+    //private StorageUnitRepository storageUnitRepository;
     private StorageUnit storageUnit;
     private Uri imageUri;
     public static final int TAKE_PHOTO = 2, CHOOSE_PHOTO = 3, REQUEST_CODE = 5;
@@ -97,6 +102,7 @@ public class AddActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        storageUnitService = new StorageUnitServiceImpl();
         ZXingLibrary.initDisplayOpinion(this);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_add);
@@ -404,8 +410,6 @@ public class AddActivity extends AppCompatActivity
             public void onClick(View v) {
                 //TODO 扫码
                 mCameraDialog.dismiss();
-                Intent intent = new Intent(AddActivity.this, ZxingActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
             }
         });
 
@@ -787,8 +791,9 @@ public class AddActivity extends AppCompatActivity
                     storageUnit.setDeleted(false);
                     int theBox = box ? 1 : 0;
                     storageUnit.setType(theBox);
-                    storageUnitRepository = new StorageUnitRepository();
-                    storageUnitRepository.save(storageUnit);
+                    storageUnitService.create(storageUnit);
+//                    storageUnitRepository = new StorageUnitRepository();
+//                    storageUnitRepository.save(storageUnit);
                     Intent intent1 = new Intent();
                     intent1.putExtra("Id",storageUnit.getId());
                     //HomeFragment.refresh();

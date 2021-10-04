@@ -72,9 +72,6 @@ public class SettingActivity extends AppCompatActivity
 
     @Inject
     CategoryService categoryService;
-
-    @Inject
-    StorageUnitCategoryRepository storageUnitCategoryRepository;
     public static final int TAKE_PHOTO = 2;
     private Uri imageUri;
     private String oldPassword = "123456";
@@ -90,7 +87,6 @@ public class SettingActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         storageUnitService = new StorageUnitServiceImpl();
         categoryService = new CategoryServiceImpl();
-        storageUnitCategoryRepository = new StorageUnitCategoryRepository();
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_setting);

@@ -53,8 +53,6 @@ import javax.inject.Inject;
 public class HomeFragment extends Fragment {
     @Inject
     StorageUnitService storageUnitService;
-
-    private StorageUnitRepository storageUnitRepository;
     private HomeViewModel homeViewModel;
     private static View root;
     private static RecyclerView mRecyclerView;
@@ -174,8 +172,7 @@ public class HomeFragment extends Fragment {
                         .setOkButton("确定", new OnDialogButtonClickListener() {
                             @Override
                             public boolean onClick(BaseDialog baseDialog, View v) {
-                                storageUnitRepository = new StorageUnitRepository();
-                                delete(TstorageUnit, storageUnitRepository);
+                                delete(TstorageUnit);
                                 refresh();
                                 SetOnClick();
                                 //Toast.makeText(getActivity(), "点击了OK！", Toast.LENGTH_SHORT).show();
@@ -186,18 +183,18 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void delete(StorageUnit storageUnit , StorageUnitRepository storageUnitRepository) {
+    private void delete(StorageUnit storageUnit) {
         StorageUnitQuery query = new StorageUnitQuery();
         query.setLocalParentId(storageUnit.getLocalId());
         storageUnit.setDeleted(true);
-        storageUnitRepository.update(storageUnit);
         // storageUnitRepository.delete(storageUnit);
         storageUnitService = new StorageUnitServiceImpl();
+        storageUnitService.update(storageUnit);
         List<StorageUnit> res = storageUnitService.query(query);
         if(res == null || res.size() == 0)
             return;
         for(StorageUnit it : res) {
-            delete(it, storageUnitRepository);
+            delete(it);
         }
     }
 

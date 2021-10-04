@@ -1,13 +1,19 @@
 package com.example.bright_storage.activity;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.*;
 import android.widget.*;
@@ -21,8 +27,10 @@ import com.example.bright_storage.R;
 import com.example.bright_storage.model.dto.RelationDTO;
 import com.example.bright_storage.service.RelationService;
 import com.example.bright_storage.service.impl.RelationServiceImpl;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,6 +57,92 @@ public class NewRelationActivity extends AppCompatActivity {
         setListeners();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode)
+        {
+            case TAKE_PHOTO:
+                try {
+                    Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                    photoButton.setImageBitmap(bitmap);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case CHOOSE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        handleImageOnKitKat(data);
+                    } else {
+                        handleImageBeforeKitKat(data);
+                    }
+                }
+                break;
+            case REQUEST_CODE:
+                if (null != data) {
+                    Bundle bundle = data.getExtras();
+                    if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_SUCCESS) {
+                        String result = bundle.getString(CodeUtils.RESULT_STRING);
+                        Toast.makeText(this, "解析结果:" + result, Toast.LENGTH_LONG).show();
+                    } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
+                        Toast.makeText(NewRelationActivity.this, "解析二维码失败", Toast.LENGTH_LONG).show();
+                    }
+                }
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private void handleImageOnKitKat(Intent data) {
+        String imagePath = null;
+        imageUri = data.getData();
+
+        if (DocumentsContract.isDocumentUri(this, imageUri)) {
+            String docId = DocumentsContract.getDocumentId(imageUri);
+            if ("com.android.providers.media.documents".equals(imageUri.getAuthority())) {
+                String id = docId.split(":")[1];//解析出数字格式的id
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+            } else if ("com.android.providers.downloads.documents".equals(imageUri.getAuthority())) {
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+                imagePath = getImagePath(contentUri, null);
+            }
+        } else if ("content".equalsIgnoreCase(imageUri.getScheme())) {
+            imagePath = getImagePath(imageUri, null);
+        } else if ("file".equalsIgnoreCase(imageUri.getScheme())) {
+            imagePath = imageUri.getPath();
+        }
+        displayImage(imagePath);//根据图片路径显示图片
+    }
+
+    private String getImagePath(Uri externalContentUri, String selection) {
+        String path = null;
+        Cursor cursor = getContentResolver().query(externalContentUri, null, selection, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
+    }
+
+    private void displayImage(String imagePath) {
+        if (imagePath != null) {
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+            photoButton.setImageBitmap(bitmap);
+        } else {
+            Toast.makeText(this, "获取图片失败，请重试", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void handleImageBeforeKitKat(Intent data) {
+        imageUri = data.getData();
+        String imagePath = getImagePath(imageUri, null);
+        displayImage(imagePath);
+    }
+
     private void init() {
         relationService = new RelationServiceImpl();
         getSupportActionBar().hide();
@@ -57,6 +151,7 @@ public class NewRelationActivity extends AppCompatActivity {
         theTitle.setText("新建关系");
         title_back = (Button) findViewById(R.id.title_back);
         title_search = (Button) findViewById(R.id.title_search);
+        title_search.setBackgroundResource(R.drawable.saoma);
         relationName = (EditText) findViewById(R.id.relation_name);
         submit = (Button) findViewById(R.id.relation_submit);
         photoButton = (ImageButton) findViewById(R.id.photoButton);
@@ -79,6 +174,13 @@ public class NewRelationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 createRelation();
+            }
+        });
+        title_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(NewRelationActivity.this, ZxingActivity.class);
+                startActivityForResult(intent, REQUEST_CODE);
             }
         });
     }

@@ -13,11 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.bright_storage.R;
-import com.example.bright_storage.activity.BSProActivity;
-import com.example.bright_storage.activity.RecycleBinActivity;
-import com.example.bright_storage.activity.RelationActivity;
-import com.example.bright_storage.activity.RelationMemberActivity;
-import com.example.bright_storage.activity.SettingActivity;
+import com.example.bright_storage.activity.*;
 import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.service.UserService;
@@ -50,7 +46,7 @@ public class PersonalInfoFragment extends Fragment {
         buttonBSPro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(root.getContext(), BSProActivity.class);
+                Intent intent = new Intent(root.getContext(), NewRelationActivity.class);
                 startActivity(intent);
             }
         });

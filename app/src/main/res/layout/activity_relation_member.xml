@@ -6,24 +6,33 @@
     android:layout_height="match_parent"
     tools:context=".activity.RelationMemberActivity"
     android:overScrollMode="never"
-    android:scrollbars="none" >
+    android:scrollbars="none"
+>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/id_pull_flush"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="56.6dp"
+    >
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/relation_member_rv"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="55dp"
+        />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <include
         android:id="@+id/include"
         layout="@layout/title_bar" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/id_pull_flush"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="56.6dp"
-        >
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/relation_member_rv"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    <include
+            layout="@layout/app_bar_relation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="55dp"/>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:clickable="true"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

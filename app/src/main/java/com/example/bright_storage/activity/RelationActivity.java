@@ -23,6 +23,8 @@ import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.RelationServiceImpl;
 import com.example.bright_storage.service.impl.SyncServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
+import com.example.bright_storage.ui.home.HomeFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,8 @@ public class RelationActivity extends AppCompatActivity
         title_text.setText("我的关系");
         Button title_back = (Button) findViewById(R.id.title_back);
         Button title_add = (Button) findViewById(R.id.title_search);
+        FloatingActionButton fab = findViewById(R.id.fab2);
+        fab.setVisibility(View.GONE);
         title_add.setBackgroundResource(R.drawable.ic_baseline_add_72dp);
         title_back.setOnClickListener(new View.OnClickListener() {
             @Override

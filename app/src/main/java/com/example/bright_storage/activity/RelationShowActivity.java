@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,8 @@ import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
 import com.example.bright_storage.ui.home.HomeAdapter;
+import com.example.bright_storage.ui.home.HomeFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.v3.MessageDialog;
@@ -38,6 +41,7 @@ public class RelationShowActivity extends AppCompatActivity {
     @Inject
     StorageUnitService storageUnitService;
     private static RecyclerView mRecyclerView;
+    private FloatingActionButton fab;
     private static StorageUnitQuery select = new StorageUnitQuery();
     private static Stack<StorageUnitDTO> p_id = new Stack<>();
     private static Stack<String> title_name = new Stack<>();
@@ -61,7 +65,15 @@ public class RelationShowActivity extends AppCompatActivity {
         mRecyclerView = (RecyclerView)findViewById(R.id.relation_member_rv);
         title_back = (Button)findViewById(R.id.title_back);
         title_add = (Button)findViewById(R.id.title_search);
-        title_add.setBackgroundResource(R.drawable.ic_baseline_add_72dp);
+        title_add.setBackgroundResource(R.drawable.gengduo);
+        fab = (FloatingActionButton) this.findViewById(R.id.fab2);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RelationShowActivity.this, StorageUnitSelectActivity.class);
+                startActivityForResult(intent, SELECT_PATH);
+            }
+        });
         title_text = (TextView)findViewById(R.id.title_text);
         name = getIntent().getBundleExtra("relate").getString("name");
         title_text.setText(name);
@@ -83,7 +95,7 @@ public class RelationShowActivity extends AppCompatActivity {
         title_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RelationShowActivity.this, StorageUnitSelectActivity.class);
+                Intent intent = new Intent(RelationShowActivity.this, RelationMemberActivity.class);
                 startActivityForResult(intent, SELECT_PATH);
             }
         });
@@ -133,7 +145,6 @@ public class RelationShowActivity extends AppCompatActivity {
     }
 
     protected void SetOnClick() {
-
         //      调用按钮返回事件回调的方法
         RelationShowAdapter.layoutSetOnclick(new RelationShowAdapter.layoutInterface() {
             @Override

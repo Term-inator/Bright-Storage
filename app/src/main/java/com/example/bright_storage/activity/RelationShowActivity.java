@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,18 +17,11 @@ import com.example.bright_storage.model.entity.StorageUnit;
 import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.query.StorageUnitQuery;
 import com.example.bright_storage.model.support.BaseResponse;
-import com.example.bright_storage.repository.StorageUnitRepository;
-import com.example.bright_storage.search.SearchActivity;
 import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
-import com.example.bright_storage.ui.home.HomeAdapter;
-import com.example.bright_storage.ui.home.HomeFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.v3.MessageDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +88,7 @@ public class RelationShowActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(RelationShowActivity.this, RelationMemberActivity.class);
+                intent.putExtra("relation_id", relateid);
                 startActivityForResult(intent, SELECT_PATH);
             }
         });

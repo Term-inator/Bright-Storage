@@ -18,7 +18,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bright_storage.R;
-import com.example.bright_storage.model.dto.UserDTO;
+import com.example.bright_storage.model.dto.RelationDTO;
+import com.example.bright_storage.model.vo.UserVO;
+import com.example.bright_storage.service.RelationService;
+import com.example.bright_storage.service.impl.RelationServiceImpl;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.v3.MessageDialog;
@@ -29,14 +32,17 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class RelationMemberActivity extends AppCompatActivity {
-    private ArrayList<UserDTO> members = new ArrayList<>();
+    private ArrayList<UserVO> members = new ArrayList<>();
     Button title_back;
     TextView title_text;
     Button title_exit;
+    private RelationService relationService = new RelationServiceImpl();
+    private Long relation_id;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        relation_id = getIntent().getLongExtra("relation_id", 0L);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_relation_member);
 
@@ -59,17 +65,13 @@ public class RelationMemberActivity extends AppCompatActivity {
                     });
         });
 
-        for (int i = 0; i < 5; ++i) {
-            UserDTO u = new UserDTO();
-            u.setAvatar("https://img.fulaishiji.com/images/goods/19883/big/03957c4d-6869-4cef-ad3e-824852f9da2b_800x800.png");
-            u.setNickname("张三");
-            members.add(u);
-        }for (int i = 0; i < 5; ++i) {
-            UserDTO u = new UserDTO();
-            u.setAvatar("https://img.fulaishiji.com/images/goods/19883/big/03957c4d-6869-4cef-ad3e-824852f9da2b_800x800.png");
-            u.setNickname("李四");
-            members.add(u);
+        RelationDTO relation = relationService.getRelationById(relation_id);
+        members = (ArrayList<UserVO>) relationService.listMembersByRelationId(relation_id);
+
+        for(UserVO m: members) {
+            m.setAvatar("https://img.fulaishiji.com/images/goods/19883/big/03957c4d-6869-4cef-ad3e-824852f9da2b_800x800.png");
         }
+
 
         RelationMemberAdapter adapter = new RelationMemberAdapter(members);
         RecyclerView rv = (RecyclerView) this.findViewById(R.id.relation_member_rv);
@@ -115,9 +117,9 @@ public class RelationMemberActivity extends AppCompatActivity {
 }
 
 class RelationMemberAdapter extends RecyclerView.Adapter<RelationMemberAdapter.MyViewHolder> {
-    private ArrayList<UserDTO> members;
+    private ArrayList<UserVO> members;
 
-    public RelationMemberAdapter(ArrayList<UserDTO> members) {
+    public RelationMemberAdapter(ArrayList<UserVO> members) {
         this.members = members;
     }
 

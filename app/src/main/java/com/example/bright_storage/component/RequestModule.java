@@ -51,6 +51,7 @@ public class RequestModule {
                     Request request = chain.request();
                     Response response = chain.proceed(request);
                     if(response.code() >= 400){
+                        System.out.println(response.code());
                         String errorString = "网络请求失败";
                         ResponseBody body = response.body();
                         if(body != null){

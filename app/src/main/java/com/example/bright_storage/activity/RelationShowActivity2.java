@@ -21,7 +21,11 @@ import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
 import com.example.bright_storage.service.impl.UserServiceImpl;
+import com.example.bright_storage.ui.home.HomeAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
+import com.kongzue.dialog.util.BaseDialog;
+import com.kongzue.dialog.v3.MessageDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,17 +33,17 @@ import java.util.Stack;
 
 import javax.inject.Inject;
 
-public class RelationShowActivity extends AppCompatActivity {
+public class RelationShowActivity2 extends AppCompatActivity {
     @Inject
     StorageUnitService storageUnitService;
     private static RecyclerView mRecyclerView;
     private FloatingActionButton fab;
     private static StorageUnitQuery select = new StorageUnitQuery();
-    private static Stack<StorageUnitDTO> p_id = new Stack<>();
+    private static Stack<Long> p_id = new Stack<>();
     private static Stack<String> title_name = new Stack<>();
-    private static List<StorageUnitDTO> datas;
+    private static List<StorageUnit> datas;
     private static List<StorageUnit> dataToDelete = new ArrayList<>();
-    private static RelationShowAdapter RelationShowAdapter;
+    private static HomeAdapter HomeAdapter;
     private Button title_back, title_add;
     private TextView title_text;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -62,7 +66,7 @@ public class RelationShowActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RelationShowActivity.this, StorageUnitSelectActivity.class);
+                Intent intent = new Intent(RelationShowActivity2.this, StorageUnitSelectActivity.class);
                 startActivityForResult(intent, SELECT_PATH);
             }
         });
@@ -87,7 +91,7 @@ public class RelationShowActivity extends AppCompatActivity {
         title_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RelationShowActivity.this, RelationMemberActivity.class);
+                Intent intent = new Intent(RelationShowActivity2.this, RelationMemberActivity.class);
                 intent.putExtra("relation_id", relateid);
                 startActivityForResult(intent, SELECT_PATH);
             }
@@ -112,44 +116,28 @@ public class RelationShowActivity extends AppCompatActivity {
         });
         SetOnClick();
     }
-    protected void initData() {
-        relateid = getIntent().getBundleExtra("relate").getLong("id");
-        storageUnitService = new StorageUnitServiceImpl();
+    protected static void initData() {
+        select.setLocalParentId(getPid());
+        StorageUnitService StorageUnitService = new StorageUnitServiceImpl();
         datas = new ArrayList<>();
-        if (p_id.empty())
-        {
-            List<StorageUnitDTO> all = storageUnitService.listStorageUnitByRelationId(relateid);
-            for(StorageUnitDTO it : all) {
-                if(!it.getDeleted()) {
-                    datas.add(it);
-                }
+        List<StorageUnit> all = StorageUnitService.query(select);
+        for(StorageUnit it : all) {
+            if(!it.getDeleted()) {
+                datas.add(it);
+                break;
             }
         }
-        else
-        {
-            System.out.println("check 2"+p_id);
-            System.out.println("check 5" + p_id.peek());
-            List<StorageUnitDTO> all = p_id.peek().getChildren();
-            System.out.println("check 3"+all);
-            System.out.println("check 4"+p_id.peek().getChildCount());
-            for(StorageUnitDTO it : all) {
-                if(!it.getDeleted()) {
-                    datas.add(it);
-                }
-            }
-        }
-
     }
 
     protected void SetOnClick() {
+
         //      调用按钮返回事件回调的方法
-        RelationShowAdapter.layoutSetOnclick(new RelationShowAdapter.layoutInterface() {
+        HomeAdapter.layoutSetOnclick(new HomeAdapter.layoutInterface() {
             @Override
-            public void onclick(View view, StorageUnitDTO TstorageUnit) {
+            public void onclick(View view, StorageUnit TstorageUnit) {
 //                Toast.makeText(root.getContext(), "点击条目上的按钮" + position, Toast.LENGTH_SHORT).show();
                 if (TstorageUnit.getType() == 1) {
-                    System.out.println("check 1");
-                    p_id.push(TstorageUnit);  //将pid设置为点击的storageunit的id
+                    p_id.push(TstorageUnit.getLocalId());  //将pid设置为点击的storageunit的id
                     title_name.push(TstorageUnit.getName()); //将titlename设置成点击的路径；
                     setTitle();
                 }
@@ -158,35 +146,34 @@ public class RelationShowActivity extends AppCompatActivity {
                     SetOnClick();
                 } else {
                     Intent intent = new Intent();
-                    intent.putExtra("Id", TstorageUnit.getId());
-                    intent.setClass(RelationShowActivity.this, ShowActivity.class);
+                    intent.putExtra("Id", TstorageUnit.getLocalId());
+                    intent.setClass(RelationShowActivity2.this, ShowActivity.class);
                     startActivity(intent);
                 }
             }
 
-//            @Override
-//            public void onLongClick(View view, StorageUnitDTO TstorageUnit) {
-//                /*FloatingActionButton fab = root.findViewById(R.id.fab);
-//                RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
-//                //HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
-//                for (int i = 0; i < manager.getChildCount();i++) {
-//                    View view = manager.getChildAt(i);
-//                    HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
-//                    holder.deleteCheckBox.setVisibility(View.VISIBLE);
-//                }*/
-//                MessageDialog.show((AppCompatActivity) RelationShowActivity.this, "删除", "确定要删除" + TstorageUnit.getName() + "吗？", "确定", "取消")
-//                        .setOkButton("确定", new OnDialogButtonClickListener() {
-//                            @Override
-//                            public boolean onClick(BaseDialog baseDialog, View v) {
-//                                storageUnitRepository = new StorageUnitRepository();
-//                                delete(TstorageUnit, storageUnitRepository);
-//                                refresh();
-//                                SetOnClick();
-//                                //Toast.makeText(getActivity(), "点击了OK！", Toast.LENGTH_SHORT).show();
-//                                return false;
-//                            }
-//                        });
-//            }
+            @Override
+            public void onLongClick(View view, StorageUnit TstorageUnit) {
+                /*FloatingActionButton fab = root.findViewById(R.id.fab);
+                RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
+                //HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
+                for (int i = 0; i < manager.getChildCount();i++) {
+                    View view = manager.getChildAt(i);
+                    HomeAdapter.MyViewHolder holder = (HomeAdapter.MyViewHolder) mRecyclerView.getChildViewHolder(view);
+                    holder.deleteCheckBox.setVisibility(View.VISIBLE);
+                }*/
+                MessageDialog.show((AppCompatActivity) RelationShowActivity2.this, "删除", "确定要删除" + TstorageUnit.getName() + "吗？", "确定", "取消")
+                        .setOkButton("确定", new OnDialogButtonClickListener() {
+                            @Override
+                            public boolean onClick(BaseDialog baseDialog, View v) {
+                                delete(TstorageUnit);
+                                refresh();
+                                SetOnClick();
+                                //Toast.makeText(getActivity(), "点击了OK！", Toast.LENGTH_SHORT).show();
+                                return false;
+                            }
+                        });
+            }
         });
     }
 
@@ -213,8 +200,29 @@ public class RelationShowActivity extends AppCompatActivity {
 
     protected void refresh() {
         initData();
-        RelationShowAdapter = new RelationShowAdapter(this, datas);
-        mRecyclerView.setAdapter(RelationShowAdapter);
+        HomeAdapter = new HomeAdapter(this, datas);
+        mRecyclerView.setAdapter(HomeAdapter);
+    }
+
+    private void delete(StorageUnit storageUnit) {
+        StorageUnitQuery query = new StorageUnitQuery();
+        query.setLocalParentId(storageUnit.getLocalId());
+        storageUnit.setDeleted(true);
+        // storageUnitRepository.delete(storageUnit);
+        storageUnitService = new StorageUnitServiceImpl();
+        storageUnitService.update(storageUnit);
+        List<StorageUnit> res = storageUnitService.query(query);
+        if(res == null || res.size() == 0)
+            return;
+        for(StorageUnit it : res) {
+            delete(it);
+        }
+    }
+
+    public static Long getPid() {
+        if (!p_id.empty())
+            return p_id.peek();
+        return 0l;
     }
 
     protected void setTitle() {
@@ -232,28 +240,4 @@ public class RelationShowActivity extends AppCompatActivity {
         setTitle();
     }
 
-    protected void login(){
-        LoginParam loginParam = new LoginParam();
-        loginParam.setPhone("15822222222");
-        loginParam.setPassword("ab123456");
-        userService = new UserServiceImpl();
-        BaseResponse<?> response = userService.loginPassword(loginParam);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
-            case SELECT_PATH:
-                if (data != null) {
-                    login();
-                    System.out.println("id"+data.getExtras().getLong("id")+" rid" + relateid);
-                    StorageUnitService storageUnitService =  new StorageUnitServiceImpl();
-                    storageUnitService.shareStorageUnit(relateid,data.getExtras().getLong("id"));
-                    refresh();
-                    SetOnClick();
-                    setTitle();
-                }
-        }
-    }
 }

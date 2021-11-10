@@ -174,6 +174,7 @@ public class StorageUnitServiceImpl extends AbstractCrudService<StorageUnit, Lon
 
         // 保存修改记录
         Map<String, Object> diff = diff(old, storageUnit);
+        diff.remove("categories");
         if(diff.size() > 0){
             OperationLog operationLog = new OperationLog();
             operationLog.setOperationType(OperationConstant.UPDATE);

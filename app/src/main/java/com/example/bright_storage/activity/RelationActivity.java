@@ -131,7 +131,7 @@ public class RelationActivity extends AppCompatActivity
                     final Bundle bundle = new Bundle();
                     bundle.putLong("id", TstorageUnit.getId());
                     bundle.putString("name",TstorageUnit.getName());
-                    intent.setClass(RelationActivity.this, RelationShowActivity.class);
+                    intent.setClass(RelationActivity.this, RelationShowActivity2.class);
                     intent.putExtra("relate",bundle);
                     login();
                     startActivity(intent);

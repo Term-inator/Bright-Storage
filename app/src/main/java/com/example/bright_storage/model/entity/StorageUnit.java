@@ -66,7 +66,7 @@ public class StorageUnit extends OwnershipEntity {
     @Column(name = "last_access_time")
     private Date lastAccessTime;
 
-    private Set<Category> categories;
+    private transient Set<Category> categories;
 
     public void setParent(@NotNull StorageUnit storageUnit){
         this.localParentId = storageUnit.getLocalId();

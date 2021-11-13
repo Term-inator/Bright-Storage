@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bright_storage.R;
-import com.example.bright_storage.model.dto.RelationDTO;
 import com.example.bright_storage.model.vo.UserVO;
 import com.example.bright_storage.service.RelationService;
 import com.example.bright_storage.service.impl.RelationServiceImpl;
@@ -42,7 +41,8 @@ public class RelationMemberActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        relation_id = getIntent().getLongExtra("relation_id", 0L);
+        relation_id = getIntent().getLongExtra("relation_id", 2L);
+        System.out.println(relation_id);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_relation_member);
 
@@ -65,7 +65,7 @@ public class RelationMemberActivity extends AppCompatActivity {
                     });
         });
 
-        RelationDTO relation = relationService.getRelationById(relation_id);
+        // RelationDTO relation = relationService.getRelationById(relation_id);
         members = (ArrayList<UserVO>) relationService.listMembersByRelationId(relation_id);
 
         for(UserVO m: members) {

@@ -88,8 +88,10 @@ public class RelationShowActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(RelationShowActivity.this, RelationMemberActivity.class);
+
                 intent.putExtra("relation_id", relateid);
-                startActivityForResult(intent, SELECT_PATH);
+                startActivity(intent);
+                // startActivityForResult(intent, SELECT_PATH);
             }
         });
 //      RecyclerView设置展示的的样式（listView样子，gridView样子，瀑布流样子）

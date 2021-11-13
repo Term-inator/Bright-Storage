@@ -114,12 +114,13 @@ public class Analyzer {
      */
     private long match(String s) {
         if(s.length() == 0) {
+            System.out.println("NO!!!");
             return -1;
         }
         long p_id = 0L; // 父节点id
         StorageUnitQuery storageUnit = new StorageUnitQuery();
         for(int i = 0; i < s.length(); ++i) {
-            storageUnit.setParentId(p_id);
+            storageUnit.setLocalParentId(p_id);
             List<StorageUnit> data = this.storageUnitRepo.query(storageUnit);
 
             boolean found = false;
@@ -164,7 +165,7 @@ public class Analyzer {
                 }
             }
 
-            storageUnit.setParentId(id);
+            storageUnit.setLocalParentId(id);
             List<StorageUnit> data = this.storageUnitRepo.query(storageUnit);
 
             for(StorageUnit su : data) {
@@ -401,7 +402,7 @@ public class Analyzer {
             ids.add(id);
 
             StorageUnitQuery storageUnit = new StorageUnitQuery();
-            storageUnit.setParentId(id);
+            storageUnit.setLocalParentId(id);
             List<StorageUnit> data = this.storageUnitRepo.query(storageUnit);
 
             for(StorageUnit su : data) {

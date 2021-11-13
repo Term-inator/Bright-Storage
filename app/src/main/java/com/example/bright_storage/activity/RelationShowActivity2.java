@@ -12,15 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.bright_storage.R;
-import com.example.bright_storage.model.dto.StorageUnitDTO;
 import com.example.bright_storage.model.entity.StorageUnit;
-import com.example.bright_storage.model.param.LoginParam;
 import com.example.bright_storage.model.query.StorageUnitQuery;
-import com.example.bright_storage.model.support.BaseResponse;
 import com.example.bright_storage.service.StorageUnitService;
 import com.example.bright_storage.service.UserService;
 import com.example.bright_storage.service.impl.StorageUnitServiceImpl;
-import com.example.bright_storage.service.impl.UserServiceImpl;
 import com.example.bright_storage.ui.home.HomeAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
@@ -59,6 +55,7 @@ public class RelationShowActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_relation_member);
         //        初始化RecyclerView
         mRecyclerView = (RecyclerView)findViewById(R.id.relation_member_rv);
+        relateid = getIntent().getBundleExtra("relate").getLong("id");
         title_back = (Button)findViewById(R.id.title_back);
         title_add = (Button)findViewById(R.id.title_search);
         title_add.setBackgroundResource(R.drawable.gengduo);
@@ -67,6 +64,7 @@ public class RelationShowActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(RelationShowActivity2.this, StorageUnitSelectActivity.class);
+                intent.putExtra("relation_id", relateid);
                 startActivityForResult(intent, SELECT_PATH);
             }
         });

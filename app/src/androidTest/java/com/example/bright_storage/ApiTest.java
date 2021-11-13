@@ -100,7 +100,7 @@ public class ApiTest {
     @Test
     public void new_analyze() {
         Analyzer analyzer = new Analyzer();
-        String text = "去除抽屉";
+        String text = "在客厅中添加面包";
         try {
             analyzer.analyze(text);
         } catch (Exception e) {

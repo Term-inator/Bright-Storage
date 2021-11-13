@@ -146,20 +146,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRoom() {
         StorageUnit storageUnit = new StorageUnit();
-        storageUnit.setName("客厅");
+        storageUnit.setName("卫生间");
         storageUnit.setLocalParentId(0L);
         storageUnit.setType(1);
         storageUnit.setAmount(1);
         storageUnit.setAccess(true);
         StorageUnitService storageUnitService = new StorageUnitServiceImpl();
         storageUnitService.create(storageUnit);
-        storageUnit.setName("餐厅");
+        storageUnit.setName("次卧");
         storageUnitService.create(storageUnit);
         storageUnit.setName("主卧");
         storageUnitService.create(storageUnit);
-        storageUnit.setName("次卧");
+        storageUnit.setName("餐厅");
         storageUnitService.create(storageUnit);
-        storageUnit.setName("卫生间");
+        storageUnit.setName("客厅");
         storageUnitService.create(storageUnit);
     }
 
